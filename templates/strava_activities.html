@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Data</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 20px;
+        background-color: #f8f8f8;
+    }
+    h1, h2 {
+        color: #333;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    th {
+        background-color: #4CAF50;
+        color: white;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    tr:hover {
+        background-color: #ddd;
+    }
+    button {
+        padding: 10px 15px;
+        font-size: 16px;
+        color: white;
+        background-color: #4CAF50;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    /* Green Button */
+    .green-btn {
+        background-color: #4CAF50;
+    }
+    .green-btn:hover {
+        background-color: #45a049;
+    }
+    /* Grey Button */
+    .grey-btn {
+        background-color: #808080; /* Grey background */
+    }
+    .grey-btn:hover {
+        background-color: #666666; /* Darker grey on hover */
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    .message {
+        margin: 10px 0;
+        color: red;
+    }
+</style>
+</head>
+<body>
+
+<h1>Select Data</h1>
+
+<!-- Calendar Dropdowns for Date Range Selection -->
+<form id="date-form" class="mb-3">
+  <label for="start_date">Start Date:</label>
+  <input type="date" id="start_date" name="start_date" required>
+  
+  <label for="end_date">End Date:</label>
+  <input type="date" id="end_date" name="end_date" required>
+  
+  <label for="per_page">Items:</label>
+  <select id="per_page" name="per_page">
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="50">50</option>
+    <option value="50">200</option>
+  </select>
+
+  <button type="button" id="fetch-data" class="grey-btn">Fetch Data</button>
+</form>
+
+<!-- Data Table with Checkbox Column -->
+<form id="activity-form" action="{{ url_for('select_activities') }}" method="POST"> <!-- Form to submit selected activities -->
+
+    <table class="table" id="data-table">
+    <thead>
+        <tr>
+        <th>Select</th>
+        <th>Date</th>
+        <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Dynamic rows will be inserted here -->
+    </tbody>
+    </table>
+
+    <!-- Submit Button for Selected Rows -->
+    <button id="submit-selection" class="green-btn">Submit Selection</button>
+</form>
+
+<script>
+$(document).ready(function() {
+     // Helper function to format the date as YYYY-MM-DD
+  function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Set the default dates
+  window.onload = function() {
+    const endDate = new Date();  // Current date
+    const startDate = new Date(); // Default start date (1 month before current date)
+    startDate.setMonth(endDate.getMonth() - 1);
+
+    document.getElementById('start_date').value = formatDate(startDate);
+    document.getElementById('end_date').value = formatDate(endDate);
+  };
+
+  // Fetch data when button is clicked
+  $('#fetch-data').click(function() {
+    const startDate = $('#start_date').val();
+    const endDate = $('#end_date').val();
+    const perPage = $('#per_page').val();
+
+    // Send AJAX request to fetch data
+    $.ajax({
+      url: '/fetch_strava',
+      method: 'GET',
+      data: { start_date: startDate, end_date: endDate, per_page: perPage },
+      success: function(response) {
+        console.log(response);  // Log the entire response
+
+        $('#data-table tbody').empty(); // Clear existing data
+        response.data.forEach(function(item) {
+          const row = `<tr>
+                        <td><input type="checkbox" name="selected_activities" class="select-row" data-id="${item.id}"></td>
+                        <td>${item.start_date}</td>
+                        <td>${item.name}</td>
+                      </tr>`;
+          $('#data-table tbody').append(row);
+        });
+      },
+      error: function(xhr, status, error) {
+        console.error('Error fetching data:', status, error);  // More detailed error logging
+        alert('Error fetching data.');
+      }
+    });
+  });
+
+  // Collect selected checkbox IDs on form submit
+  $('#activity-form').submit(function(event) {
+      const selectedIds = [];
+      // Collect selected checkbox IDs
+      $('.select-row:checked').each(function() {
+      selectedIds.push($(this).data('id'));  // Get the ID from data-id attribute
+      });
+      // If no checkboxes are selected, alert the user and prevent form submission
+      if (selectedIds.length === 0) {
+      event.preventDefault();  // Prevent form submission
+      alert('Please select at least one activity.');
+      } else {
+      // Optionally, you can handle the selectedIds (e.g., pass them to the server via AJAX)
+      console.log('Selected IDs:', selectedIds);
+      // Clear previously added hidden inputs (in case this is a re-submit)
+      $('#activity-form input[name="selected_activities"]').remove();// Add selected IDs as hidden inputs to the form
+      // Add selected IDs as hidden inputs to the form    
+      selectedIds.forEach(function(id) {
+          $('<input>').attr({
+          type: 'hidden',
+          name: 'selected_activities',  // The same name as the form field
+          value: id  // The value of each selected ID
+          }).appendTo('#activity-form');
+      });
+      }
+  });
+});
+</script>
+
+</body>
+</html>

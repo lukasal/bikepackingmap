@@ -37,7 +37,7 @@ class ActivityManager:
         :param selection_criteria: Criteria for selecting activities (e.g., list of indices, a filter function, etc.)
         """
         # Assuming selection_criteria is a list of indices for simplicity
-        self.selected_df = self.raw.loc[selection_criteria]
+        self.selected_df = self.raw.loc[self.raw['id'].isin(selection_criteria)]
 
     def preprocess_selected(self):
         """

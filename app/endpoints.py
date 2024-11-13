@@ -1,4 +1,4 @@
-from flask import Flask, session, request, redirect, url_for, render_template, send_file
+from flask import Flask, session, request, redirect, url_for, render_template, send_file, jsonify
 import requests
 import os 
 import pandas as pd
@@ -31,7 +31,11 @@ STRAVA_AUTH_URL = (
     f"&scope=read,activity:read"
 )
 def create_app():
-    app = Flask(__name__, template_folder='../templates')  # Correct path to templates
+        # Get the absolute path of your project root directory
+    project_root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+
+    # Create the Flask app and set the root path to the project root
+    app = Flask(__name__, root_path=project_root)
     
     app.secret_key = os.urandom(24)  # Secret key for signing session cookies
 
@@ -91,39 +95,52 @@ def create_app():
             refresh_token = token_data.get('refresh_token')
             expires_at = token_data.get('expires_at')
             session['access_token'] = access_token
-            return redirect(url_for("fetch"))
+            return redirect(url_for("display_strava"))
         except Exception as e:
             return f"An error occurred: {str(e)}", 500
+
+    @app.route('/display_strava')
+    def display_strava():  
+        return render_template('strava_activities.html')
+    
+    @app.route('/fetch_strava')
+    def fetch_strava():  
+  
+        # Get the current user's ActivityManager
+        session_id = session['session_id']
+        activity_manager = user_activity_managers.get(session_id)       
+         # Extract parameters
+        start_date = request.args.get('start_date')
+        # Convert string dates to datetime objects
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
         
-    @app.route('/fetch')
-    def fetch(before = None, after = None, per_page= None, page= None):  
+        end_date = request.args.get('end_date')
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        per_page = int(request.args.get('per_page', 10))
+        
+        # Create a sample DataFrame with name and start_date
+        data = get_data(session['access_token'], per_page=per_page, page=1)
+            # normalize data
+        data = pd.json_normalize(data)
+        # Add activities to the DataFrame
+        activity_manager.add_activities(data)
 
-            
-            # Get the current user's ActivityManager
-            session_id = session['session_id']
-            activity_manager = user_activity_managers.get(session_id)       
-            
-            # Create a sample DataFrame with name and start_date
-            data = get_data(session['access_token'], per_page=60, page=1)
-                # normalize data
-            data = pd.json_normalize(data)
-            # Add activities to the DataFrame
-            activity_manager.add_activities(data)
-            df = activity_manager.get_activities()
+        df = activity_manager.get_activities()
+        filtered_df = df[(df['start_date'] >= start_date.strftime('%Y-%m-%d')) & (df['start_date'] <= end_date.strftime('%Y-%m-%d'))]
+   
+        # Prepare data to send to the frontend
+        data_to_send = filtered_df[["start_date", "name", "id"]].to_dict(orient='records')
 
+        return jsonify({'data': data_to_send})
             # Render a template with the authorization code, tokens, and the DataFrame
-            return render_template('redirect.html', 
-                                df=df)  # Pass the DataFrame to the template
-
-
-
-
+            # return render_template('redirect.html', 
+            #                     df=df)  # Pass the DataFrame to the template
 
     @app.route('/select_activities', methods=['POST'])
     def select_activities():
-        selected_activities = request.form.getlist('selected_activities')  # Get selected activities
-        if not selected_activities:
-            return "No activities selected.", 400  # Handle case where no activities are selected
+        selected_activities = request.form.getlist('selected_activities')
+
+
         session_id = session['session_id']
         activity_manager = user_activity_managers.get(session_id)
         selected_activities = [int(index) for index in selected_activities]
@@ -133,7 +150,8 @@ def create_app():
         
         # Render the submitted activities in a new template
         return render_template('submitted.html', activities=activity_manager.preprocessed)  # Pass the selected activities to the new template
-
+    
+    
     @app.route('/activities')
     def activities():
         activities_df = ActivityManager.get_activities()  # Get all activities from the manager
