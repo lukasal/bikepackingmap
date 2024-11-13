@@ -91,8 +91,12 @@ def create_app():
             refresh_token = token_data.get('refresh_token')
             expires_at = token_data.get('expires_at')
             session['access_token'] = access_token
-
+            return redirect(url_for("fetch"))
+        except Exception as e:
+            return f"An error occurred: {str(e)}", 500
         
+    @app.route('/fetch')
+    def fetch(before = None, after = None, per_page= None, page= None):  
 
             
             # Get the current user's ActivityManager
@@ -109,13 +113,9 @@ def create_app():
 
             # Render a template with the authorization code, tokens, and the DataFrame
             return render_template('redirect.html', 
-                                code=authorization_code,
-                                access_token=access_token,
-                                refresh_token=refresh_token,
-                                expires_at=expires_at,
                                 df=df)  # Pass the DataFrame to the template
-        except Exception as e:
-            return f"An error occurred: {str(e)}", 500
+
+
 
 
 

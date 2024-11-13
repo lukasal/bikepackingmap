@@ -54,10 +54,6 @@
 </head>
 <body>
     <h1>Authentication Successful!</h1>
-    <p>Your authorization code: <strong>{{ code }}</strong></p>
-    <p>Your access token: <strong>{{ access_token }}</strong></p>
-    <p>Your refresh token: <strong>{{ refresh_token }}</strong></p>
-    <p>Token expires at: <strong>{{ expires_at }}</strong></p>
 
     <h2>Activities</h2>
     <form action="{{ url_for('select_activities') }}" method="POST"> <!-- Form to submit selected activities -->
