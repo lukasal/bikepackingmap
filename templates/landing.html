@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strava Authentication</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #f6511d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e63946;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Welcome to Strava Authentication</h1>
+        <p>Click the button below to authenticate:</p>
+        <a href="{{ url_for('strava_auth') }}">
+            <button>Authenticate with Strava</button>
+        </a>
+    </div>
+</body>
+</html>

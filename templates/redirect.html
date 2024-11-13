@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Successful</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            margin: 10px 0;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Authentication Successful!</h1>
+    <p>Your authorization code: <strong>{{ code }}</strong></p>
+    <p>Your access token: <strong>{{ access_token }}</strong></p>
+    <p>Your refresh token: <strong>{{ refresh_token }}</strong></p>
+    <p>Token expires at: <strong>{{ expires_at }}</strong></p>
+
+    <h2>Activities</h2>
+    <form action="{{ url_for('select_activities') }}" method="POST"> <!-- Form to submit selected activities -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Name</th>
+                    <th>Start Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for index, row in df.iterrows() %} <!-- Iterate through DataFrame rows -->
+                <tr>
+                    <td><input type="checkbox" name="selected_activities" value="{{ index }}"></td>
+                    <td>{{ row['name'] }}</td>
+                    <td>{{ row['start_date'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit">Submit</button> <!-- Submit button -->
+    </form>
+</body>
+</html>
