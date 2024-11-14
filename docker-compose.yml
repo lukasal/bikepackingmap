@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:alpine  # Use the official Redis Alpine image (lightweight)
+    container_name: redis
+    ports:
+      - "6379:6379"  # Expose Redis on default port
+
+  flask-app:
+    build: .
+    container_name: flask-app
+    ports:
+      - "5000:5000"  # Expose Flask app on port 5000
+    depends_on:
+      - redis  # Ensure Redis starts before Flask app
+    environment:
+      - REDIS_URL=redis://redis:6379/0 

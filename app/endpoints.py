@@ -10,14 +10,12 @@ matplotlib.use('Agg')  # Use a non-GUI backend for rendering
 from app.activity_manager import ActivityManager
 from app.strava.get_data import get_data
 from datetime import datetime, timedelta
-
-
-
+from app.redis_client import redis_client
+import time
 #app = Flask(__name__)
 
 # In-memory store for user-specific activity managers
 user_activity_managers = {}
-
 
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
@@ -36,9 +34,9 @@ def create_app():
 
     # Create the Flask app and set the root path to the project root
     app = Flask(__name__, root_path=project_root)
-    
-    app.secret_key = os.urandom(24)  # Secret key for signing session cookies
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1)
 
+    app.secret_key = os.urandom(24)  # Secret key for signing session cookies
 
     @app.before_request
     def ensure_session_id():
@@ -46,16 +44,30 @@ def create_app():
         Ensure each user has a unique session ID stored as a cookie.
         This is run before every request.
         """
+        SESSION_EXPIRATION = int(os.getenv("SESSION_EXP_TIME", 1800))
+        if 'session_id' in session:
+            print("before request")
+
+            print(redis_client.exists(f"session:{session['session_id']}"))
+            print('session_id' in session)
+            print(redis_client.ttl(f"session:{session['session_id']}"))
+        #session expired, then the redis client has deleted the content
+        if 'session_id' in session and redis_client.exists(f"session:{session['session_id']}")!=1:
+            session.clear()
+            # Check if the request is AJAX
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'session_expired': True}), 401  # Send a JSON response indicating session expired
+            else:
+                return redirect(url_for('session_expired'))  # For regular requests, perform a redirect
+        #new session
         if 'session_id' not in session:
             # Generate a new session ID if one doesn't exist
             session['session_id'] = os.urandom(16).hex()
-        
-        # Initialize a new ActivityManager for the user if not already present
-        session_id = session['session_id']
-        if session_id not in user_activity_managers:
-            user_activity_managers[session_id] = ActivityManager(session_id)
-        user_activity_managers[session_id].set_last_activity() # If session does not have 'last_activity', initialize it
-        
+            ActivityManager(session['session_id'])
+        #session ok
+        else:            
+            redis_client.expire(f"session:{session['session_id']}", SESSION_EXPIRATION)
+
     @app.route('/')
     def home():
         return render_template('landing.html')  # Render the landing page
@@ -63,6 +75,11 @@ def create_app():
     @app.route('/strava_auth')
     def strava_auth():
         return redirect(STRAVA_AUTH_URL)
+    
+    @app.route('/session-expired')
+    def session_expired():
+        # Render the expiration page when the session has expired
+        return render_template('expired.html')
 
     @app.route('/redirect')
     def strava_redirect():
@@ -108,7 +125,7 @@ def create_app():
   
         # Get the current user's ActivityManager
         session_id = session['session_id']
-        activity_manager = user_activity_managers.get(session_id)       
+        activity_manager = ActivityManager.load_from_redis(session_id)       
          # Extract parameters
         start_date = request.args.get('start_date')
         # Convert string dates to datetime objects
@@ -119,7 +136,7 @@ def create_app():
         per_page = int(request.args.get('per_page', 10))
         
         # Create a sample DataFrame with name and start_date
-        data = get_data(session['access_token'], per_page=per_page, page=1)
+        data = get_data(session['access_token'], start_date, end_date, per_page=per_page, page=1)
             # normalize data
         data = pd.json_normalize(data)
         # Add activities to the DataFrame
@@ -142,25 +159,20 @@ def create_app():
 
 
         session_id = session['session_id']
-        activity_manager = user_activity_managers.get(session_id)
+        activity_manager = ActivityManager.load_from_redis(session_id)       
         selected_activities = [int(index) for index in selected_activities]
 
         selected_activities = activity_manager.select_activities(selected_activities)
         activity_manager.preprocess_selected()
         
         # Render the submitted activities in a new template
-        return render_template('submitted.html', activities=activity_manager.preprocessed)  # Pass the selected activities to the new template
+        return render_template('submitted.html', activities=activity_manager.preprocessed[["name", "id"]])  # Pass the selected activities to the new template
     
-    
-    @app.route('/activities')
-    def activities():
-        activities_df = ActivityManager.get_activities()  # Get all activities from the manager
-        return render_template('activities.html', activities=activities_df.to_dict(orient='records'))  # Render activities in a new template
 
     @app.route('/map', methods=['GET'])
     def map_view():
         session_id = session['session_id']
-        activity_manager = user_activity_managers.get(session_id)
+        activity_manager = ActivityManager.load_from_redis(session_id)       
         # Get activity ID(s) from query parameters
         activity_ids = request.args.get('activity_ids')
         if not activity_ids:
@@ -184,7 +196,7 @@ def create_app():
     @app.route('/download_map', methods=['GET'])
     def download_map():
         session_id = session['session_id']
-        activity_manager = user_activity_managers.get(session_id)
+        activity_manager = ActivityManager.load_from_redis(session_id)       
         
         activity_id = request.args.get('activity_ids')
         activity_id = int(activity_id) if activity_id else None
@@ -193,17 +205,22 @@ def create_app():
             activity_data = activity_manager.preprocessed[activity_manager.preprocessed['id'] == activity_id]
             # figure
             # Gen   erate map for the selected activity
-            filename = f'plots/{activity_data['name'].squeeze()}_map.html'
+            filename = f"plots/{activity_data['name'].squeeze()}_map.html"
             map_activities(activity_data, filename, tiles_name = 'google_hybrid')
             png = save_png(filename)
+            
+            try:
             # Return the image as a downloadable file
-            return send_file(png, mimetype='image/png', as_attachment=True, download_name=f'{activity_data['name'].squeeze()}_map.png')
-
+                return send_file(png, mimetype='image/png', as_attachment=True, download_name=f"{activity_data['name'].squeeze()}_map.png")
+            finally:
+                # After the file is sent, delete it
+                if os.path.exists(png):
+                    os.remove(png)
 
     @app.route('/download_elevation_profile', methods=['GET'])
     def download_elevation_profile():
         session_id = session['session_id']
-        activity_manager = user_activity_managers.get(session_id)
+        activity_manager = ActivityManager.load_from_redis(session_id)       
         
         activity_id = request.args.get('activity_ids')
         activity_id = int(activity_id) if activity_id else None
@@ -212,11 +229,15 @@ def create_app():
             activity_data = activity_manager.preprocessed[activity_manager.preprocessed['id'] == activity_id].squeeze()
             # figure
             fig = create_elevation_profile(activity_data, background_color = 'whitesmoke')
-            png = f'plots/{activity_data['name']}_elevation_profile.png'
+            png = f"plots/{activity_data['name']}_elevation_profile.png"
             fig.savefig(png, dpi=150)
 
-            # Return the image as a downloadable file
-            return send_file(png, mimetype='image/png', as_attachment=True, download_name=f'{activity_data['name']}_elevation_profile.png')
-
+            try:
+                # Return the image as a downloadable file
+                return send_file(png, mimetype='image/png', as_attachment=True, download_name=f"{activity_data['name']}_elevation_profile.png")
+            finally:
+                # After the file is sent, delete it
+                if os.path.exists(png):
+                    os.remove(png)
 
     return app

@@ -53,15 +53,15 @@
     <table>
         <thead>
             <tr>
-                <th>Name</th>
                 <th>Start Date</th>
+                <th>Name</th>
             </tr>
         </thead>
         <tbody>
             {% for index, activity in activities.iterrows() %}
             <tr>
+                <td>{{ index }}</td>
                 <td>{{ activity['name'] }}</td>
-                <td>{{ activity['start_date'] }}</td>
                 <td>
                     <!-- Individual button form for each row -->
                     <form action="{{ url_for('map_view') }}" method="GET" style="display:inline;">
