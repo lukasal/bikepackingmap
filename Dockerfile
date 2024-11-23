@@ -1,5 +1,5 @@
 # base Image
-FROM python:3.12.7-slim
+FROM python:3.9.20-slim
 # Install ssl upgrade because of vulnerability
 # Update package list, upgrade OpenSSL, and clean up
 RUN apt-get update && \

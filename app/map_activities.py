@@ -1,10 +1,7 @@
 import folium
 import folium.plugins as plugins
 import time
-import os
-import matplotlib.pyplot as plt
-import base64
-from .elevation_profile import create_elevation_profile
+
 # color scheme
 color = {'Ride':'darkblue', 'Run':'green', 'Hike':'purple'}
 
@@ -45,12 +42,12 @@ def map_activities(activities,
                    tiles = None,
                    attr= ".",
                    )
-    
+
     folium.TileLayer(tiles[tiles_name], show=True, attr = tiles_name, name = tiles_name).add_to(m)
     if dynamic_tiles:
         for tile_name, tile_path in tiles.items():
             folium.TileLayer(tile_path, attr = tile_name, name = tile_name, show=False).add_to(m)
-    
+
         folium.LayerControl().add_to(m)
 
     for row in activities.iterrows():
@@ -64,22 +61,8 @@ def map_activities(activities,
                              weight=5,     
                              #smooth_factor=2
                             ).add_to(m)
-        
-        halfway_coord = row_values['map.polyline'][int(len(row_values['map.polyline'])/2)]
-        
-        # create elevation profile
-        fig = create_elevation_profile(row_values)
-        png = 'elevation_profile_{}.png'.format(row_values['id'])
-        fig.savefig(png, dpi=75)
-        plt.close()
-    
-        # read png file
-        elevation_profile = base64.b64encode(open(png, 'rb').read()).decode()
-    
-        # delete file
-        os.remove(png)
-        
-    # popup text
+
+        # popup text
         html = """
         <h3>{}</h3>
             <p>
@@ -103,37 +86,39 @@ def map_activities(activities,
             </p>
        
         """.format(
-            row_values['name'], 
-            row_index.date(), 
-            row_index.time(),  
-            row_values['type'], 
-            row_values['distance'], 
-            row_values['total_elevation_gain'], 
-            time.strftime('%H:%M:%S', time.gmtime(row_values['moving_time'])), 
-            time.strftime('%H:%M:%S', time.gmtime(row_values['elapsed_time'])),
-            row_values['average_speed'], row_values['max_speed'], 
-            row_values['average_heartrate'], row_values['max_heartrate'], 
-            row_values['average_temp'], 
-            elevation_profile, 
+            row_values["name"],
+            row_index.date(),
+            row_index.time(),
+            row_values["type"],
+            row_values["distance"],
+            row_values["total_elevation_gain"],
+            time.strftime("%H:%M:%S", time.gmtime(row_values["moving_time"])),
+            time.strftime("%H:%M:%S", time.gmtime(row_values["elapsed_time"])),
+            row_values["average_speed"],
+            row_values["max_speed"],
+            row_values["average_heartrate"],
+            row_values["max_heartrate"],
+            row_values["average_temp"],
+            row_values["elevation_profile"],
         )
-        
+
         # add marker to map
         iframe = folium.IFrame(html, width=(width*resolution)+20, height=(height*resolution)+20)
         popup = folium.Popup(iframe, max_width=2850)
         ls.add_child(popup)
         ls.add_to(m)
-    
+
     # House Markler for each stage town:
-    #stage_town_activities = activities[activities['type'] == "Ride"].groupby(activities[activities['type'] == "Ride"].index.date).apply(lambda x: x.loc[x.index.min()])
+    # stage_town_activities = activities[activities['type'] == "Ride"].groupby(activities[activities['type'] == "Ride"].index.date).apply(lambda x: x.loc[x.index.min()])
     stage_town_activities = activities.groupby(activities.index.date).apply(lambda x: x.loc[x.index.min()])
     for row in stage_town_activities.iterrows():
         row_values = row[1]
-        #color
+        # color
         # #if row_values['restday_previous'] == 0:#
         icon_color = "#007799" 
         # else:
         #     icon_color = "orange"
-    
+
         icon_=plugins.BeautifyIcon(
                          icon="house",
                          icon_shape="circle",
@@ -152,7 +137,7 @@ def map_activities(activities,
                          text_color="green",
                          background_color='white'
                      )
-    
+
     # Grand depart marker
     icon_=plugins.BeautifyIcon(
                          icon="play",
@@ -164,13 +149,13 @@ def map_activities(activities,
                          icon_anchor=(21, 21),
                          inner_icon_style='font-size:30px;'  # Adjust inner icon size
                      )
-    
+
     folium.Marker(location=activities[activities.index == min(activities.index)]['map.polyline'][0][0],
                   icon=icon_,
                   icon_size = 10,
                   zIndexOffset = 1000,
                   tooltip = activities[activities.index == min(activities.index)]['start_location'][0]).add_to(m)
-    #Finish marker
+    # Finish marker
     icon_=plugins.BeautifyIcon(
                          icon="fa fa-flag-checkered",
                          icon_shape="circle",
@@ -181,7 +166,7 @@ def map_activities(activities,
                          #text_color="red",
                          #background_color='white'
     )
-    
+
     fm = folium.Marker(location=stage_town_activities[stage_town_activities.index == max(stage_town_activities.index)]['map.polyline'][0][-1], 
                   icon=icon_, 
                   icon_size = 10,
@@ -194,13 +179,13 @@ def map_activities(activities,
     #     #fig = create_total_elevation(ride_activities)
     #     fig.savefig(png, dpi=75)
     #     plt.close()
-        
+
     #     # read png file
     #     total_elevation_profile = base64.b64encode(open(png, 'rb').read()).decode()
-         
+
     #     # delete file
     #     os.remove(png)
-         
+
     #     # popup text
     #     html = """
     #         <h3>Palermo - Freiburg</h3>
@@ -223,17 +208,17 @@ def map_activities(activities,
     #             </p>
     #         <img src="data:image/png;base64,{}">
     #         """.format(
-    #             summary_stats_ride['distance'], 
+    #             summary_stats_ride['distance'],
     #             print_moving_time(summary_stats_ride['moving_time']),
-    #             summary_stats_ride['speed'], 
-    #             summary_stats_ride['total_elevation_gain'], 
-    #             summary_stats_hike['distance'], 
+    #             summary_stats_ride['speed'],
+    #             summary_stats_ride['total_elevation_gain'],
+    #             summary_stats_hike['distance'],
     #             print_moving_time(summary_stats_hike['moving_time']),
-    #             #summary_stats_ride['speed'], 
-    #             summary_stats_hike['total_elevation_gain'], 
+    #             #summary_stats_ride['speed'],
+    #             summary_stats_hike['total_elevation_gain'],
     #             total_elevation_profile
     #         )
-            
+
     #         # add marker to map
     #     iframe = folium.IFrame(html, width=(width*resolution)+20, height=(height*resolution)+20)
     #     popup = folium.Popup(iframe, max_width=8850)
@@ -242,6 +227,5 @@ def map_activities(activities,
 
     m.fit_bounds(bounding_box(activities['map.polyline'], margin = zoom_margin)) 
 
-
     m.save(out_file)
-    #display(m)
+    # display(m)

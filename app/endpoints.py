@@ -12,7 +12,11 @@ from app.strava.get_data import get_data
 from datetime import datetime, timedelta
 from app.redis_client import redis_client
 import time
-#app = Flask(__name__)
+import redis
+import json
+import pickle
+
+# app = Flask(__name__)
 
 # In-memory store for user-specific activity managers
 user_activity_managers = {}
@@ -29,14 +33,18 @@ STRAVA_AUTH_URL = (
     f"&scope=read,activity:read"
 )
 def create_app():
-        # Get the absolute path of your project root directory
+    # Get the absolute path of your project root directory
     project_root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
     # Create the Flask app and set the root path to the project root
     app = Flask(__name__, root_path=project_root)
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1)
+    # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1)
+    app.config["SESSION_TYPE"] = "redis"
+    app.config["SESSION_PERMANENT"] = True
+    app.config["SESSION_USE_SIGNER"] = True
+    app.config["SESSION_REDIS"] = redis.StrictRedis(host="localhost", port=6379, db=0)
 
-    app.secret_key = os.urandom(24)  # Secret key for signing session cookies
+    app.secret_key = os.getenv("SECRET_KEY")
 
     @app.before_request
     def ensure_session_id():
@@ -51,7 +59,7 @@ def create_app():
             print(redis_client.exists(f"session:{session['session_id']}"))
             print('session_id' in session)
             print(redis_client.ttl(f"session:{session['session_id']}"))
-        #session expired, then the redis client has deleted the content
+        # session expired, then the redis client has deleted the content
         if 'session_id' in session and redis_client.exists(f"session:{session['session_id']}")!=1:
             session.clear()
             # Check if the request is AJAX
@@ -59,12 +67,12 @@ def create_app():
                 return jsonify({'session_expired': True}), 401  # Send a JSON response indicating session expired
             else:
                 return redirect(url_for('session_expired'))  # For regular requests, perform a redirect
-        #new session
+        # new session
         if 'session_id' not in session:
             # Generate a new session ID if one doesn't exist
             session['session_id'] = os.urandom(16).hex()
             ActivityManager(session['session_id'])
-        #session ok
+        # session ok
         else:            
             redis_client.expire(f"session:{session['session_id']}", SESSION_EXPIRATION)
 
@@ -75,11 +83,30 @@ def create_app():
     @app.route('/strava_auth')
     def strava_auth():
         return redirect(STRAVA_AUTH_URL)
-    
+
     @app.route('/session-expired')
     def session_expired():
         # Render the expiration page when the session has expired
         return render_template('expired.html')
+
+    @app.route("/use_example_dataset")
+    def use_example_dataset():
+
+        session_id = session["session_id"]
+        activity_manager = ActivityManager.load_from_redis(session_id)
+        # Load the example dataset
+        with open("giro_italia_example_raw.json", "r") as file:
+            example_raw = json.load(file)
+        with open("giro_italia_example_preprocessed.pkl", "rb") as file:
+            example_processed = pickle.load(file)
+        # Add activities to the DataFrame
+        activity_manager.preprocessed = example_processed
+        activity_manager.add_activities(example_raw)
+
+        # Render the submitted activities in a new template
+        return render_template(
+            "submitted.html", activities=activity_manager.preprocessed[["name", "id"]]
+        )  # Pass the selected activities to the new template
 
     @app.route('/redirect')
     def strava_redirect():
@@ -108,9 +135,7 @@ def create_app():
             # Extract access token and other details from the response
             token_data = token_response.json()
             # Store the access token in session
-            access_token = token_data.get('access_token')
-            refresh_token = token_data.get('refresh_token')
-            expires_at = token_data.get('expires_at')
+            access_token = token_data.get("access_token")
             session['access_token'] = access_token
             return redirect(url_for("display_strava"))
         except Exception as e:
@@ -119,44 +144,43 @@ def create_app():
     @app.route('/display_strava')
     def display_strava():  
         return render_template('strava_activities.html')
-    
+
     @app.route('/fetch_strava')
     def fetch_strava():  
-  
+
         # Get the current user's ActivityManager
         session_id = session['session_id']
         activity_manager = ActivityManager.load_from_redis(session_id)       
-         # Extract parameters
+        # Extract parameters
         start_date = request.args.get('start_date')
         # Convert string dates to datetime objects
         start_date = datetime.strptime(start_date, '%Y-%m-%d')
-        
+
         end_date = request.args.get('end_date')
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date, "%Y-%m-%d") + timedelta(days=1)
         per_page = int(request.args.get('per_page', 10))
-        
+
         # Create a sample DataFrame with name and start_date
         data = get_data(session['access_token'], start_date, end_date, per_page=per_page, page=1)
-            # normalize data
+        # normalize data
         data = pd.json_normalize(data)
         # Add activities to the DataFrame
         activity_manager.add_activities(data)
 
-        df = activity_manager.get_activities()
-        filtered_df = df[(df['start_date'] >= start_date.strftime('%Y-%m-%d')) & (df['start_date'] <= end_date.strftime('%Y-%m-%d'))]
-   
+        # df = activity_manager.get_activities()
+        # filtered_df = df[(df['start_date'] >= start_date.strftime('%Y-%m-%d')) & (df['start_date'] <= end_date.strftime('%Y-%m-%d'))]
+
         # Prepare data to send to the frontend
-        data_to_send = filtered_df[["start_date", "name", "id"]].to_dict(orient='records')
+        data_to_send = data[["start_date", "name", "id"]].to_dict(orient="records")
 
         return jsonify({'data': data_to_send})
-            # Render a template with the authorization code, tokens, and the DataFrame
-            # return render_template('redirect.html', 
-            #                     df=df)  # Pass the DataFrame to the template
+        # Render a template with the authorization code, tokens, and the DataFrame
+        # return render_template('redirect.html',
+        #                     df=df)  # Pass the DataFrame to the template
 
     @app.route('/select_activities', methods=['POST'])
     def select_activities():
         selected_activities = request.form.getlist('selected_activities')
-
 
         session_id = session['session_id']
         activity_manager = ActivityManager.load_from_redis(session_id)       
@@ -164,10 +188,11 @@ def create_app():
 
         selected_activities = activity_manager.select_activities(selected_activities)
         activity_manager.preprocess_selected()
-        
+
         # Render the submitted activities in a new template
-        return render_template('submitted.html', activities=activity_manager.preprocessed[["name", "id"]])  # Pass the selected activities to the new template
-    
+        return render_template(
+            "submitted.html", activities=activity_manager.preprocessed[["name", "id"]]
+        )  # Pass the selected activities to the new template
 
     @app.route('/map', methods=['GET'])
     def map_view():
@@ -183,7 +208,6 @@ def create_app():
             activity_ids = [int(id) for id in activity_ids.split(',')]
             activities_to_map = activity_manager.preprocessed[activity_manager.preprocessed['id'].isin(activity_ids)]
 
-
         # Call your complex function to generate the map HTML
         map_activities(activities_to_map,
                     out_file = './templates/tmp/mymap_terrain.html', 
@@ -197,7 +221,7 @@ def create_app():
     def download_map():
         session_id = session['session_id']
         activity_manager = ActivityManager.load_from_redis(session_id)       
-        
+
         activity_id = request.args.get('activity_ids')
         activity_id = int(activity_id) if activity_id else None
         if activity_id:
@@ -208,9 +232,9 @@ def create_app():
             filename = f"plots/{activity_data['name'].squeeze()}_map.html"
             map_activities(activity_data, filename, tiles_name = 'google_hybrid')
             png = save_png(filename)
-            
+
             try:
-            # Return the image as a downloadable file
+                # Return the image as a downloadable file
                 return send_file(png, mimetype='image/png', as_attachment=True, download_name=f"{activity_data['name'].squeeze()}_map.png")
             finally:
                 # After the file is sent, delete it
@@ -221,7 +245,7 @@ def create_app():
     def download_elevation_profile():
         session_id = session['session_id']
         activity_manager = ActivityManager.load_from_redis(session_id)       
-        
+
         activity_id = request.args.get('activity_ids')
         activity_id = int(activity_id) if activity_id else None
         if activity_id:

@@ -15,14 +15,24 @@
         button {
             padding: 10px 20px;
             font-size: 16px;
-            background-color: #f6511d;
-            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin: 5px;
         }
-        button:hover {
+        .auth-button {
+            background-color: #f6511d;
+            color: white;
+        }
+        .auth-button:hover {
             background-color: #e63946;
+        }
+        .example-button {
+            background-color: #1d72f6;
+            color: white;
+        }
+        .example-button:hover {
+            background-color: #155ab2;
         }
     </style>
 </head>
@@ -31,7 +41,11 @@
         <h1>Welcome to Strava Authentication</h1>
         <p>Click the button below to authenticate:</p>
         <a href="{{ url_for('strava_auth') }}">
-            <button>Authenticate with Strava</button>
+            <button class="auth-button">Authenticate with Strava</button>
+        </a>
+        <p>Or use the example dataset:</p>
+        <a href="{{ url_for('use_example_dataset') }}">
+            <button class="example-button">Use Example Dataset</button>
         </a>
     </div>
 </body>

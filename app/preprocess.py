@@ -4,6 +4,10 @@ from tqdm import  tqdm
 import requests
 import re
 from flask import session
+from .elevation_profile import create_elevation_profile
+import matplotlib.pyplot as plt
+import base64
+import os
 
 # define function to get elevation data using the open-elevation API
 def get_elevation(id):
@@ -22,12 +26,11 @@ def get_elevation(id):
     return r['distance']['data'],r['altitude']['data']
 
 def preprocess(activities):
-# add decoded summary polylines
+    # add decoded summary polylines
     activities['map.polyline'] = activities['map.summary_polyline'].apply(polyline.decode)
-    
-    #activities = activities[activities.name.str.contains("tappa") ]
-    
-    
+
+    # activities = activities[activities.name.str.contains("tappa") ]
+
     # get elevation data
     elevation_data = list()
     distance_data = list()
@@ -36,23 +39,34 @@ def preprocess(activities):
         distance, elevation = get_elevation(activity.id)
         elevation_data.append(elevation)
         distance_data.append(distance)
-        
+
     # add elevation data to dataframe
     activities['map.elevation'] = elevation_data
     activities['map.distance'] = distance_data
 
     activities['start_location'] =  [(re.findall(r'\: (.+) -', s)+[''])[0] for s in activities['name']]
     activities['end_location'] = [(re.findall(r'\- (.+)$', s)+[''])[0] for s in activities['name']]
-    
-    
-        # convert data types
-    #activities.loc[:, 'start_date'] = pd.to_datetime(activities['start_date']).dt.date
+
+    # convert data types
+    # activities.loc[:, 'start_date'] = pd.to_datetime(activities['start_date']).dt.date
     activities.loc[:, 'date'] = pd.to_datetime(activities['start_date_local']).dt.date
     activities.loc[:, 'start_date_local'] = pd.to_datetime(activities['start_date_local']).dt.tz_localize(None)
     # convert values
     activities.loc[:, 'distance'] /= 1000 # convert from m to km
     activities.loc[:, 'average_speed'] *= 3.6 # convert from m/s to km/h
     activities.loc[:, 'max_speed'] *= 3.6 # convert from m/s to km/h
+
+    for row_index, row_values in activities.iterrows():  # create elevation profile
+        fig = create_elevation_profile(row_values)
+        png = "elevation_profile_{}.png".format(row_values["id"])
+        fig.savefig(png, dpi=75)
+        plt.close()
+
+        # read png file
+        elevation_profile = base64.b64encode(open(png, "rb").read()).decode()
+        activities.loc[row_index, "elevation_profile"] = elevation_profile
+        # delete file
+        os.remove(png)
     # drop columns
     activities.drop(
         [
@@ -80,9 +94,8 @@ def preprocess(activities):
         axis=1, 
         inplace=True
     )
-    
-    
-    #read POIs
+
+    # read POIs
     # poi = pd.read_excel("data/data_poi.xlsx")
     # poi['Datum'] = poi.Datum.dt.date
     # poi = poi.groupby(['Datum', 'type']).agg({'reference_dist':lambda x: list(x), 'reference_label':lambda x: list(x)})
@@ -99,5 +112,5 @@ def preprocess(activities):
 
     # set index
     activities.set_index('start_date_local', inplace=True)#
-    
+
     return activities
