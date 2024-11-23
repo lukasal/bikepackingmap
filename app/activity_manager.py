@@ -37,22 +37,22 @@ class ActivityManager:
         self.selected_df = pd.DataFrame()  # Selected activities for further processing
         self.preprocessed = pd.DataFrame()
         self.last_activity = datetime.utcnow()
-    
-     # Class method to load an instance from Redis
+
+    # Class method to load an instance from Redis
     @classmethod
     def load_from_redis(cls, session_id):
         # Attempt to get serialized data from Redis
         serialized_activity = redis_client.get(f"session:{session_id}")
-        
+
         # If no data is found, return None
         if serialized_activity is None:
             return None
-        
+
         # Deserialize the data into a UserActivity instance
         user_activity = pickle.loads(serialized_activity)
         return user_activity
-         # Class method to load an instance from Redis
-    
+        # Class method to load an instance from Redis
+
     @store_in_redis    
     def set_last_activity(self):
         self.last_activity = datetime.utcnow()
@@ -79,7 +79,7 @@ class ActivityManager:
         """
         # Assuming selection_criteria is a list of indices for simplicity
         self.selected_df = self.raw.loc[self.raw['id'].isin(selection_criteria)]
-    
+
     @store_in_redis 
     def preprocess_selected(self):
         """
@@ -90,6 +90,12 @@ class ActivityManager:
             # Example: Add a new column 'processed' to mark activities as preprocessed
             self.preprocessed  = preprocess(self.selected_df)
 
+    @store_in_redis
+    def save(self):
+        """
+        store current class in redis
+        """
+        pass
 
     def get_selected_activities(self):
         """

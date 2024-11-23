@@ -143,7 +143,19 @@ def create_app():
 
     @app.route('/display_strava')
     def display_strava():  
-        return render_template('strava_activities.html')
+        return render_template(
+            "select_activities.html",
+            selection="select_strava",
+            fetch_url="/fetch_strava",
+        )
+
+    @app.route("/display_examples")
+    def display_examples():
+        return render_template(
+            "select_activities.html",
+            selection="select_examples",
+            fetch_url="/fetch_examples",
+        )
 
     @app.route('/fetch_strava')
     def fetch_strava():  
@@ -178,8 +190,27 @@ def create_app():
         # return render_template('redirect.html',
         #                     df=df)  # Pass the DataFrame to the template
 
-    @app.route('/select_activities', methods=['POST'])
-    def select_activities():
+    @app.route("/fetch_examples")
+    def fetch_examples():
+
+        session_id = session["session_id"]
+        activity_manager = ActivityManager.load_from_redis(session_id)
+        # Load the example dataset
+        with open("data/giro_italia_example_raw.json", "r") as file:
+            example_raw = pd.json_normalize(json.load(file))
+        with open("data/giro_italia_example_preprocessed.pkl", "rb") as file:
+            example_processed = pickle.load(file)
+        # Add activities to the DataFrame
+        activity_manager.preprocessed = example_processed
+        activity_manager.add_activities(example_raw)
+
+        return jsonify({"data": example_raw})
+        # Render a template with the authorization code, tokens, and the DataFrame
+        # return render_template('redirect.html',
+        #                     df=df)  # Pass the DataFrame to the template
+
+    @app.route("/select_strava", methods=["POST"])
+    def select_strava():
         selected_activities = request.form.getlist('selected_activities')
 
         session_id = session['session_id']
@@ -191,7 +222,27 @@ def create_app():
 
         # Render the submitted activities in a new template
         return render_template(
-            "submitted.html", activities=activity_manager.preprocessed[["name", "id"]]
+            "submitted.html",
+            activities=activity_manager.preprocessed[["name", "id"]],
+        )  # Pass the selected activities to the new template
+
+    @app.route("/select_examples", methods=["POST"])
+    def select_examples():
+        selected_activities = request.form.getlist("selected_activities")
+
+        session_id = session["session_id"]
+        activity_manager = ActivityManager.load_from_redis(session_id)
+        selected_activities = [int(index) for index in selected_activities]
+
+        selected_activities = activity_manager.select_activities(selected_activities)
+        activity_manager.preprocessed = activity_manager.preprocessed.loc[
+            activity_manager.preprocessed["id"].isin(selected_activities)
+        ]
+        activity_manager.save()
+        # Render the submitted activities in a new template
+        return render_template(
+            "submitted.html",
+            activities=activity_manager.preprocessed[["name", "id"]],
         )  # Pass the selected activities to the new template
 
     @app.route('/map', methods=['GET'])
