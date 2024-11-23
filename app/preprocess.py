@@ -42,7 +42,8 @@ def preprocess(activities):
         elevation_data.append(elevation)
         distance_data.append(distance)
         fig = create_elevation_profile(
-            {"map.elevation": elevation, "map.distance": distance}
+            pd.DataFrame({"map.elevation": elevation, "map.distance": distance}),
+            top_color=False,
         )
         png = "elevation_profile_.png"
         fig.savefig(png, dpi=75)
@@ -53,6 +54,7 @@ def preprocess(activities):
         elevation_profiles.append(elevation_profile)
         # delete file
         os.remove(png)
+
     # add elevation data to dataframe
     activities['map.elevation'] = elevation_data
     activities['map.distance'] = distance_data

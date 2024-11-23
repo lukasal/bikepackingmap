@@ -243,6 +243,9 @@ def create_app():
         activity_manager.preprocessed = activity_manager.preprocessed.loc[
             activity_manager.preprocessed["id"].isin(selected_activities)
         ]
+        from app.map_activities2 import map_activities
+
+        activity_manager.map_activities = map_activities(activity_manager.preprocessed)
         activity_manager.save()
         # Render the submitted activities in a new template
         return render_template(
@@ -319,5 +322,70 @@ def create_app():
                 # After the file is sent, delete it
                 if os.path.exists(png):
                     os.remove(png)
+
+    @app.route("/view_map")
+    def view_map():
+        session_id = session["session_id"]
+        activity_manager = ActivityManager.load_from_redis(session_id)
+        m = activity_manager.map_activities.build(
+            activity_manager.preprocessed,
+            out_file="./templates/tmp/mymap_terrain.html",
+            tiles_name="stadia_terrain",
+            final_popup=False,
+            dynamic_tiles=True,
+            save=False,
+            zoom_margin=0.05,
+        )  # Assuming this function creates 'map_output.html'
+        return render_template(
+            "build_map.html",
+            map=m._repr_html_(),
+            colors=activity_manager.map_activities.color,
+        )
+
+    @app.route("/update_map", methods=["POST"])
+    def update_map():
+
+        # Get updated colors from the form
+        session_id = session["session_id"]
+        activity_manager = ActivityManager.load_from_redis(session_id)
+        activity_manager.map_activities.color = {
+            name: request.form.get(name, default_color)
+            for name, default_color in activity_manager.map_activities.color.items()
+        }  # Get style parameters from the form
+        activity_manager.map_activities.line_thickness = int(
+            request.form.get("line_thickness", 2)
+        )
+        activity_manager.map_activities.stage_start_icon = request.form.get(
+            "stage_start_icon"
+        )
+        activity_manager.map_activities.stage_icon_shape = request.form.get(
+            "stage_icon_shape"
+        )
+        activity_manager.map_activities.stage_border_color = request.form.get(
+            "stage_border_color"
+        )
+        activity_manager.map_activities.stage_background_color = request.form.get(
+            "stage_background_color"
+        )
+        activity_manager.map_activities.stage_start_color = request.form.get(
+            "stage_start_color"
+        )
+        activity_manager.map_activities.stage_labels_active = request.form.get(
+            "stage_labels_active"
+        )
+        activity_manager.save()
+
+        # Create a map with updated styles
+        m = activity_manager.map_activities.build(
+            activity_manager.preprocessed,
+            out_file="./templates/tmp/mymap_terrain.html",
+            tiles_name="stadia_terrain",
+            final_popup=False,
+            dynamic_tiles=True,
+            save=False,
+            zoom_margin=0.05,
+        )
+
+        return jsonify({"map": m._repr_html_()})
 
     return app

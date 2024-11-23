@@ -27,12 +27,16 @@ def bounding_box(polylines, margin = 0.3):
 
 
 # plot all activities on map
-def map_activities(activities, 
-                  out_file = 'mymap_terrain.html', 
-                  tiles_name = 'stadia_terrain',
-                  final_popup = False,
-                  dynamic_tiles = True,
-                  zoom_margin = 0.05):
+def map_activities(
+    activities,
+    out_file="mymap_terrain.html",
+    tiles_name="stadia_terrain",
+    final_popup=False,
+    dynamic_tiles=True,
+    zoom_margin=0.05,
+    save=True,
+    lin_width=5,
+):
     resolution, width, height = 75, 6, 6.5
 
     m = folium.Map(location=centroid(activities['map.polyline']),
@@ -53,14 +57,18 @@ def map_activities(activities,
     for row in activities.iterrows():
         row_index = row[0]
         row_values = row[1]
-        ls = folium.PolyLine(row_values['map.polyline'], color='white',
-                                 weight=8,     
-                                 #smooth_factor=2
-                                ).add_to(m)
-        ls = folium.PolyLine(row_values['map.polyline'], color=color[row_values['type']],
-                             weight=5,     
-                             #smooth_factor=2
-                            ).add_to(m)
+        ls = folium.PolyLine(
+            row_values["map.polyline"],
+            color="white",
+            weight=lin_width + 3,
+            # smooth_factor=2
+        ).add_to(m)
+        ls = folium.PolyLine(
+            row_values["map.polyline"],
+            color=color[row_values["type"]],
+            weight=lin_width,
+            # smooth_factor=2
+        ).add_to(m)
 
         # popup text
         html = """
@@ -226,6 +234,10 @@ def map_activities(activities,
     fm.add_to(m)
 
     m.fit_bounds(bounding_box(activities['map.polyline'], margin = zoom_margin)) 
+    if save:
+        m.save(out_file)
 
-    m.save(out_file)
-    # display(m)
+    return m
+
+
+# display(m)

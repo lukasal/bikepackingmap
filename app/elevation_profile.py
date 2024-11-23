@@ -41,7 +41,16 @@ def create_elevation_profile(
     ax.set_axisbelow(True)
 
     # create vertical referrence lines
-    references = pd.DataFrame({'reference_dist':my_ride.get('reference_dist', default=[]), 'reference_label':my_ride.get('reference_label', default=[])})
+    try:
+        references = pd.DataFrame(
+            {
+                "reference_dist": my_ride.get("reference_dist", default=[]),
+                "reference_label": my_ride.get("reference_label", default=[]),
+            }
+        )
+    except:
+        references = pd.DataFrame()
+
     max_height= 0
     random_move = up_gen(0,2)
 

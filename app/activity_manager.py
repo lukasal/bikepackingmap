@@ -5,6 +5,7 @@ from functools import wraps
 from datetime import datetime
 from app.preprocess import preprocess
 from app.redis_client import redis_client
+from app.map_activities2 import map_activities
 
 
 # Define the decorator without an outer function
@@ -89,6 +90,7 @@ class ActivityManager:
         if not self.selected_df.empty:
             # Example: Add a new column 'processed' to mark activities as preprocessed
             self.preprocessed  = preprocess(self.selected_df)
+            self.map_activities = map_activities(self.preprocessed)
 
     @store_in_redis
     def save(self):
