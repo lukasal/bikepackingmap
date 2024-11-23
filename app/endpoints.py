@@ -11,6 +11,7 @@ from app.activity_manager import ActivityManager
 from app.strava.get_data import get_data
 from datetime import datetime, timedelta
 from app.redis_client import redis_client
+from app.helper import parse_date
 import time
 import redis
 import json
@@ -166,10 +167,10 @@ def create_app():
         # Extract parameters
         start_date = request.args.get('start_date')
         # Convert string dates to datetime objects
-        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        start_date = parse_date(start_date)
 
         end_date = request.args.get('end_date')
-        end_date = datetime.strptime(end_date, "%Y-%m-%d") + timedelta(days=1)
+        end_date = parse_date(end_date, timedelta(days=1))
         per_page = int(request.args.get('per_page', 10))
 
         # Create a sample DataFrame with name and start_date

@@ -34,15 +34,29 @@ def preprocess(activities):
     # get elevation data
     elevation_data = list()
     distance_data = list()
+    elevation_profiles = list()
     for idx in tqdm(activities.index):
         activity = activities.loc[idx, :]
+        # TODO catch if fails
         distance, elevation = get_elevation(activity.id)
         elevation_data.append(elevation)
         distance_data.append(distance)
+        fig = create_elevation_profile(
+            {"map.elevation": elevation, "map.distance": distance}
+        )
+        png = "elevation_profile_.png"
+        fig.savefig(png, dpi=75)
+        plt.close()
 
+        # read png file
+        elevation_profile = base64.b64encode(open(png, "rb").read()).decode()
+        elevation_profiles.append(elevation_profile)
+        # delete file
+        os.remove(png)
     # add elevation data to dataframe
     activities['map.elevation'] = elevation_data
     activities['map.distance'] = distance_data
+    activities["elevation_profile"] = elevation_profiles
 
     activities['start_location'] =  [(re.findall(r'\: (.+) -', s)+[''])[0] for s in activities['name']]
     activities['end_location'] = [(re.findall(r'\- (.+)$', s)+[''])[0] for s in activities['name']]
@@ -56,17 +70,6 @@ def preprocess(activities):
     activities.loc[:, 'average_speed'] *= 3.6 # convert from m/s to km/h
     activities.loc[:, 'max_speed'] *= 3.6 # convert from m/s to km/h
 
-    for row_index, row_values in activities.iterrows():  # create elevation profile
-        fig = create_elevation_profile(row_values)
-        png = "elevation_profile_{}.png".format(row_values["id"])
-        fig.savefig(png, dpi=75)
-        plt.close()
-
-        # read png file
-        elevation_profile = base64.b64encode(open(png, "rb").read()).decode()
-        activities.loc[row_index, "elevation_profile"] = elevation_profile
-        # delete file
-        os.remove(png)
     # drop columns
     activities.drop(
         [
