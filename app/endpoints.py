@@ -89,24 +89,24 @@ def create_app():
         # Render the expiration page when the session has expired
         return render_template('expired.html')
 
-    @app.route("/use_example_dataset")
-    def use_example_dataset():
+    # @app.route("/use_example_dataset")
+    # def use_example_dataset():
 
-        session_id = session["session_id"]
-        activity_manager = ActivityManager.load_from_redis(session_id)
-        # Load the example dataset
-        with open("giro_italia_example_raw.json", "r") as file:
-            example_raw = json.load(file)
-        with open("giro_italia_example_preprocessed.pkl", "rb") as file:
-            example_processed = pickle.load(file)
-        # Add activities to the DataFrame
-        activity_manager.preprocessed = example_processed
-        activity_manager.add_activities(example_raw)
+    #     session_id = session["session_id"]
+    #     activity_manager = ActivityManager.load_from_redis(session_id)
+    #     # Load the example dataset
+    #     with open("giro_italia_example_raw.json", "r") as file:
+    #         example_raw = json.load(file)
+    #     with open("giro_italia_example_preprocessed.pkl", "rb") as file:
+    #         example_processed = pickle.load(file)
+    #     # Add activities to the DataFrame
+    #     activity_manager.preprocessed = example_processed
+    #     activity_manager.add_activities(example_raw)
 
-        # Render the submitted activities in a new template
-        return render_template(
-            "submitted.html", activities=activity_manager.preprocessed[["name", "id"]]
-        )  # Pass the selected activities to the new template
+    #     # Render the submitted activities in a new template
+    #     return render_template(
+    #         "submitted.html", activities=activity_manager.preprocessed[["name", "id"]]
+    #     )  # Pass the selected activities to the new template
 
     @app.route('/redirect')
     def strava_redirect():
@@ -203,8 +203,12 @@ def create_app():
         # Add activities to the DataFrame
         activity_manager.preprocessed = example_processed
         activity_manager.add_activities(example_raw)
+        # Prepare data to send to the frontend
+        data_to_send = example_raw[["start_date", "name", "id"]].to_dict(
+            orient="records"
+        )
 
-        return jsonify({"data": example_raw})
+        return jsonify({"data": data_to_send})
         # Render a template with the authorization code, tokens, and the DataFrame
         # return render_template('redirect.html',
         #                     df=df)  # Pass the DataFrame to the template
@@ -234,7 +238,7 @@ def create_app():
         activity_manager = ActivityManager.load_from_redis(session_id)
         selected_activities = [int(index) for index in selected_activities]
 
-        selected_activities = activity_manager.select_activities(selected_activities)
+        activity_manager.select_activities(selected_activities)
         activity_manager.preprocessed = activity_manager.preprocessed.loc[
             activity_manager.preprocessed["id"].isin(selected_activities)
         ]
