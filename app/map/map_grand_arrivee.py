@@ -2,7 +2,7 @@ import folium
 from folium.plugins import BeautifyIcon
 
 
-def grand_arrivee(activities, settings, final_popup=False):
+def map_grand_arrivee(activities, settings, final_popup=False):
 
     grand_arrivee = folium.FeatureGroup(name="Grand arrivee", control=False)
 

@@ -5,8 +5,8 @@ import sys
 import os
 from os.path import abspath, dirname, realpath
 
-PATH = realpath(abspath(__file__))
-sys.path.insert(0, dirname(dirname(PATH)))
+# PATH = realpath(abspath(__file__))
+# sys.path.insert(0, dirname(dirname(PATH)))
 
 
 class TestAddTiles(unittest.TestCase):

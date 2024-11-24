@@ -35,6 +35,10 @@ class TestMapMarkers(unittest.TestCase):
         # Quit the WebDriver
         os.remove("test_map.html")
 
+    def test_map_creation(self):
+        map_div = self.soup.find("div", {"class": "folium-map"})
+        self.assertIsNotNone(map_div, "Map div not found in the HTML.")
+
     def test_tiles_present(self):
         # Find all script tags
         script_tags = self.soup.find_all("script")
@@ -115,6 +119,11 @@ class TestMapMarkers(unittest.TestCase):
             "not the right amount of stage icons were found in the html.",
         )
 
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_fit_bounds(self):
+        script_tags = self.soup.find_all("script")
+        found = False
+        for script in script_tags:
+            if script.string and "fitBounds" in script.string:
+                found = True
+                break
+        self.assertTrue(found, "fitBounds was not called in the map.")

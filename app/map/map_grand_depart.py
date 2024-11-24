@@ -2,7 +2,7 @@ import folium
 from folium.plugins import BeautifyIcon
 
 
-def grand_depart(activities, settings):
+def map_grand_depart(activities, settings):
 
     grand_depart = folium.FeatureGroup(name="Grand depart", control=False)
 
