@@ -2,7 +2,6 @@ from flask import Flask, session, request, redirect, url_for, render_template, s
 import requests
 import os 
 import pandas as pd
-from app.map_activities import map_activities
 import matplotlib
 from app.elevation_profile import create_elevation_profile
 from app.save_png import save_png
@@ -12,6 +11,9 @@ from app.strava.get_data import get_data
 from datetime import datetime, timedelta
 from app.redis_client import redis_client
 from app.helper import parse_date
+from app.map.generate_map import generate_map
+from app.map.MapSettings import MapSettings
+
 import time
 import redis
 import json
@@ -243,9 +245,8 @@ def create_app():
         activity_manager.preprocessed = activity_manager.preprocessed.loc[
             activity_manager.preprocessed["id"].isin(selected_activities)
         ]
-        from app.map_activities2 import map_activities
 
-        activity_manager.map_activities = map_activities(activity_manager.preprocessed)
+        activity_manager.map_settings = MapSettings(activity_manager.preprocessed)
         activity_manager.save()
         # Render the submitted activities in a new template
         return render_template(
@@ -268,12 +269,15 @@ def create_app():
             activities_to_map = activity_manager.preprocessed[activity_manager.preprocessed['id'].isin(activity_ids)]
 
         # Call your complex function to generate the map HTML
-        map_activities(activities_to_map,
-                    out_file = './templates/tmp/mymap_terrain.html', 
-                    tiles_name = 'stadia_terrain',
-                    final_popup = False,
-                    dynamic_tiles = True,
-                    zoom_margin = 0.05)  # Assuming this function creates 'map_output.html'
+        generate_map(
+            activity_manager.map_settings,
+            activities_to_map,
+            out_file="./templates/tmp/mymap_terrain.html",
+            tiles_name="stadia_terrain",
+            final_popup=False,
+            dynamic_tiles=True,
+            zoom_margin=0.05,
+        )  # Assuming this function creates 'map_output.html'
         return render_template('tmp/mymap_terrain.html') # Serve the generated map HTML
 
     @app.route('/download_map', methods=['GET'])
@@ -289,7 +293,12 @@ def create_app():
             # figure
             # Gen   erate map for the selected activity
             filename = f"plots/{activity_data['name'].squeeze()}_map.html"
-            map_activities(activity_data, filename, tiles_name = 'google_hybrid')
+            generate_map(
+                activity_manager.map_settings,
+                activity_data,
+                filename,
+                tiles_name="google_hybrid",
+            )
             png = save_png(filename)
 
             try:
@@ -327,7 +336,8 @@ def create_app():
     def view_map():
         session_id = session["session_id"]
         activity_manager = ActivityManager.load_from_redis(session_id)
-        m = activity_manager.map_activities.build(
+        m = generate_map(
+            activity_manager.map_settings,
             activity_manager.preprocessed,
             out_file="./templates/tmp/mymap_terrain.html",
             tiles_name="stadia_terrain",
@@ -339,7 +349,7 @@ def create_app():
         return render_template(
             "build_map.html",
             map=m._repr_html_(),
-            colors=activity_manager.map_activities.color,
+            colors=activity_manager.map_settings.color,
         )
 
     @app.route("/update_map", methods=["POST"])
@@ -348,35 +358,36 @@ def create_app():
         # Get updated colors from the form
         session_id = session["session_id"]
         activity_manager = ActivityManager.load_from_redis(session_id)
-        activity_manager.map_activities.color = {
+        activity_manager.map_settings.color = {
             name: request.form.get(name, default_color)
-            for name, default_color in activity_manager.map_activities.color.items()
+            for name, default_color in activity_manager.map_settings.color.items()
         }  # Get style parameters from the form
-        activity_manager.map_activities.line_thickness = int(
+        activity_manager.map_settings.line_thickness = int(
             request.form.get("line_thickness", 2)
         )
-        activity_manager.map_activities.stage_start_icon = request.form.get(
+        activity_manager.map_settings.stage_start_icon = request.form.get(
             "stage_start_icon"
         )
-        activity_manager.map_activities.stage_icon_shape = request.form.get(
+        activity_manager.map_settings.stage_icon_shape = request.form.get(
             "stage_icon_shape"
         )
-        activity_manager.map_activities.stage_border_color = request.form.get(
+        activity_manager.map_settings.stage_border_color = request.form.get(
             "stage_border_color"
         )
-        activity_manager.map_activities.stage_background_color = request.form.get(
+        activity_manager.map_settings.stage_background_color = request.form.get(
             "stage_background_color"
         )
-        activity_manager.map_activities.stage_start_color = request.form.get(
+        activity_manager.map_settings.stage_start_color = request.form.get(
             "stage_start_color"
         )
-        activity_manager.map_activities.stage_labels_active = request.form.get(
+        activity_manager.map_settings.stage_labels_active = request.form.get(
             "stage_labels_active"
         )
         activity_manager.save()
 
         # Create a map with updated styles
-        m = activity_manager.map_activities.build(
+        m = generate_map(
+            activity_manager.map_settings,
             activity_manager.preprocessed,
             out_file="./templates/tmp/mymap_terrain.html",
             tiles_name="stadia_terrain",
