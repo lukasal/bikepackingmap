@@ -6,7 +6,7 @@ def map_grand_arrivee(activities, settings, final_popup=False):
 
     grand_arrivee = folium.FeatureGroup(name="Grand arrivee", control=False)
 
-    final_stage = activities[activities.index == max(activities.index)]
+    final_stage = activities[activities["end_date"] == activities["end_date"].max()]
     # Finish marker
     icon_ = BeautifyIcon(
         icon="fa fa-flag-checkered",

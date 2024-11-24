@@ -67,6 +67,9 @@ def preprocess(activities):
     # activities.loc[:, 'start_date'] = pd.to_datetime(activities['start_date']).dt.date
     activities.loc[:, 'date'] = pd.to_datetime(activities['start_date_local']).dt.date
     activities.loc[:, 'start_date_local'] = pd.to_datetime(activities['start_date_local']).dt.tz_localize(None)
+    activities["end_date"] = activities["start_date_local"] + pd.to_timedelta(
+        activities["elapsed_time"], unit="s"
+    )
     # convert values
     activities.loc[:, 'distance'] /= 1000 # convert from m to km
     activities.loc[:, 'average_speed'] *= 3.6 # convert from m/s to km/h

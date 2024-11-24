@@ -82,12 +82,12 @@
                         <h4>Line Settings</h4>
                         <div class="form-group mx-2">
                             <label for="line_thickness" class="mr-2">Line Thickness:</label>
-                            <input type="number" class="form-control" id="line_thickness" name="line_thickness" min="1" max="10" value="2">
+                            <input type="number" class="form-control" id="line_thickness" name="line_thickness" min="1" max="10" value="{{settings.line_thickness}}">
                         </div>
                     </div>
                     <div class="col-md-3">
                         <h4>Color Settings</h4>
-                        {% for name, color in colors.items() %}
+                        {% for name, color in settings.color.items() %}
                         <div class="color-input mx-2">
                             <label for="{{ name }}">{{ name }} Color:</label>
                             <input type="color" id="{{ name }}" name="{{ name }}" value="{{ color }}">
@@ -98,11 +98,15 @@
                         <h4>Stage Icon Settings</h4>
                         <div class="form-group mx-2">
                             <label for="stage_labels_active" class="mr-2">Display stage Labels:</label>
-                            <input type="checkbox" id="stage_labels_active" name="stage_labels_active" value="true">
+                            <input type="checkbox" id="stage_labels_active" name="stage_labels_active" {% if settings.stage_labels_active %}checked{% endif %}>
+                        </div>
+                        <div class="form-group mx-2">
+                            <label for="stage_icon_size" class="mr-2">Size of the Icon:</label>
+                            <input type="number" class="form-control" id="stage_icon_size" name="stage_icon_size" min="5" max="100" value="{{settings.stage_icon_size}}">
                         </div>
                         <div class="form-group mx-2">
                             <label for="stage_start_icon" class="mr-2">Icon:</label>
-                            <input list="icons" class="form-control" id="stage_start_icon" name="stage_start_icon" placeholder="Select an icon or enter custom text">
+                            <input list="icons" class="form-control" id="stage_start_icon" name="stage_start_icon" placeholder="Select an icon or enter custom text" value="{{settings.stage_start_icon}}">
                                 <datalist id="icons">
                                     <option value="house">
                                     <option value="star">
@@ -113,17 +117,29 @@
                                 </datalist>
                             </select>
                         </div>
+                        <div class="form-group mx-2">
+                            <label for="stage_border_transparent" class="mr-2">Border Transparent:</label>
+                            <input type="checkbox" id="stage_border_transparent" name="stage_border_transparent" {% if settings.stage_border_transparent %}checked{% endif %}>
+                        </div>
                         <div class="color-input mx-2">
                             <label for="stage_border_color" >Border Color:</label>
-                            <input type="color"  id="stage_border_color" name="stage_border_color" value="#000000">
+                            <input type="color"  id="stage_border_color" name="stage_border_color" value="{{settings.stage_border_color}}">
+                        </div>
+                        <div class="form-group mx-2">
+                            <label for="stage_background_transparent" class="mr-2">Background Transparent:</label>
+                            <input type="checkbox" id="stage_background_transparent" name="stage_background_transparent" {% if settings.stage_background_transparent %}checked{% endif %}>
                         </div>
                         <div class="color-input mx-2">
                             <label for="stage_background_color" >Background Color:</label>
-                            <input type="color" id="stage_background_color" name="stage_background_color" value="#ffffff">
+                            <input type="color" id="stage_background_color" name="stage_background_color" value="{{settings.stage_background_color}}">
+                        </div>
+                        <div class="form-group mx-2">
+                            <label for="stage_icon_inner_size" class="mr-2">Symbol Size:</label>
+                            <input type="number" class="form-control" id="stage_icon_inner_size" name="stage_icon_inner_size" min="5" max="100" value="{{settings.stage_icon_inner_size}}">
                         </div>
                         <div class="color-input mx-2">
-                            <label for="stage_start_color" >Start Color:</label>
-                            <input type="color"  id="stage_start_color" name="stage_start_color" value="#007799">
+                            <label for="stage_start_color" >Symbol Color:</label>
+                            <input type="color"  id="stage_start_color" name="stage_start_color" value="{{settings.stage_start_color}}">
                         </div>
                     </div>
                     <div class="col-md-3">

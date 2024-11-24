@@ -17,8 +17,12 @@ class MapSettings:
         self.stage_labels_active = True
         self.stage_start_icon = "house"
         self.stage_icon_shape = "circle"
-        self.stage_border_color = "black"
-        self.stage_background_color = "white"
+        self.stage_icon_size = 22
+        self.stage_icon_inner_size = 10
+        self.stage_border_transparent = False
+        self.stage_border_color = "#000000"
+        self.stage_background_transparent = False
+        self.stage_background_color = "#FFFFFF"
         self.stage_start_color = "#007799"
         self.rest_day = True
         self.rest_day_symbol = "house"

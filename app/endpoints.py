@@ -349,7 +349,7 @@ def create_app():
         return render_template(
             "build_map.html",
             map=m._repr_html_(),
-            colors=activity_manager.map_settings.color,
+            settings=activity_manager.map_settings,
         )
 
     @app.route("/update_map", methods=["POST"])
@@ -365,14 +365,26 @@ def create_app():
         activity_manager.map_settings.line_thickness = int(
             request.form.get("line_thickness", 2)
         )
+        activity_manager.map_settings.stage_icon_size = request.form.get(
+            "stage_icon_size"
+        )
+        activity_manager.map_settings.stage_icon_inner_size = request.form.get(
+            "stage_icon_inner_size"
+        )
         activity_manager.map_settings.stage_start_icon = request.form.get(
             "stage_start_icon"
         )
         activity_manager.map_settings.stage_icon_shape = request.form.get(
             "stage_icon_shape"
         )
+        activity_manager.map_settings.stage_border_transparent = request.form.get(
+            "stage_border_transparent"
+        )
         activity_manager.map_settings.stage_border_color = request.form.get(
             "stage_border_color"
+        )
+        activity_manager.map_settings.stage_background_transparent = request.form.get(
+            "stage_background_transparent"
         )
         activity_manager.map_settings.stage_background_color = request.form.get(
             "stage_background_color"
