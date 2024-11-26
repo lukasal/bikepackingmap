@@ -28,7 +28,7 @@ def map_stage_icons(activities, settings):
                     if settings.stage_border_transparent
                     else settings.stage_border_color
                 ),
-                text_color=settings.stage_start_color,
+                text_color=settings.stage_symbol_color,
                 background_color=(
                     "transparent"
                     if settings.stage_background_transparent

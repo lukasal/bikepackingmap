@@ -21,11 +21,11 @@ def map_grand_arrivee(activities, settings, final_popup=False):
     )
 
     fm = folium.Marker(
-        location=final_stage["map.polyline"][0][-1],
+        location=final_stage["map.polyline"].iloc[0][-1],
         icon=icon_,
         icon_size=10,
         zIndexOffset=1000,
-        tooltip=final_stage["end_location"][0],
+        tooltip=final_stage["end_location"].iloc[0],
     )
     # final popup
     # if final_popup:

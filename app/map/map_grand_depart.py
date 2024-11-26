@@ -6,6 +6,9 @@ def map_grand_depart(activities, settings):
 
     grand_depart = folium.FeatureGroup(name="Grand depart", control=False)
 
+    first_stage = activities[activities.index == activities.index.min()]
+    # first_stage = activities[activities["start_date"] == activities["start_date"].min()]
+
     # Grand depart marker
     icon_ = BeautifyIcon(
         icon="play",
@@ -20,15 +23,11 @@ def map_grand_depart(activities, settings):
     )
 
     folium.Marker(
-        location=activities[activities.index == min(activities.index)]["map.polyline"][
-            0
-        ][0],
+        location=first_stage["map.polyline"].iloc[0][0],
         icon=icon_,
         icon_size=10,
         zIndexOffset=1000,
-        tooltip=activities[activities.index == min(activities.index)]["start_location"][
-            0
-        ],
+        tooltip=first_stage["start_location"].iloc[0],
     ).add_to(grand_depart)
 
     return grand_depart

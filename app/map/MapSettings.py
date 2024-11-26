@@ -23,7 +23,7 @@ class MapSettings:
         self.stage_border_color = "#000000"
         self.stage_background_transparent = False
         self.stage_background_color = "#FFFFFF"
-        self.stage_start_color = "#007799"
+        self.stage_symbol_color = "#007799"
         self.rest_day = True
         self.rest_day_symbol = "house"
         self.rest_day_color = "yellow"

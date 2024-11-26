@@ -56,12 +56,7 @@ def create_app():
         This is run before every request.
         """
         SESSION_EXPIRATION = int(os.getenv("SESSION_EXP_TIME", 1800))
-        if 'session_id' in session:
-            print("before request")
 
-            print(redis_client.exists(f"session:{session['session_id']}"))
-            print('session_id' in session)
-            print(redis_client.ttl(f"session:{session['session_id']}"))
         # session expired, then the redis client has deleted the content
         if 'session_id' in session and redis_client.exists(f"session:{session['session_id']}")!=1:
             session.clear()
@@ -389,8 +384,8 @@ def create_app():
         activity_manager.map_settings.stage_background_color = request.form.get(
             "stage_background_color"
         )
-        activity_manager.map_settings.stage_start_color = request.form.get(
-            "stage_start_color"
+        activity_manager.map_settings.stage_symbol_color = request.form.get(
+            "stage_symbol_color"
         )
         activity_manager.map_settings.stage_labels_active = request.form.get(
             "stage_labels_active"
