@@ -78,77 +78,32 @@
         <form id="mapForm" class="form-inline justify-content-center">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-3">
-                        <h4>Line Settings</h4>
-                        <div class="form-group mx-2">
-                            <label for="line_thickness" class="mr-2">Line Thickness:</label>
-                            <input type="number" class="form-control" id="line_thickness" name="line_thickness" min="1" max="10" value="{{settings.line_thickness}}">
+                    {% for group in settings.get_interactive_groups() %}
+                        <div class="col mx-3">
+                            <h4>{{ group }} Settings</h4>
+                            {% for setting in settings.interactive_settings.values() %}
+                                {% if setting.group == group %}
+                                    <div class="form-group mx-2">
+                                        <label for="{{ setting.id }}" class="mr-2">{{ setting.label }}:</label>
+                                        {% if setting.__class__.__name__ == 'BooleanSetting' %}
+                                            <input type="checkbox" id="{{ setting.id }}" name="{{ setting.id }}" {% if setting.value %}checked{% endif %}>
+                                        {% elif setting.__class__.__name__ == 'ColorSetting' %}
+                                            <input type="color" class= color-input id="{{ setting.id }}" name="{{ setting.id }}" value="{{ setting.value }}">
+                                        {% elif setting.__class__.__name__ == 'NumberSetting' %}
+                                            <input type="number" class="form-control" id="{{ setting.id }}" name="{{ setting.id }}" min="{{ setting.min_value }}" max="{{ setting.max_value }}" value="{{ setting.value }}">
+                                        {% elif setting.__class__.__name__ == 'TextSetting' %}
+                                            <input type="text" class="form-control" id="{{ setting.id }}" name="{{ setting.id }}" value="{{ setting.value }}">
+                                            <datalist id="icons-{{ setting.id }}">
+                                                {% for option in setting.options %}
+                                                    <option value="{{ option }}">
+                                                {% endfor %}
+                                            </datalist>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <h4>Color Settings</h4>
-                        {% for name, color in settings.color.items() %}
-                        <div class="color-input mx-2">
-                            <label for="{{ name }}">{{ name }} Color:</label>
-                            <input type="color" id="{{ name }}" name="{{ name }}" value="{{ color }}">
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <div class="col-md-3">
-                        <h4>Stage Icon Settings</h4>
-                        <div class="form-group mx-2">
-                            <label for="stage_labels_active" class="mr-2">Display stage Labels:</label>
-                            <input type="checkbox" id="stage_labels_active" name="stage_labels_active" {% if settings.stage_labels_active %}checked{% endif %}>
-                        </div>
-                        <div class="form-group mx-2">
-                            <label for="stage_icon_size" class="mr-2">Size of the Icon:</label>
-                            <input type="number" class="form-control" id="stage_icon_size" name="stage_icon_size" min="5" max="100" value="{{settings.stage_icon_size}}">
-                        </div>
-                        <div class="form-group mx-2">
-                            <label for="stage_start_icon" class="mr-2">Icon:</label>
-                            <input list="icons" class="form-control" id="stage_start_icon" name="stage_start_icon" placeholder="Select an icon or enter custom text" value="{{settings.stage_start_icon}}">
-                                <datalist id="icons">
-                                    <option value="house">
-                                    <option value="star">
-                                    <option value="map-pin">
-                                    <option value="flag">
-                                    <option value="anchor">
-                                <!-- Add more icons as needed -->
-                                </datalist>
-                            </select>
-                        </div>
-                        <div class="form-group mx-2">
-                            <label for="stage_border_transparent" class="mr-2">Border Transparent:</label>
-                            <input type="checkbox" id="stage_border_transparent" name="stage_border_transparent" {% if settings.stage_border_transparent %}checked{% endif %}>
-                        </div>
-                        <div class="color-input mx-2">
-                            <label for="stage_border_color" >Border Color:</label>
-                            <input type="color"  id="stage_border_color" name="stage_border_color" value="{{settings.stage_border_color}}">
-                        </div>
-                        <div class="form-group mx-2">
-                            <label for="stage_background_transparent" class="mr-2">Background Transparent:</label>
-                            <input type="checkbox" id="stage_background_transparent" name="stage_background_transparent" {% if settings.stage_background_transparent %}checked{% endif %}>
-                        </div>
-                        <div class="color-input mx-2">
-                            <label for="stage_background_color" >Background Color:</label>
-                            <input type="color" id="stage_background_color" name="stage_background_color" value="{{settings.stage_background_color}}">
-                        </div>
-                        <div class="form-group mx-2">
-                            <label for="stage_icon_inner_size" class="mr-2">Symbol Size:</label>
-                            <input type="number" class="form-control" id="stage_icon_inner_size" name="stage_icon_inner_size" min="5" max="100" value="{{settings.stage_icon_inner_size}}">
-                        </div>
-                        <div class="color-input mx-2">
-                            <label for="stage_symbol_color" >Symbol Color:</label>
-                            <input type="color"  id="stage_symbol_color" name="stage_symbol_color" value="{{settings.stage_symbol_color}}">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <h4>Stage Icon Settings</h4>
-                        <div class="form-group mx-2">
-                            <label for="opacity" class="mr-2">Opacity:</label>
-                            <input type="number" class="form-control" id="opacity" name="opacity" min="0" max="1" step="0.1" value="1">
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
                 <div class="row">
                     <div class="col-md-12 text-center">
@@ -177,10 +132,22 @@
         function updateMap() {
             var form = document.getElementById('mapForm');
             var formData = new FormData(form);
+            var settings = {};
+            // Include all form elements, including unchecked checkboxes
+            Array.from(form.elements).forEach(element => {
+                if (element.type === 'checkbox') {
+                    settings[element.name] = element.checked;
+                } else if (element.name) {
+                    settings[element.name] = element.value;
+                }
+            });
 
             fetch('/update_map', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
             })
             .then(response => response.json())
             .then(data => {

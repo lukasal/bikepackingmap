@@ -9,14 +9,28 @@ def map_grand_arrivee(activities, settings, final_popup=False):
     final_stage = activities[activities["end_date"] == activities["end_date"].max()]
     # Finish marker
     icon_ = BeautifyIcon(
-        icon="fa fa-flag-checkered",
-        icon_shape="circle",
-        icon_size=[42, 42],
-        icon_anchor=(21, 21),
-        inner_icon_style="font-size:30px;",  # Adjust inner icon size
-        # border_color='black',
-        # text_color="red",
-        # background_color='white'
+        icon=settings.get_interactive_setting("arrivee_icon"),
+        icon_shape=settings.get_interactive_setting("arrivee_icon_shape"),
+        border_color=(
+            "transparent"
+            if settings.get_interactive_setting("arrivee_border_transparent")
+            else settings.get_interactive_setting("arrivee_border_color")
+        ),
+        text_color=settings.get_interactive_setting("arrivee_symbol_color"),
+        background_color=(
+            "transparent"
+            if settings.get_interactive_setting("arrivee_background_transparent")
+            else settings.get_interactive_setting("arrivee_background_color")
+        ),
+        icon_size=[
+            settings.get_interactive_setting("arrivee_icon_size"),
+            settings.get_interactive_setting("arrivee_icon_size"),
+        ],
+        icon_anchor=(
+            int(settings.get_interactive_setting("arrivee_icon_size")) / 2,
+            int(settings.get_interactive_setting("arrivee_icon_size")) / 2,
+        ),
+        inner_icon_style=f"font-size:{settings.get_interactive_setting('arrivee_icon_inner_size')}px;",  # Adjust inner icon size
         id="grand_arrivee",
     )
 

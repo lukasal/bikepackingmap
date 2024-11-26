@@ -2,6 +2,7 @@ import unittest
 import folium
 import pandas as pd
 from app.map.map_grand_arrivee import map_grand_arrivee
+from unittest.mock import MagicMock
 
 
 class TestMapGrandArrivee(unittest.TestCase):
@@ -20,7 +21,19 @@ class TestMapGrandArrivee(unittest.TestCase):
         )
         # Convert end_date to datetime
         self.activities["end_date"] = pd.to_datetime(self.activities["end_date"])
-        self.settings = {}
+        # Mock settings
+        self.settings = MagicMock()
+        self.settings.get_interactive_setting.side_effect = lambda x: {
+            "arrivee_icon": "flag",
+            "arrivee_icon_shape": "circle",
+            "arrivee_border_transparent": False,
+            "arrivee_border_color": "blue",
+            "arrivee_symbol_color": "white",
+            "arrivee_background_transparent": False,
+            "arrivee_background_color": "red",
+            "arrivee_icon_size": 20,
+            "arrivee_icon_inner_size": 10,
+        }[x]
 
     def test_map_grand_arrivee(self):
         # Test without final_popup

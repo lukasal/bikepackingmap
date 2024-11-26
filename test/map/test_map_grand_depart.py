@@ -2,9 +2,10 @@ import unittest
 import folium
 import pandas as pd
 from app.map.map_grand_depart import map_grand_depart
+from unittest.mock import MagicMock
 
 
-class TestMapGrandArrivee(unittest.TestCase):
+class TestMapGranddepart(unittest.TestCase):
 
     def setUp(self):
         # Sample data for activities
@@ -20,9 +21,20 @@ class TestMapGrandArrivee(unittest.TestCase):
         )
         # Convert end_date to datetime
         self.activities["end_date"] = pd.to_datetime(self.activities["end_date"])
-        self.settings = {}
+        self.settings = MagicMock()
+        self.settings.get_interactive_setting.side_effect = lambda x: {
+            "depart_icon": "flag",
+            "depart_icon_shape": "circle",
+            "depart_border_transparent": False,
+            "depart_border_color": "blue",
+            "depart_symbol_color": "white",
+            "depart_background_transparent": False,
+            "depart_background_color": "red",
+            "depart_icon_size": 20,
+            "depart_icon_inner_size": 10,
+        }[x]
 
-    def test_map_grand_arrivee(self):
+    def test_map_grand_depart(self):
         # Test without final_popup
         result = map_grand_depart(self.activities, self.settings)
         # Check the properties of the marker

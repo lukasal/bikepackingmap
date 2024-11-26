@@ -241,7 +241,9 @@ def create_app():
             activity_manager.preprocessed["id"].isin(selected_activities)
         ]
 
-        activity_manager.map_settings = MapSettings(activity_manager.preprocessed)
+        activity_manager.map_settings = MapSettings(
+            activity_manager.preprocessed, "config/interactive_settings.yml"
+        )
         activity_manager.save()
         # Render the submitted activities in a new template
         return render_template(
@@ -353,43 +355,14 @@ def create_app():
         # Get updated colors from the form
         session_id = session["session_id"]
         activity_manager = ActivityManager.load_from_redis(session_id)
-        activity_manager.map_settings.color = {
-            name: request.form.get(name, default_color)
-            for name, default_color in activity_manager.map_settings.color.items()
-        }  # Get style parameters from the form
-        activity_manager.map_settings.line_thickness = int(
-            request.form.get("line_thickness", 2)
-        )
-        activity_manager.map_settings.stage_icon_size = request.form.get(
-            "stage_icon_size"
-        )
-        activity_manager.map_settings.stage_icon_inner_size = request.form.get(
-            "stage_icon_inner_size"
-        )
-        activity_manager.map_settings.stage_start_icon = request.form.get(
-            "stage_start_icon"
-        )
-        activity_manager.map_settings.stage_icon_shape = request.form.get(
-            "stage_icon_shape"
-        )
-        activity_manager.map_settings.stage_border_transparent = request.form.get(
-            "stage_border_transparent"
-        )
-        activity_manager.map_settings.stage_border_color = request.form.get(
-            "stage_border_color"
-        )
-        activity_manager.map_settings.stage_background_transparent = request.form.get(
-            "stage_background_transparent"
-        )
-        activity_manager.map_settings.stage_background_color = request.form.get(
-            "stage_background_color"
-        )
-        activity_manager.map_settings.stage_symbol_color = request.form.get(
-            "stage_symbol_color"
-        )
-        activity_manager.map_settings.stage_labels_active = request.form.get(
-            "stage_labels_active"
-        )
+        settings_data = request.get_json()  # Read the JSON data from the request
+        print(settings_data)
+        for name, value in settings_data.items():
+            try:
+                activity_manager.map_settings.set_interactive_setting(name, value)
+            except KeyError as e:
+                return jsonify({"error": str(e)}), 400
+
         activity_manager.save()
 
         # Create a map with updated styles

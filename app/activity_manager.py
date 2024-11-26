@@ -90,7 +90,9 @@ class ActivityManager:
         if not self.selected_df.empty:
             # Example: Add a new column 'processed' to mark activities as preprocessed
             self.preprocessed  = preprocess(self.selected_df)
-            self.map_settings = MapSettings(self.preprocessed)
+            self.map_settings = MapSettings(
+                self.preprocessed, "config/interactive_settings.yml"
+            )
 
     @store_in_redis
     def save(self):

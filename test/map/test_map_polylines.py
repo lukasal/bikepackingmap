@@ -3,9 +3,16 @@ import folium
 import pandas as pd
 from datetime import datetime
 from app.map.map_polylines import map_polylines
-
+from app.map.MapSettings import MapSettings
 
 class TestMapPolylines(unittest.TestCase):
+
+    class MapSettings:
+        line_thickness = 5
+        color = {"Run": "blue"}
+        spec_width = 300
+        spec_height = 200
+        spec_resolution = 1
 
     def setUp(self):
         # Sample data for activities
@@ -28,14 +35,9 @@ class TestMapPolylines(unittest.TestCase):
         self.activities = pd.DataFrame(data, index=index)
 
         # Sample map settings
-        class MapSettings:
-            line_thickness = 5
-            color = {"Run": "blue"}
-            spec_width = 300
-            spec_height = 200
-            spec_resolution = 1
-
-        self.map_settings = MapSettings()
+        self.map_settings = MapSettings(
+            self.activities, "config/interactive_settings.yml"
+        )
 
     def test_map_polylines(self):
         polylines = map_polylines(self.activities, self.map_settings)
@@ -44,15 +46,22 @@ class TestMapPolylines(unittest.TestCase):
 
         # Check if the first polyline has the correct color and weight
         polyline1 = list(polylines._children.values())[0]
-        self.assertEqual(polyline1.options["color"], "white")
+        self.assertEqual(polyline1.options["color"], "#ffffff")
         self.assertEqual(
-            polyline1.options["weight"], self.map_settings.line_thickness + 3
+            polyline1.options["weight"],
+            self.map_settings.get_interactive_setting("line_thickness") + 3,
         )
 
         # Check if the second polyline has the correct color and weight
         polyline2 = list(polylines._children.values())[1]
-        self.assertEqual(polyline2.options["color"], self.map_settings.color["Run"])
-        self.assertEqual(polyline2.options["weight"], self.map_settings.line_thickness)
+        self.assertEqual(
+            polyline2.options["color"],
+            self.map_settings.get_interactive_setting("line_color_Run"),
+        )
+        self.assertEqual(
+            polyline2.options["weight"],
+            self.map_settings.get_interactive_setting("line_thickness"),
+        )
 
         # Check if the popup is correctly added
         self.assertEqual(len(polyline2._children), 1)

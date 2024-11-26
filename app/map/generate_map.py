@@ -32,16 +32,20 @@ def generate_map(
     m = add_tiles(m, settings, tiles_name, dynamic_tiles)
 
     # add polylines
-    map_polylines(activities, settings).add_to(m)
+    if settings.get_interactive_setting("lines_active"):
+        map_polylines(activities, settings).add_to(m)
 
     # House Markler for each stage town:
-    map_stage_icons(activities, settings).add_to(m)
+    if settings.get_interactive_setting("stage_labels_active"):
+        map_stage_icons(activities, settings).add_to(m)
 
     # Grand depart marker
-    map_grand_depart(activities, settings).add_to(m)
+    if settings.get_interactive_setting("depart_labels_active"):
+        map_grand_depart(activities, settings).add_to(m)
 
     # Grand arrivee marker
-    map_grand_arrivee(activities, settings, final_popup).add_to(m)
+    if settings.get_interactive_setting("arrivee_labels_active"):
+        map_grand_arrivee(activities, settings, final_popup).add_to(m)
 
     m.fit_bounds(bounding_box(activities["map.polyline"], margin=zoom_margin))
     if save:

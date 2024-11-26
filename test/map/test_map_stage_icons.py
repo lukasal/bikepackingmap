@@ -30,16 +30,17 @@ class TestMapStageIcons(unittest.TestCase):
 
         # Mock settings
         self.settings = MagicMock()
-        self.settings.stage_labels_active = True
-        self.settings.stage_start_icon = "star"
-        self.settings.stage_icon_shape = "circle"
-        self.settings.stage_border_transparent = False
-        self.settings.stage_border_color = "blue"
-        self.settings.stage_symbol_color = "red"
-        self.settings.stage_background_transparent = False
-        self.settings.stage_background_color = "green"
-        self.settings.stage_icon_size = 20
-        self.settings.stage_icon_inner_size = 10
+        self.settings.get_interactive_setting.side_effect = lambda key: {
+            "stage_start_icon": "star",
+            "stage_icon_shape": "circle",
+            "stage_border_transparent": False,
+            "stage_border_color": "blue",
+            "stage_symbol_color": "red",
+            "stage_background_transparent": False,
+            "stage_background_color": "green",
+            "stage_icon_size": 20,
+            "stage_icon_inner_size": 10,
+        }[key]
 
     def test_map_stage_icons(self):
         stage_icons = map_stage_icons(self.activities, self.settings)

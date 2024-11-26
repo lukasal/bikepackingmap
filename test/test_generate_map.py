@@ -20,7 +20,7 @@ class TestMapMarkers(unittest.TestCase):
         with open("data/giro_italia_example_preprocessed.pkl", "rb") as file:
             data_processed = pickle.load(file)
 
-        settings = MapSettings(data_processed)
+        settings = MapSettings(data_processed, "config/interactive_settings.yml")
         generate_map(settings, data_processed, out_file="test_map.html")
         # Set up the Selenium WebDriver
         # cls.driver = webdriver.Chrome()

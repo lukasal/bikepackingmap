@@ -8,16 +8,19 @@ def map_polylines(activities, map_settings):
     for row in activities.iterrows():
         row_index = row[0]
         row_values = row[1]
+        if map_settings.get_interactive_setting("line_stroke"):
+            ls = folium.PolyLine(
+                row_values["map.polyline"],
+                color=map_settings.get_interactive_setting("line_stroke_color"),
+                weight=map_settings.get_interactive_setting("line_thickness") + 3,
+                # smooth_factor=2
+            ).add_to(polylines)
         ls = folium.PolyLine(
             row_values["map.polyline"],
-            color="white",
-            weight=map_settings.line_thickness + 3,
-            # smooth_factor=2
-        ).add_to(polylines)
-        ls = folium.PolyLine(
-            row_values["map.polyline"],
-            color=map_settings.color[row_values["type"]],
-            weight=map_settings.line_thickness,
+            color=map_settings.get_interactive_setting(
+                f"line_color_{row_values['type']}"
+            ),
+            weight=map_settings.get_interactive_setting("line_thickness"),
             # smooth_factor=2
         )
 
