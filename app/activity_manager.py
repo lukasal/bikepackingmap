@@ -3,7 +3,7 @@ import pickle
 import os
 from functools import wraps
 from datetime import datetime
-from app.preprocess import preprocess
+from app.strava.preprocess import preprocess
 from app.redis_client import redis_client
 from app.map.MapSettings import MapSettings
 

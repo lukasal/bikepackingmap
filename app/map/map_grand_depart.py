@@ -37,7 +37,7 @@ def map_grand_depart(activities, settings):
     )
 
     folium.Marker(
-        location=first_stage["map.polyline"].iloc[0][0],
+        location=first_stage["start_latlng"].iloc[0],
         icon=icon_,
         icon_size=10,
         zIndexOffset=1000,

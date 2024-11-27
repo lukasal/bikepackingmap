@@ -59,19 +59,19 @@ def map_polylines(activities, map_settings):
             
                 """.format(
             row_values["name"],
-            row_index.date(),
-            row_index.time(),
+            row_values["date"],
+            row_values["start_date"].time(),
             row_values["type"],
-            row_values["distance"],
-            row_values["total_elevation_gain"],
-            time.strftime("%H:%M:%S", time.gmtime(row_values["moving_time"])),
-            time.strftime("%H:%M:%S", time.gmtime(row_values["elapsed_time"])),
-            row_values["average_speed"],
-            row_values["max_speed"],
-            row_values["average_heartrate"],
-            row_values["max_heartrate"],
-            row_values["average_temp"],
-            row_values["elevation_profile"],
+            row_values.metadata["distance"],
+            row_values.metadata["total_elevation_gain"],
+            time.strftime("%H:%M:%S", time.gmtime(row_values.metadata["moving_time"])),
+            time.strftime("%H:%M:%S", time.gmtime(row_values.metadata["elapsed_time"])),
+            row_values.metadata["average_speed"],
+            row_values.metadata["max_speed"],
+            row_values.metadata["average_heartrate"],
+            row_values.metadata["max_heartrate"],
+            row_values.metadata["average_temp"],
+            row_values.metadata["elevation_profile"],
         )
 
         # add marker to map

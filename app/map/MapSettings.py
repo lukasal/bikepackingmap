@@ -11,9 +11,10 @@ import yaml
 
 class MapSettings:
 
-    def __init__(self, activities, config_file):
+    def __init__(self, activities, config_file=None):
         self.interactive_settings = {}
-        self.load_settings(config_file)
+        if config_file:
+            self.load_settings(config_file)
 
         activity_types = activities["type"].unique()
         line_colors = [

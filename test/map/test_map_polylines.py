@@ -18,21 +18,26 @@ class TestMapPolylines(unittest.TestCase):
         # Sample data for activities
         data = {
             "name": ["Activity 1"],
+            "start_date": [datetime(2023, 10, 1, 12, 0, 0)],
+            "date": ["2023-10-01"],
             "type": ["Run"],
             "map.polyline": [[[51.5, -0.1], [51.5, -0.12], [51.5, -0.14]]],
-            "distance": [10.0],
-            "total_elevation_gain": [100],
-            "moving_time": [3600],
-            "elapsed_time": [4000],
-            "average_speed": [10.0],
-            "max_speed": [15.0],
-            "average_heartrate": [150],
-            "max_heartrate": [180],
-            "average_temp": [20.0],
-            "elevation_profile": ["sample_base64_encoded_image"],
+            "metadata": [
+                {
+                    "distance": 10.0,
+                    "total_elevation_gain": 100,
+                    "moving_time": 3600,
+                    "elapsed_time": 4000,
+                    "average_speed": 10.0,
+                    "max_speed": 15.0,
+                    "average_heartrate": 150,
+                    "max_heartrate": 180,
+                    "average_temp": 20.0,
+                    "elevation_profile": "sample_base64_encoded_image",
+                }
+            ],
         }
-        index = [datetime(2023, 10, 1, 12, 0, 0)]
-        self.activities = pd.DataFrame(data, index=index)
+        self.activities = pd.DataFrame(data)
 
         # Sample map settings
         self.map_settings = MapSettings(

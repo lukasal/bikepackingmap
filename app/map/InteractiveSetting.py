@@ -34,6 +34,6 @@ class NumberSetting(InteractiveSetting):
 
 class TextSetting(InteractiveSetting):
 
-    def __init__(self, id, group, label, value, options):
+    def __init__(self, id, group, label, value, options=None):
         super().__init__(id, group, label, value)
         self.options = options

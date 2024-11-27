@@ -17,6 +17,8 @@ class TestMapGranddepart(unittest.TestCase):
                     [(47.0, 9.0), (48.0, 10.0)],
                 ],
                 "start_location": ["Location A", "Location B"],
+                "start_latlng": [(45.0, 7.0), (47.0, 9.0)],
+                "end_latlng": [(46.0, 8.0), (48.0, 10.0)],
             }
         )
         # Convert end_date to datetime

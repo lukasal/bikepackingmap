@@ -1,0 +1,13 @@
+test_thickness:
+  type: NumberSetting
+  value: 5
+  min_value: 1
+  max_value: 10
+  group: Group1
+  label: Line Thickness
+
+test_stroke:
+  type: BooleanSetting
+  value: true
+  group: Group2
+  label: Display Stroke on routes

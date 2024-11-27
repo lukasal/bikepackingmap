@@ -45,7 +45,7 @@ def map_stage_icons(activities, settings):
             inner_icon_style=f"font-size:{settings.get_interactive_setting('stage_icon_inner_size')}px;",  # Adjust inner icon size
         )
         folium.Marker(
-            location=row_values["map.polyline"][-1],
+            location=row_values["end_latlng"],
             icon=icon_,
             icon_size=10,
             tooltip=row_values["end_location"],

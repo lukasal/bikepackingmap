@@ -23,6 +23,8 @@ class TestMapStageIcons(unittest.TestCase):
                     [[51.0, -0.12], [51.5, -0.14], [51.5, -0.11]],
                 ],
                 "end_location": ["Location A", "Location B", "Location C"],
+                "start_latlng": [(51.5, -0.1), (51.0, -0.1), (51.0, -0.12)],
+                "end_latlng": [(51.7, -0.13), (51.2, -0.11), (51.5, -0.11)],
             }
         )
         self.activities["date"] = pd.to_datetime(self.activities["date"])

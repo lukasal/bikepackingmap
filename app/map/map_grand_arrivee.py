@@ -35,7 +35,7 @@ def map_grand_arrivee(activities, settings, final_popup=False):
     )
 
     fm = folium.Marker(
-        location=final_stage["map.polyline"].iloc[0][-1],
+        location=final_stage["end_latlng"].iloc[0],
         icon=icon_,
         icon_size=10,
         zIndexOffset=1000,
