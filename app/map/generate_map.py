@@ -15,6 +15,8 @@ def generate_map(
     out_file="mymap_terrain.html",
     tiles_name="stadia_terrain",
     zoom_margin=0.05,
+    width="100%",
+    height="100vh",
     final_popup=False,
     dynamic_tiles=False,
     save=True,
@@ -22,8 +24,8 @@ def generate_map(
 
     m = folium.Map(
         location=centroid(activities["map.polyline"]),
-        width=settings.map_width,
-        height=settings.map_height,
+        width=width,
+        height=height,
         zoom_start=6,
         tiles=None,
         attr=".",

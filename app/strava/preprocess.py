@@ -55,10 +55,10 @@ def combine_columns(row, columns):
 
 def preprocess(activities):
     # drop activitites without a gps track
-    activities.dropna(
+    activities = activities.dropna(
         subset=["map.summary_polyline", "start_date_local", "elapsed_time"],
-        inplace=True,
     )
+    activities = activities[activities["map.summary_polyline"] != ""]
 
     # add decoded summary polylines
     activities["map.polyline"] = activities["map.summary_polyline"].apply(

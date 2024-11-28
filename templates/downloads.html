@@ -46,11 +46,36 @@
         a:hover {
             background-color: #45a049;
         }
+        .button-container {
+        display: flex;
+        justify-content:  flex-start;
+        width: 100%;
+        margin-bottom: 20px;
+        gap: 10px; /* Adjust the value to control the space between buttons */
+
+        }
     </style>
 </head>
 <body>
-    <a href="{{ url_for('home') }}">Go Back</a>
+    <a href="{{ url_for('build_map') }}">Go Back</a>
     <h1>Submitted Activities</h1>
+
+    <div class="button-container">
+        <!-- Form to view map for all activities -->
+        <form action="{{ url_for('get_map') }}" method="GET">
+            <!-- Hidden input containing all activity IDs as a comma-separated string -->
+            <input type="hidden" name="activity_ids" value="all">
+            <input type="hidden" name="filetype" value="html">
+            <button type="submit">Download html Map for All Activities</button>
+        </form>
+        <!-- Form to view map for all activities -->
+        <form action="{{ url_for('get_map') }}" method="GET">
+            <!-- Hidden input containing all activity IDs as a comma-separated string -->
+            <input type="hidden" name="activity_ids" value="all">
+            <input type="hidden" name="filetype" value="png">
+            <button type="submit">Download PNG Map for All Activities</button>
+        </form>
+    </div>
     <table>
         <thead>
             <tr>
@@ -65,14 +90,22 @@
                 <td>{{ activity['name'] }}</td>
                 <td>
                     <!-- Individual button form for each row -->
-                    <form action="{{ url_for('map_view') }}" method="GET" style="display:inline;">
+                    <form action="{{ url_for('get_map') }}" method="GET" style="display:inline;">
                         <input type="hidden" name="activity_ids" value="{{ activity['id'] }}">
+                        <input type="hidden" name="filetype" value="view">
                         <button type="submit">View Map</button>
                     </form>
                      <!-- Button to download map -->
-                     <form action="{{ url_for('download_map') }}" method="GET" style="display:inline;">
+                     <form action="{{ url_for('get_map') }}" method="GET" style="display:inline;">
                         <input type="hidden" name="activity_ids" value="{{ activity['id'] }}">
-                        <button type="submit">Download Map</button>
+                        <input type="hidden" name="filetype" value="html">
+                        <button type="submit">Download HTML Map</button>
+                    </form>
+                        <!-- Button to download map -->
+                        <form action="{{ url_for('get_map') }}" method="GET" style="display:inline;">
+                        <input type="hidden" name="activity_ids" value="{{ activity['id'] }}">
+                        <input type="hidden" name="filetype" value="png">
+                        <button type="submit">Download PNG Map</button>
                     </form>
                     <!-- Button to download elevation profile -->
                     <form action="{{ url_for('download_elevation_profile') }}" method="GET" style="display:inline;">
@@ -85,12 +118,7 @@
         </tbody>
     </table>
 
-    <!-- Form to view map for all activities -->
-    <form action="{{ url_for('view_map') }}" method="GET">
-        <!-- Hidden input containing all activity IDs as a comma-separated string -->
-        <input type="hidden" name="activity_ids" value="all">
-        <button type="submit">View Map for All Activities</button>
-    </form>
+
     
 
 </body>

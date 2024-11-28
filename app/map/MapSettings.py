@@ -33,8 +33,6 @@ class MapSettings:
         self.spec_resolution = 75
         self.spec_width = 6
         self.spec_height = 6.5
-        self.map_width = "100%"
-        self.map_height = "60%"
 
         self.tiles = tiles = {
             "stadia_terrain": "https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png?api_key=18eb0b62-6b8d-4784-9997-f9b5a9ac39fd",

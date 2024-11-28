@@ -73,12 +73,14 @@
 
 <!-- Calendar Dropdowns for Date Range Selection -->
 <form id="date-form" class="mb-3">
+  {% if show_calendar %}
+
   <label for="start_date">Start Date:</label>
   <input type="date" id="start_date" name="start_date" required>
   
   <label for="end_date">End Date:</label>
   <input type="date" id="end_date" name="end_date" required>
-  
+
   <label for="per_page">Items:</label>
   <select id="per_page" name="per_page">
     <option value="10">10</option>
@@ -86,9 +88,10 @@
     <option value="50">50</option>
     <option value="200">200</option>
   </select>
-
+  {% endif %}
   <button type="button" id="fetch-data" class="grey-btn">Fetch Data</button>
 </form>
+
 
 <!-- Data Table with Checkbox Column -->
 <form id="activity-form" action="{{ url_for(selection) }}" method="POST"> <!-- Form to submit selected activities -->

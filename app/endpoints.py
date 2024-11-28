@@ -87,25 +87,6 @@ def create_app():
         # Render the expiration page when the session has expired
         return render_template('expired.html')
 
-    # @app.route("/use_example_dataset")
-    # def use_example_dataset():
-
-    #     session_id = session["session_id"]
-    #     activity_manager = ActivityManager.load_from_redis(session_id)
-    #     # Load the example dataset
-    #     with open("giro_italia_example_raw.json", "r") as file:
-    #         example_raw = json.load(file)
-    #     with open("giro_italia_example_preprocessed.pkl", "rb") as file:
-    #         example_processed = pickle.load(file)
-    #     # Add activities to the DataFrame
-    #     activity_manager.preprocessed = example_processed
-    #     activity_manager.add_activities(example_raw)
-
-    #     # Render the submitted activities in a new template
-    #     return render_template(
-    #         "submitted.html", activities=activity_manager.preprocessed[["name", "id"]]
-    #     )  # Pass the selected activities to the new template
-
     @app.route('/redirect')
     def strava_redirect():
         # Get the authorization code from the query parameters
@@ -145,6 +126,7 @@ def create_app():
             "select_activities.html",
             selection="select_strava",
             fetch_url="/fetch_strava",
+            show_calendar=True,
         )
 
     @app.route("/display_examples")
@@ -153,6 +135,7 @@ def create_app():
             "select_activities.html",
             selection="select_examples",
             fetch_url="/fetch_examples",
+            show_calendar=False,
         )
 
     @app.route('/fetch_strava')
@@ -219,14 +202,11 @@ def create_app():
         activity_manager = ActivityManager.load_from_redis(session_id)       
         selected_activities = [int(index) for index in selected_activities]
 
-        selected_activities = activity_manager.select_activities(selected_activities)
+        activity_manager.select_activities(selected_activities)
         activity_manager.preprocess_selected()
 
         # Render the submitted activities in a new template
-        return render_template(
-            "submitted.html",
-            activities=activity_manager.preprocessed[["name", "id"]],
-        )  # Pass the selected activities to the new template
+        return redirect("/build_map")
 
     @app.route("/select_examples", methods=["POST"])
     def select_examples():
@@ -246,65 +226,82 @@ def create_app():
         )
         activity_manager.save()
         # Render the submitted activities in a new template
+        return redirect("/build_map")
+
+    @app.route("/downloads_overview", methods=["GET"])
+    def downloads_overview():
+        session_id = session["session_id"]
+        activity_manager = ActivityManager.load_from_redis(session_id)
         return render_template(
-            "submitted.html",
+            "downloads.html",
             activities=activity_manager.preprocessed[["name", "id"]],
         )  # Pass the selected activities to the new template
 
-    @app.route('/map', methods=['GET'])
-    def map_view():
+    @app.route("/get_map", methods=["GET"])
+    def get_map():
+
+        filetype = request.args.get("filetype")
         session_id = session['session_id']
         activity_manager = ActivityManager.load_from_redis(session_id)       
-        # Get activity ID(s) from query parameters
-        activity_ids = request.args.get('activity_ids')
+
+        activity_ids = request.args.get("activity_ids")
         if not activity_ids:
-            return "No activities selected.", 400  # Handle case where no activities are selected
+            return (
+                "No activities selected.",
+                400,
+            )  # Handle case where no activities are selected
         elif activity_ids == "all":
             activities_to_map = activity_manager.preprocessed
-        else :
-            activity_ids = [int(id) for id in activity_ids.split(',')]
-            activities_to_map = activity_manager.preprocessed[activity_manager.preprocessed['id'].isin(activity_ids)]
+            name = "full"
+        else:
+            activity_ids = [int(id) for id in activity_ids.split(",")]
+            activities_to_map = activity_manager.preprocessed[
+                activity_manager.preprocessed["id"].isin(activity_ids)
+            ]
+            name = "_".join(activities_to_map["name"].tolist())
 
-        # Call your complex function to generate the map HTML
-        generate_map(
-            activity_manager.map_settings,
-            activities_to_map,
-            out_file="./templates/tmp/mymap_terrain.html",
-            tiles_name="stadia_terrain",
-            final_popup=False,
-            dynamic_tiles=True,
-            zoom_margin=0.05,
-        )  # Assuming this function creates 'map_output.html'
-        return render_template('tmp/mymap_terrain.html') # Serve the generated map HTML
+        # Generate map for the selected activity
+        filename = f"tmp/{session_id}_{os.urandom(4).hex()}_map.html"
+        try:
+            if filetype == "html" or filetype == "view":
+                generate_map(
+                    activity_manager.map_settings,
+                    activities_to_map,
+                    out_file=filename,
+                    tiles_name="stadia_terrain",
+                    final_popup=False,
+                    dynamic_tiles=True,
+                    zoom_margin=0.05,
+                )  # Assuming this function creates 'map_output.html'
+                return send_file(
+                    filename,
+                    mimetype="text/html",
+                    as_attachment=True if filetype == "html" else False,
+                    download_name=f"{name}_map.html",
+                )
 
-    @app.route('/download_map', methods=['GET'])
-    def download_map():
-        session_id = session['session_id']
-        activity_manager = ActivityManager.load_from_redis(session_id)       
+            if filetype == "png":
+                generate_map(
+                    activity_manager.map_settings,
+                    activities_to_map,
+                    filename,
+                    tiles_name="google_hybrid",
+                )
 
-        activity_id = request.args.get('activity_ids')
-        activity_id = int(activity_id) if activity_id else None
-        if activity_id:
-            # Filter the DataFrame based on the activity_id
-            activity_data = activity_manager.preprocessed[activity_manager.preprocessed['id'] == activity_id]
-            # figure
-            # Gen   erate map for the selected activity
-            filename = f"plots/{activity_data['name'].squeeze()}_map.html"
-            generate_map(
-                activity_manager.map_settings,
-                activity_data,
-                filename,
-                tiles_name="google_hybrid",
-            )
-            png = save_png(filename)
-
-            try:
+                png = save_png(filename)
                 # Return the image as a downloadable file
-                return send_file(png, mimetype='image/png', as_attachment=True, download_name=f"{activity_data['name'].squeeze()}_map.png")
-            finally:
-                # After the file is sent, delete it
-                if os.path.exists(png):
-                    os.remove(png)
+                return send_file(
+                    png,
+                    mimetype="image/png",
+                    as_attachment=True,
+                    download_name=f"{name}_map.png",
+                )
+        finally:
+            # After the file is sent, delete it
+            if filetype == "png" and os.path.exists(png):
+                os.remove(png)
+            if os.path.exists(filename):
+                os.remove(filename)
 
     @app.route('/download_elevation_profile', methods=['GET'])
     def download_elevation_profile():
@@ -317,8 +314,12 @@ def create_app():
             # Filter the DataFrame based on the activity_id
             activity_data = activity_manager.preprocessed[activity_manager.preprocessed['id'] == activity_id].squeeze()
             # figure
-            fig = create_elevation_profile(activity_data, background_color = 'whitesmoke')
-            png = f"plots/{activity_data['name']}_elevation_profile.png"
+            fig = create_elevation_profile(
+                activity_data,
+                background_color="whitesmoke",
+                top_color=False,
+            )
+            png = f"tmp/{activity_data['name']}_elevation_profile.png"
             fig.savefig(png, dpi=150)
 
             try:
@@ -329,8 +330,8 @@ def create_app():
                 if os.path.exists(png):
                     os.remove(png)
 
-    @app.route("/view_map")
-    def view_map():
+    @app.route("/build_map")
+    def build_map():
         session_id = session["session_id"]
         activity_manager = ActivityManager.load_from_redis(session_id)
         m = generate_map(
@@ -338,6 +339,8 @@ def create_app():
             activity_manager.preprocessed,
             out_file="./templates/tmp/mymap_terrain.html",
             tiles_name="stadia_terrain",
+            width="100%",
+            height="60%",
             final_popup=False,
             dynamic_tiles=True,
             save=False,
@@ -371,6 +374,8 @@ def create_app():
             activity_manager.preprocessed,
             out_file="./templates/tmp/mymap_terrain.html",
             tiles_name="stadia_terrain",
+            width="100%",
+            height="60%",
             final_popup=False,
             dynamic_tiles=True,
             save=False,
