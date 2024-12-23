@@ -1,0 +1,67 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Contact US {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block body_class %} contact-us {% endblock body_class %}
+
+{% block content %}
+
+  {% include "includes/navigation.html" %}
+
+  <header>
+    <div class="page-header section-height-85">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 d-flex justify-content-center flex-column">
+            <div class="card d-flex blur justify-content-center p-4 shadow-lg my-4">
+              <div class="text-center">
+                <h3 class="text-gradient text-primary">Contact</h3>
+                <p class="mb-0">
+                  For further questions please use this contact form.
+                </p>
+              </div>
+              <form role="form" id="contact-form" autocomplete="off" onsubmit="submitForm(event)">
+                <div class="card-body pb-2">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Full Name</label>
+                      <div class="input-group mb-4">
+                        <input class="form-control" placeholder="Full Name" aria-label="Full Name" type="text" name="full_name" id="full_name">
+                      </div>
+                    </div>
+                    <div class="col-md-6 ps-md-2">
+                      <label>Email</label>
+                      <div class="input-group">
+                        <input type="email" class="form-control" placeholder="a@b.com" name="email" id="email">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group mb-0 mt-md-0 mt-4">
+                    <label>How can we help you?</label>
+                    <textarea name="message" class="form-control" id="message" rows="6" placeholder="Describe your problem in at least 250 characters"></textarea>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 text-center">
+                      <button type="submit" class="btn bg-gradient-primary mt-3 mb-0">Send Message</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+  <script src="/static/assets/js/soft-design-system.min.js?v=1.0.1" type="text/javascript"></script>
+  <script src="/static/assets/js/contact-form.js?v=1.0.1" type="text/javascript"></script>
+{% endblock javascripts %}

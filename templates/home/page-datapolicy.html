@@ -1,0 +1,76 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Contact US {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<style>
+  .content-wrapper {
+      padding-top: 70px; /* Adjust this value based on the height of your navbar */
+  }
+  h3 {
+      font-size: 1.75rem; /* Adjust this value as needed */
+  }
+  h4 {
+      font-size: 1.25rem; /* Adjust this value as needed */
+  }
+</style>
+{% endblock stylesheets %}
+
+{% block body_class %} contact-us {% endblock body_class %}
+
+{% block content %}
+
+  {% include "includes/navigation.html" %}
+
+  <header>
+    <div class="page-header section-height-85">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 d-flex justify-content-center flex-column">
+            <div class="card d-flex blur justify-content-center p-4 shadow-lg my-4">
+              <div class="text-center">
+                <h3 class="text-gradient text-primary">Data Privacy Policy</h3>
+                <p class="mb-0">
+                  Your privacy is important to us. Please read our data privacy policy carefully.
+                </p>
+              </div>
+              <div class="card-body pb-2">
+                <h4>1. Introduction</h4>
+                <p>Welcome to our website. We are committed to protecting your personal data and your privacy. This Data Privacy Policy explains how we handle your data.</p>
+                
+                <h4>2. Data Collection</h4>
+                <p>We collect data from external sources, including but not limited to Strava, to create maps and other visualizations. By using our website, you agree to the collection and use of data in accordance with this policy.</p>
+                
+                <h4>3. Data Usage</h4>
+                <p>The data we collect is used solely for the purpose of creating maps and visualizations. We do not store any data permanently. All data is deleted after 30 minutes of inactivity.</p>
+                
+                <h4>4. Data Deletion</h4>
+                <p>To ensure your privacy, all data collected is automatically deleted after 30 minutes of inactivity. This means that if you do not interact with our website for 30 minutes, all your data will be permanently deleted from our systems.</p>
+                
+                <h4>5. No Permanent Storage</h4>
+                <p>We do not store any data permanently. Once the data is deleted after 30 minutes of inactivity, it cannot be recovered. We do not keep backups or logs of your data.</p>
+                
+                <h4>6. Data Security</h4>
+                <p>We take data security seriously and implement appropriate measures to protect your data from unauthorized access, alteration, disclosure, or destruction.</p>
+                
+                <h4>7. Changes to This Policy</h4>
+                <p>We may update our Data Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page. You are advised to review this policy periodically for any changes.</p>
+                
+                <h4>8. Contact Us</h4>
+                <p>If you have any questions about this Data Privacy Policy, please contact us using the information provided on our website.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+  <script src="/static/assets/js/soft-design-system.min.js?v=1.0.1" type="text/javascript"></script>
+{% endblock javascripts %}

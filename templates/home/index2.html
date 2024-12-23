@@ -1,0 +1,42 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Forms {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block body_class %} forms-sections {% endblock body_class %}
+
+{% block content %}
+    
+    {% include "includes/navigation.html" %}
+
+    <!-- -------- START HEADER 1 w/ text and image on right ------- -->
+    <header>
+        <div class="page-header section-height-100">
+            <div class="oblique position-absolute top-0 h-100 d-md-block d-none">
+                <div class="oblique-image bg-cover position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6" style="background-image: url('{{ url_for('static', filename='assets/img/bikemap.png') }}');"></div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-md-7 d-flex justify-content-center flex-column">   
+                        <h1 class="text-gradient text-primary">Bike Pack Map</h1>
+                        <h1 class="mb-4">The individual map of your bikepacking trip</h1>
+                        <p class="lead pe-5 me-5">Create beautiful maps showing your multi stage backpacking route! 
+                            Fully customizable in any aspect...</p>
+                        <div class="buttons">
+                            <a href="{{ url_for('strava_auth') }}">
+                                <button type="submit" class="btn bg-gradient-primary mt-4">Connect to Strava an build maps </button>
+                            </a>
+                            <a href="{{ url_for('display_examples') }}">
+                                <button type="button" class="btn bg-gradient-primary mt-4">Learn how it works with example data</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- -------- END HEADER 1 w/ text and image on right ------- -->
+
+{% endblock %}

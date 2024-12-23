@@ -1,0 +1,88 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Select Data {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block body_class %} select-data-page {% endblock body_class %}
+
+{% block content %}
+    
+    {% include "includes/navigation.html" %}
+
+    <!-- -------- START HEADER 1 ------- -->
+    <header>
+        <div class="page-header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-center flex-column">   
+                        <h1 class="text-gradient text-primary">Select Data</h1>
+                        <h2 class="mb-4">Choose your data range and items</h2>
+                        <p class="lead">Select the date range and number of items you want to display. Then, fetch and submit your data.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- -------- END HEADER 1 ------- -->
+
+    <div class="container mt-5">
+        <!-- Calendar Dropdowns for Date Range Selection -->
+        <form id="date-form" class="mb-3">
+            {% if show_calendar %}
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" id="start_date" name="start_date" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="end_date">End Date:</label>
+                    <input type="date" id="end_date" name="end_date" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="per_page">Items:</label>
+                    <select id="per_page" name="per_page" class="form-control">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="200">200</option>
+                    </select>
+                </div>
+            </div>
+            {% endif %}
+            <button type="button" id="fetch-data" class="btn bg-gradient-primary mt-4">Fetch Data</button>
+        </form>
+
+        <!-- Data Table with Checkbox Column -->
+        <form id="activity-form" action="{{ url_for(selection) }}" method="POST"> <!-- Form to submit selected activities -->
+            <table class="table" id="data-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="select-all"></th>
+                        <th>Date</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamic rows will be inserted here -->
+                </tbody>
+            </table>
+
+            <!-- Submit Button for Selected Rows -->
+            <button id="submit-selection" class="btn bg-gradient-primary mt-4">Submit Selection</button>
+        </form>
+    </div>
+
+{% endblock %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+    <script>
+      const fetchUrl = "{{ fetch_url }}";
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/assets/js/soft-design-system.min.js?v=1.0.1" type="text/javascript"></script>
+    <script src="{{ url_for('static', filename='assets/js/select_activities.js') }}" type="text/javascript"></script>
+{% endblock javascripts %}
