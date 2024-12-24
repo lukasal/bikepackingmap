@@ -115,7 +115,9 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 d-flex justify-content-center flex-column">   
-                        <h1 class="text-gradient text-primary">Folium Map with User Controls</h1>
+                        <h1 class="text-gradient text-primary">Bikepacking Map</h1>
+                        <p class="lead">Customize your map according to your wishes, for more information view <a href="/static/page-how.html" target="_blank">this page</a>.</p>
+
                     </div>
                 </div>
             </div>
@@ -126,11 +128,11 @@
     <div class="container mt-5 folium-map-page">
         <div class="top-buttons">
             <button onclick="window.location.href='{{ url_for('home') }}'" class="btn bg-gradient-primary mt-4">Back</button>
-            <button onclick="window.location.href='{{ url_for('downloads_overview') }}'" class="btn bg-gradient-primary mt-4">Go to Downloads</button>
+            <button onclick="window.location.href='{{ url_for('downloads_overview') }}'" class="btn bg-gradient-primary mt-4">Export maps</button>
         </div>
 
         <button type="button" class="collapsible">
-          Map Settings
+          Map Customisations
           <img src="/static/assets/img/down-arrow-dark.svg" alt="down-arrow" class="arrow">
         </button>
         <div class="content">

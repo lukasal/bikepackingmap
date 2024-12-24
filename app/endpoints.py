@@ -234,7 +234,7 @@ def create_app():
         session_id = session["session_id"]
         activity_manager = ActivityManager.load_from_redis(session_id)
         return render_template(
-            "home/downloads.html",
+            "home/export.html",
             activities=activity_manager.preprocessed[["name", "id"]],
         )  # Pass the selected activities to the new template
 

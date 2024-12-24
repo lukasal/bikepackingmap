@@ -1,0 +1,86 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Forms {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<style>
+    .iframe-container {
+        position: relative;
+        width: 100%;
+        height: 800px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .iframe-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block body_class %} forms-sections {% endblock body_class %}
+
+{% block content %}
+    
+    {% include "includes/navigation.html" %}
+
+    <!-- -------- START HEADER 1 w/ text and image on right ------- -->
+    <header>
+        <div class="page-header">
+            <div class="container">
+                <div class="row">
+                    <div class="ol-lg-8 col-md-10 d-flex justify-content-center flex-column">
+                        <!-- <h1 class="text-gradient text-primary">Bikepacking Map</h1> -->
+                        <h1 class="mb-4">How to build a map?</h1>
+                        <p class="mt-4">The basis of bikepacking map are the gps data of your routes.
+                           Currently, only Strava is supported as a data source. 
+                           However, imports from gpx files and a connection to further apps are planned in the future.   </p>
+                        <h2>How to connect to Strava?</h2>
+                        <p>By clicking on the "Connect to Strava" button, a connection to Strava is established. Follow the instructions on the screen, log in to your Strava account, and grant the necessary permissions for the app to fetch the data.</p>
+                        <p><strong>Note:</strong> Activities marked as "private" won't be fetched!</p>
+                        <div class="buttons">
+                            <a href="{{ url_for('strava_auth') }}" target="_blank">
+                                <button type="submit" class="btn bg-gradient-primary mt-4">Connect to Strava</button>
+                            </a>
+                        </div>
+
+                        <h2> How to select the relevant activities?</h2>
+                        After the connection to Strava is established, you can fetch activities based on a date range. 
+                        The app will show dates and names of all activities which are "public" or "public to followers" within the selected range. 
+                        Mark the activities you want to include in the map with a checkbox or mark all with the top checkbox. 
+                        <img src="{{ url_for('static', filename='assets/img/select_activities.png') }}" alt="Selecting activities" class="img-fluid mt-4" style="max-width: 100%; width: auto; height: auto;">
+                        <br>
+                        
+                        <h2> How to customize your map?</h2>
+                          <p>Once your activities are selected, the map is build and displayed. 
+                          You can customize all lines and markers by clicking on the settings button. 
+                          <img src="{{ url_for('static', filename='assets/img/customisation.png') }}" alt="Selecting activities" class="img-fluid mt-4" style="max-width: 100%; width: auto; height: auto;">
+                          For the icons, as a default you can use <a href="https://getbootstrap.com/docs/3.3/components/" target="_blank">bootstrap glyphicons</a> that provide over 250 glyphs for free. 
+                          You can directly enter the name of the icon without any prefix into the icon field(e.g. "house").
+                          <img src="{{ url_for('static', filename='assets/img/folium-glyphicons.png') }}" alt="bootstrap glyphicons" class="img-fluid mt-4" style="max-width: 100%; width: auto; height: auto;">
+                          Alternatively you can use the <a href="https://fontawesome.com/search" target="_blank">Font Awesome icons</a> which are a collection of scalable vector icons that can be customized and used in a variety of ways, such as in graphic design projects, websites, and applications. The icons are available in different styles, including Solid, Regular, and Brands, and can be easily integrated by adding the fa prefix to the name of the icon (e.g. "fa fa-flag-checkered").
+                          <img src="{{ url_for('static', filename='assets/img/folium-fontawesome.png') }}" alt="fontawesome icons" class="img-fluid mt-4" style="max-width: 100%; width: auto; height: auto;">
+                            
+                          Play around, try different icons, colors and styles to create your own unique map. Have fun :-)
+                          </p>
+                        
+                        
+                        <h2> How to export maps?</h2>
+                        As a last step, you can clik on "export maps" to download the created visualisation.
+                        You can download the full map (as html or png), but also the map (png, html) and the profile (png) of each stage.
+                        <img src="{{ url_for('static', filename='assets/img/export_maps.png') }}" alt="export maps" class="img-fluid mt-4" style="max-width: 100%; width: auto; height: auto;">
+                        You can then share them with your friends, print them or use them in a photo book (as I did). Feel free to use it!
+                </div>
+            </div>
+        </div>
+    </header>
+    
+{% endblock %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+  <script src="/static/assets/js/soft-design-system.min.js?v=1.0.1" type="text/javascript"></script>
+{% endblock javascripts %}

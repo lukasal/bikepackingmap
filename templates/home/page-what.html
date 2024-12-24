@@ -1,0 +1,69 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Forms {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<style>
+    .iframe-container {
+        position: relative;
+        width: 100%;
+        height: 800px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .iframe-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block body_class %} forms-sections {% endblock body_class %}
+
+{% block content %}
+    
+    {% include "includes/navigation.html" %}
+
+    <!-- -------- START HEADER 1 w/ text and image on right ------- -->
+    <header>
+        <div class="page-header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-md-7 d-flex justify-content-center flex-column">
+                        <!-- <h1 class="text-gradient text-primary">Bikepacking Map</h1> -->
+                        <h1 class="mb-4">What is bikepacking map?</h1>
+                        <p class="mt-4">Bikepacking map creates visualizations of multi-day trips like the one displayed on the right hand side.
+                           It shows the whole route in a way similar to the maps from Tour de France route visualizations including stage towns and the finish/depart. 
+                           These maps consist of:</p>
+                        <ul>
+                            <li>The route based on GPS data</li>
+                            <li>A "grand depart" marker at the start of the trip</li>
+                            <li>A "grand arrivee" marker at the end of the trip</li>
+                            <li>Markers for "stage locations" at the end of each stage</li>
+                            <li>Different map types to choose from</li>
+                            <li>Handling multiple sports types within one map using different colors for each type</li>
+                            <li>Popups with altimetry and statistics shown by clicking on a stage route</li>
+                            <li>All markers, styles and colors are fully customisable.</li>
+                        </ul>
+                        More features are about to come...
+                      </div>
+                    <div class="col-lg-6 col-md-5">
+                        <!-- New container to include asd.html -->
+                        <div class="iframe-container">
+                            <iframe src="{{ url_for('static', filename='assets/example_map.html') }}"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+{% endblock %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+  <script src="/static/assets/js/soft-design-system.min.js?v=1.0.1" type="text/javascript"></script>
+{% endblock javascripts %}
