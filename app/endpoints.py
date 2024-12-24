@@ -170,10 +170,7 @@ def create_app():
         # Prepare data to send to the frontend
         data_to_send = data[["start_date", "name", "id"]].to_dict(orient="records")
 
-        return jsonify({'data': data_to_send})
-        # Render a template with the authorization code, tokens, and the DataFrame
-        # return render_template('redirect.html',
-        #                     df=df)  # Pass the DataFrame to the template
+        return jsonify({"data": data_to_send})
 
     @app.route("/fetch_examples")
     def fetch_examples():
