@@ -30,7 +30,9 @@ user_activity_managers = {}
 
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-REDIRECT_URI = 'http://localhost:5000/redirect'  # Your redirect URI
+REDIRECT_URI = (
+    os.getenv("WEBSITE_HOSTNAME", "localhost") + ":5000/redirect"
+)  # Your redirect URI
 
 STRAVA_AUTH_URL = (
     f"https://www.strava.com/oauth/authorize"
@@ -39,6 +41,7 @@ STRAVA_AUTH_URL = (
     f"&response_type=code"
     f"&scope=read,activity:read"
 )
+print(os.getenv("REDIS_HOST"))
 def create_app():
     # Get the absolute path of your project root directory
     project_root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -49,7 +52,7 @@ def create_app():
     app.config["SESSION_TYPE"] = "redis"
     app.config["SESSION_PERMANENT"] = True
     app.config["SESSION_USE_SIGNER"] = True
-    app.config["SESSION_REDIS"] = redis.StrictRedis(host="localhost", port=6379, db=0)
+    app.config["SESSION_REDIS"] = redis_client
 
     app.secret_key = os.getenv("SECRET_KEY")
 
@@ -89,7 +92,7 @@ def create_app():
     @app.route('/session-expired')
     def session_expired():
         # Render the expiration page when the session has expired
-        return render_template('expired.html')
+        return render_template("home/expired.html")
 
     @app.route('/redirect')
     def strava_redirect():

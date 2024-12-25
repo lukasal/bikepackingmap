@@ -1,6 +1,8 @@
 import redis
 import os 
-redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+redis_url = os.getenv("REDIS_HOST", "localhost")
 
 # Initialize and configure the Redis client connection
-redis_client = redis.StrictRedis.from_url(redis_url)
+redis_client = redis.StrictRedis(
+    host=redis_url, port=6379, db=0, password=os.getenv("REDIS_KEY")
+)
