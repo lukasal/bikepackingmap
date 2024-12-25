@@ -30,10 +30,14 @@ user_activity_managers = {}
 
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-REDIRECT_URI = (
-    os.getenv("WEBSITE_HOSTNAME", "localhost") + ":5000/redirect"
-)  # Your redirect URI
 
+website_host = os.getenv("WEBSITE_HOSTNAME")
+if website_host:
+    REDIRECT_URI = f"https://{website_host}/redirect"
+else:
+    REDIRECT_URI = "http://localhost:5000/redirect"
+
+print(REDIRECT_URI)
 STRAVA_AUTH_URL = (
     f"https://www.strava.com/oauth/authorize"
     f"?client_id={CLIENT_ID}"
