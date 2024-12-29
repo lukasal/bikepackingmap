@@ -1,0 +1,247 @@
+lines_active:
+  type: BooleanSetting
+  value: true
+  group: Line
+  label: Display Routes
+
+line_thickness:
+  type: NumberSetting
+  value: 5
+  min_value: 1
+  max_value: 30
+  group: Line
+  label: Line Thickness
+
+line_stroke:
+  type: BooleanSetting
+  value: true
+  group: Line
+  label: Display Stroke on routes
+
+line_stroke_color:
+  type: ColorSetting
+  value: '#ffffff'
+  group: Line
+  label: Stroke Color
+
+stage_labels_active:
+  type: BooleanSetting
+  value: true
+  group: Stage Icon
+  label: Display Stage Labels
+
+stage_icon_size:
+  type: NumberSetting
+  value: 22
+  min_value: 5
+  max_value: 100
+  group: Stage Icon
+  label: Size of the Icon
+
+stage_start_icon:
+  type: TextSetting
+  value: house
+  group: Stage Icon
+  label: Icon
+  options:
+    - star
+    - map-pin
+    - flag
+    - anchor
+
+stage_border_transparent:
+  type: BooleanSetting
+  value: false
+  group: Stage Icon
+  label: Border Transparent
+
+stage_border_color:
+  type: ColorSetting
+  value: '#000000'
+  group: Stage Icon
+  label: Border Color
+
+stage_background_transparent:
+  type: BooleanSetting
+  value: false
+  group: Stage Icon
+  label: Background Transparent
+
+stage_background_color:
+  type: ColorSetting
+  value: '#ffffff'
+  group: Stage Icon
+  label: Background Color
+
+stage_icon_inner_size:
+  type: NumberSetting
+  value: 10
+  min_value: 5
+  max_value: 100
+  group: Stage Icon
+  label: Icon Inner Size
+
+stage_icon_shape:
+  type: TextSetting
+  value: circle
+  group: Stage Icon
+  label: Icon Shape
+  options:
+    - circle
+    - square
+    - diamond
+    - triangle
+
+stage_symbol_color:
+  type: ColorSetting
+  value: '#007799'
+  group: Stage Icon
+  label: Symbol Color
+
+arrivee_labels_active:
+  type: BooleanSetting
+  value: true
+  group: Finish Icon
+  label: Display Finish Label
+
+arrivee_icon_size:
+  type: NumberSetting
+  value: 42
+  min_value: 5
+  max_value: 100
+  group: Finish Icon
+  label: Size of the Icon
+
+arrivee_icon:
+  type: TextSetting
+  value: fa fa-flag-checkered
+  group: Finish Icon
+  label: Icon
+  options:
+    - star
+    - map-pin
+    - flag
+    - anchor
+
+arrivee_border_transparent:
+  type: BooleanSetting
+  value: false
+  group: Finish Icon
+  label: Border Transparent
+
+arrivee_border_color:
+  type: ColorSetting
+  value: '#000000'
+  group: Finish Icon
+  label: Border Color
+
+arrivee_background_transparent:
+  type: BooleanSetting
+  value: false
+  group: Finish Icon
+  label: Background Transparent
+
+arrivee_background_color:
+  type: ColorSetting
+  value: '#ffffff'
+  group: Finish Icon
+  label: Background Color
+
+arrivee_icon_inner_size:
+  type: NumberSetting
+  value: 30
+  min_value: 5
+  max_value: 100
+  group: Finish Icon
+  label: Icon Inner Size
+
+arrivee_icon_shape:
+  type: TextSetting
+  value: circle
+  group: Finish Icon
+  label: Icon Shape
+  options:
+    - circle
+    - square
+    - diamond
+    - triangle
+
+arrivee_symbol_color:
+  type: ColorSetting
+  value: '#000000'
+  group: Finish Icon
+  label: Symbol Color
+
+depart_labels_active:
+  type: BooleanSetting
+  value: true
+  group: Depart Icon
+  label: Display Depart Label
+
+depart_icon_size:
+  type: NumberSetting
+  value: 42
+  min_value: 5
+  max_value: 100
+  group: Depart Icon
+  label: Size of the Icon
+
+depart_icon:
+  type: TextSetting
+  value: play
+  group: Depart Icon
+  label: Icon
+  options:
+    - star
+    - map-pin
+    - flag
+    - anchor
+
+depart_border_transparent:
+  type: BooleanSetting
+  value: false
+  group: Depart Icon
+  label: Border Transparent
+
+depart_border_color:
+  type: ColorSetting
+  value: '#000000'
+  group: Depart Icon
+  label: Border Color
+
+depart_background_transparent:
+  type: BooleanSetting
+  value: false
+  group: Depart Icon
+  label: Background Transparent
+
+depart_background_color:
+  type: ColorSetting
+  value: '#ffffff'
+  group: Depart Icon
+  label: Background Color
+
+depart_icon_inner_size:
+  type: NumberSetting
+  value: 30
+  min_value: 5
+  max_value: 100
+  group: Depart Icon
+  label: Icon Inner Size
+
+depart_icon_shape:
+  type: TextSetting
+  value: circle
+  group: Depart Icon
+  label: Icon Shape
+  options:
+    - circle
+    - square
+    - diamond
+    - triangle
+
+depart_symbol_color:
+  type: ColorSetting
+  value: '#008000'
+  group: Depart Icon
+  label: Symbol Color

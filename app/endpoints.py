@@ -3,6 +3,10 @@ import requests
 import os 
 import pandas as pd
 import matplotlib
+from jinja2 import TemplateNotFound
+from email.mime.text import MIMEText
+import smtplib
+
 from app.elevation_profile import create_elevation_profile
 from app.save_png import save_png
 matplotlib.use('Agg')  # Use a non-GUI backend for rendering
@@ -26,8 +30,14 @@ user_activity_managers = {}
 
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-REDIRECT_URI = 'http://localhost:5000/redirect'  # Your redirect URI
 
+website_host = os.getenv("WEBSITE_HOSTNAME")
+if website_host:
+    REDIRECT_URI = f"https://{website_host}/redirect"
+else:
+    REDIRECT_URI = "http://localhost:5000/redirect"
+
+print(REDIRECT_URI)
 STRAVA_AUTH_URL = (
     f"https://www.strava.com/oauth/authorize"
     f"?client_id={CLIENT_ID}"
@@ -35,6 +45,7 @@ STRAVA_AUTH_URL = (
     f"&response_type=code"
     f"&scope=read,activity:read"
 )
+print(os.getenv("REDIS_HOST"))
 def create_app():
     # Get the absolute path of your project root directory
     project_root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -45,7 +56,7 @@ def create_app():
     app.config["SESSION_TYPE"] = "redis"
     app.config["SESSION_PERMANENT"] = True
     app.config["SESSION_USE_SIGNER"] = True
-    app.config["SESSION_REDIS"] = redis.StrictRedis(host="localhost", port=6379, db=0)
+    app.config["SESSION_REDIS"] = redis_client
 
     app.secret_key = os.getenv("SECRET_KEY")
 
@@ -76,7 +87,7 @@ def create_app():
 
     @app.route('/')
     def home():
-        return render_template('landing.html')  # Render the landing page
+        return render_template("home/index2.html")  # Render the landing page
 
     @app.route('/strava_auth')
     def strava_auth():
@@ -85,7 +96,7 @@ def create_app():
     @app.route('/session-expired')
     def session_expired():
         # Render the expiration page when the session has expired
-        return render_template('expired.html')
+        return render_template("home/expired.html")
 
     @app.route('/redirect')
     def strava_redirect():
@@ -123,7 +134,7 @@ def create_app():
     @app.route('/display_strava')
     def display_strava():  
         return render_template(
-            "select_activities.html",
+            "home/select_activities.html",
             selection="select_strava",
             fetch_url="/fetch_strava",
             show_calendar=True,
@@ -132,7 +143,7 @@ def create_app():
     @app.route("/display_examples")
     def display_examples():
         return render_template(
-            "select_activities.html",
+            "home/select_activities.html",
             selection="select_examples",
             fetch_url="/fetch_examples",
             show_calendar=False,
@@ -166,10 +177,7 @@ def create_app():
         # Prepare data to send to the frontend
         data_to_send = data[["start_date", "name", "id"]].to_dict(orient="records")
 
-        return jsonify({'data': data_to_send})
-        # Render a template with the authorization code, tokens, and the DataFrame
-        # return render_template('redirect.html',
-        #                     df=df)  # Pass the DataFrame to the template
+        return jsonify({"data": data_to_send})
 
     @app.route("/fetch_examples")
     def fetch_examples():
@@ -233,7 +241,7 @@ def create_app():
         session_id = session["session_id"]
         activity_manager = ActivityManager.load_from_redis(session_id)
         return render_template(
-            "downloads.html",
+            "home/export.html",
             activities=activity_manager.preprocessed[["name", "id"]],
         )  # Pass the selected activities to the new template
 
@@ -347,7 +355,7 @@ def create_app():
             zoom_margin=0.05,
         )  # Assuming this function creates 'map_output.html'
         return render_template(
-            "build_map.html",
+            "home/build_map.html",
             map=m._repr_html_(),
             settings=activity_manager.map_settings,
         )
@@ -383,5 +391,64 @@ def create_app():
         )
 
         return jsonify({"map": m._repr_html_()})
+
+    @app.route("/static/<template>")
+    def route_template(template):
+
+        try:
+
+            if not template.endswith(".html"):
+                template += ".html"
+
+            # Detect the current page
+            segment = get_segment(request)
+
+            # Serve the file (if exists) from app/templates/home/FILE.html
+            return render_template("home/" + template, segment=segment)
+
+        except TemplateNotFound:
+            return render_template("home/page-404.html"), 404
+
+        except:
+            return render_template("home/page-500.html"), 500
+
+    @app.route("/send-email", methods=["POST"])
+    def send_email():
+        full_name = request.form["full_name"]
+        email = request.form["email"]
+        message = request.form["message"]
+
+        # Email content
+        msg = MIMEText(f"Name: {full_name}\nEmail: {email}\nMessage: {message}")
+        msg["Subject"] = "Contact Form Submission"
+        msg["From"] = os.getenv("EMAIL")
+        msg["To"] = os.getenv("EMAIL_TARGET")
+
+        # Send email
+        try:
+            with smtplib.SMTP("mail.gmx.net", 587) as server:
+                server.starttls()
+                server.login(os.getenv("EMAIL"), os.getenv("EMAIL_PW"))
+                server.sendmail(
+                    os.getenv("EMAIL"), os.getenv("EMAIL_TARGET"), msg.as_string()
+                )
+            return jsonify({"message": "Contact form successfully submitted!"})
+        except smtplib.SMTPException as e:
+            return jsonify({"message": f"Failed to send email: {e}"}), 500
+
+    # Helper - Extract current page name from request
+    def get_segment(request):
+
+        try:
+
+            segment = request.path.split("/")[-1]
+
+            if segment == "":
+                segment = "index"
+
+            return segment
+
+        except:
+            return None
 
     return app
