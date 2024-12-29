@@ -15,4 +15,4 @@ services:
     depends_on:
       - redis  # Ensure Redis starts before Flask app
     environment:
-      - REDIS_URL=redis://redis:6379/0 
+      - REDIS_HOST=redis
