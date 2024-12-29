@@ -13,6 +13,15 @@ WORKDIR /app
 COPY . . 
 # Install python packages
 RUN pip install -r requirements.txt
+# Install Selenium and the Chrome WebDriver
+RUN apt-get update && apt-get install -y \
+    chromium-driver \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables for Chrome
+ENV CHROME_BIN=/usr/bin/chromium \
+    CHROME_DRIVER=/usr/bin/chromedriver
+
 # Expose port 5000 for FastAPI inside the container
 EXPOSE 5000
 # Start and run the Fast API app in the container
