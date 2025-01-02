@@ -46,7 +46,7 @@ jobs:
         if: needs.check_dockerfile.outputs.dockerfile_changed == 'true'
         run: |
           docker build \
-            --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} 
+            --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
             --build-arg CLIENT_ID=${{ secrets.CLIENT_ID }} \
             --build-arg CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} \
             -t laappacr.azurecr.io/bikepackmap:latest \
