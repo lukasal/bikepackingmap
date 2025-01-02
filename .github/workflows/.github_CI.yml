@@ -20,7 +20,7 @@ jobs:
       - name: Check if Dockerfile has changed
         id: dockerfile_check
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q 'Dockerfile\|requirements.txt|github_CI'; then
+          if git diff --name-only HEAD^ HEAD | grep -q 'Dockerfile\|requirements.txt|.github_CI.yml'; then
             echo "dockerfile_changed=true" >> $GITHUB_ENV
             echo "::set-output name=dockerfile_changed::true"
           else
