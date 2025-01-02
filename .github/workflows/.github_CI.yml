@@ -50,7 +50,7 @@ jobs:
           docker push laappacr.azurecr.io/bikepackmap:latest
 
   test:
-    needs: [check_dockerfile, build]
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Log in to Azure Container Registry
@@ -63,12 +63,12 @@ jobs:
       - name: Pull Docker image
         run: docker pull laappacr.azurecr.io/bikepackmap:latest
 
-      - name: Run unit tests
-        env:
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}    
-          REDIS_KEY: ${{ secrets.REDIS_KEY }}    
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}    
-        run: docker run --rm laappacr.azurecr.io/bikepackmap:latest python -m unittest discover
+      - name: Run unit tests   
+        run: docker run --rm \
+             -e REDIS_HOST=${{ secrets.REDIS_HOST }} \
+             -e REDIS_KEY=${{ secrets.REDIS_KEY }} \
+             -e SECRET_KEY=${{ secrets.SECRET_KEY }} \
+             laappacr.azurecr.io/bikepackmap:latest python -m unittest discover
 
   deploy:
     needs: test
