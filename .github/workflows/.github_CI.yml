@@ -50,6 +50,7 @@ jobs:
           docker push laappacr.azurecr.io/bikepackmap:latest
 
   test:
+    needs: [check_dockerfile, build]
     runs-on: ubuntu-latest
     steps:
       - name: Log in to Azure Container Registry
