@@ -41,7 +41,7 @@ jobs:
         run: docker run --rm bikepackmap:${{github.SHA}} python -m 
 
   deploy:
-    needs: build
+    needs: build_and_test
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
 
