@@ -1,27 +1,39 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI-pipeline
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # build and test
-  build_and_test:
-    # The type of runner that the job will run on
+  check_dockerfile:
+    runs-on: ubuntu-latest
+    outputs:
+      dockerfile_changed: ${{ steps.dockerfile_check.outputs.dockerfile_changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check if Dockerfile has changed
+        id: dockerfile_check
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q 'Dockerfile'; then
+            echo "dockerfile_changed=true" >> $GITHUB_ENV
+            echo "::set-output name=dockerfile_changed::true"
+          else
+            echo "dockerfile_changed=false" >> $GITHUB_ENV
+            echo "::set-output name=dockerfile_changed::false"
+          fi
+
+  build:
+    needs: check_dockerfile
+    if: needs.check_dockerfile.outputs.dockerfile_changed == 'true'
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
       - name: Log in to Azure Container Registry
@@ -30,13 +42,28 @@ jobs:
           login-server: laappacr.azurecr.io
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
-
+          
       - name: Build and push Docker image
         run: |
           docker build -t laappacr.azurecr.io/bikepackmap:latest .
           az acr repository tag -n laappacr.azurecr.io --repository bikepackmap --image latest --new previous-latest
           docker push laappacr.azurecr.io/bikepackmap:latest
-      
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: laappacr.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Pull Docker image
+        run: docker pull laappacr.azurecr.io/bikepackmap:latest
+
       - name: Run unit tests
         env:
           REDIS_HOST: ${{ secrets.REDIS_HOST }}    
@@ -45,7 +72,7 @@ jobs:
         run: docker run --rm laappacr.azurecr.io/bikepackmap:latest python -m unittest discover
 
   deploy:
-    needs: build_and_test
+    needs: test
     runs-on: ubuntu-latest
     environment: production
 
