@@ -58,6 +58,9 @@ jobs:
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
     steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      
       - name: Run unit tests
         env:
           REDIS_HOST: ${{ secrets.REDIS_HOST }}    
