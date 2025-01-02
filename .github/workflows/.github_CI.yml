@@ -38,7 +38,7 @@ jobs:
           docker push laappacr.azurecr.io/bikepackmap:${{github.SHA}}
 
       - name: Run unit tests
-        run: docker run --rm laappacr.azurecr.io/bikepackmap:${{github.SHA}} python -m 
+        run: docker run --rm laappacr.azurecr.io/bikepackmap:${{github.SHA}} python -m unittest discover
 
   deploy:
     needs: build_and_test
