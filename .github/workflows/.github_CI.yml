@@ -30,14 +30,12 @@ jobs:
           login-server: <your-acr-login-server>
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
-      - name: Print name
-        run: echo "Commit hash $GITHUB_SHA ${{github.SHA}}"
 
       - name: Build and push Docker image
         run: |
-          docker build -t laappacr.azurecr.io/bikepackmap:latest -t laappacr.azurecr.io/bikepackmap:${{ env.GITHUB_SHA }} .
+          docker build -t laappacr.azurecr.io/bikepackmap:latest -t laappacr.azurecr.io/bikepackmap:${{github.SHA}} .
           docker push laappacr.azurecr.io/bikepackmap:latest
-          docker push laappacr.azurecr.io/bikepackmap:${{ env.GITHUB_SHA }}
+          docker push laappacr.azurecr.io/bikepackmap:${{github.SHA}}
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
