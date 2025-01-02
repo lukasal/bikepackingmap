@@ -49,21 +49,21 @@ jobs:
           az acr repository tag -n laappacr.azurecr.io --repository bikepackmap --image latest --new previous-latest
           docker push laappacr.azurecr.io/bikepackmap:latest
 
-test:
-  needs: build
-  runs-on: ubuntu-latest
-  container:
-    image: laappacr.azurecr.io/bikepackmap:latest
-    credentials:
-      username: ${{ secrets.ACR_USERNAME }}
-      password: ${{ secrets.ACR_PASSWORD }}
-  steps:
-    - name: Run unit tests
-      env:
-        REDIS_HOST: ${{ secrets.REDIS_HOST }}    
-        REDIS_KEY: ${{ secrets.REDIS_KEY }}    
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}    
-      run: python -m unittest discover
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    container:
+      image: laappacr.azurecr.io/bikepackmap:latest
+      credentials:
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+    steps:
+      - name: Run unit tests
+        env:
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}    
+          REDIS_KEY: ${{ secrets.REDIS_KEY }}    
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}    
+        run: python -m unittest discover
 
   deploy:
     needs: test
