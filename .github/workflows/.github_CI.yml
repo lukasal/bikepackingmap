@@ -37,13 +37,11 @@ jobs:
           az acr repository tag -n laappacr.azurecr.io --repository bikepackmap --image latest --new previous-latest
           docker push laappacr.azurecr.io/bikepackmap:latest
       
-      - name: Set up environment variables
+      - name: Run unit tests
         env:
           REDIS_HOST: ${{ secrets.REDIS_HOST }}    
           REDIS_KEY: ${{ secrets.REDIS_KEY }}    
           SECRET_KEY: ${{ secrets.SECRET_KEY }}    
-      
-      - name: Run unit tests
         run: docker run --rm laappacr.azurecr.io/bikepackmap:latest python -m unittest discover
 
   deploy:
