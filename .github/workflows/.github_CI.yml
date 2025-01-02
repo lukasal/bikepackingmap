@@ -30,7 +30,6 @@ jobs:
 
   build:
     needs: check_dockerfile
-    if: needs.check_dockerfile.outputs.dockerfile_changed == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -44,6 +43,7 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
           
       - name: Build and push Docker image
+        if: needs.check_dockerfile.outputs.dockerfile_changed == 'true'
         run: |
           docker build -t laappacr.azurecr.io/bikepackmap:latest .
           az acr repository tag -n laappacr.azurecr.io --repository bikepackmap --image latest --new previous-latest
