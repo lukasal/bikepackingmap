@@ -31,7 +31,7 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
       - name: Print name
-        run: echo "Commit hash: $env.GITHUB_SHA"
+        run: echo "Commit hash $env.GITHUB_SHA"
 
       - name: Build and push Docker image
         run: |
