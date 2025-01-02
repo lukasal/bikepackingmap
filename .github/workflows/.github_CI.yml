@@ -30,6 +30,8 @@ jobs:
           login-server: <your-acr-login-server>
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
+      - name: Print name
+        run: echo "Commit hash: $env.GITHUB_SHA"
 
       - name: Build and push Docker image
         run: |
