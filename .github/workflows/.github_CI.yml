@@ -45,9 +45,10 @@ jobs:
       - name: Build and push Docker image
         if: needs.check_dockerfile.outputs.dockerfile_changed == 'true'
         run: |
-          docker build -t laappacr.azurecr.io/bikepackmap:latest .
-          az acr import --name laappacr --source laappacr.azurecr.io/bikepackmap:latest --image bikepackmap:previous-latest
+          docker build -t laappacr.azurecr.io/bikepackmap:latest -t laappacr.azurecr.io/bikepackmap:{{$github.SHA}} .
+          #az acr import --name laappacr --source laappacr.azurecr.io/bikepackmap:latest --image bikepackmap:previous-latest
           docker push laappacr.azurecr.io/bikepackmap:latest
+          
 
   test:
     needs: build
