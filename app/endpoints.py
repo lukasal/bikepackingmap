@@ -87,7 +87,7 @@ def create_app():
 
     @app.route('/')
     def home():
-        return render_template("home/index2.html")  # Render the landing page
+        return render_template("home/index.html")  # Render the landing page
 
     @app.route('/strava_auth')
     def strava_auth():
