@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 from app.map.map_popup import html_popup
 
-# import html5lib
+import html5lib
 
 
 class TestHtmlPopup(unittest.TestCase):
