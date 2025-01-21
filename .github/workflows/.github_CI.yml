@@ -15,7 +15,7 @@ jobs:
 
       - name: Set up Docker Buildx
         run: |
-          docker buildx create --use
+          docker buildx create --use --driver docker-container
 
       - name: Cache Docker layers
         uses: actions/cache@v3
