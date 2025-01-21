@@ -12,4 +12,5 @@ webdriver_manager==4.0.2
 redis==5.2.0
 pyyaml==6.0.2
 seaborn==0.13.2
-beautifulsoup4==4.12.3 
+beautifulsoup4==4.12.3
+html5lib==1.1

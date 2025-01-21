@@ -5,9 +5,6 @@ from app.map.map_popup import html_popup
 # import html5lib
 
 
-@unittest.skip(
-    "Skipping test for until docker image can be rebuild with library html5lib"
-)
 class TestHtmlPopup(unittest.TestCase):
     def setUp(self):
         self.template_path = "templates/map/popup.html"
