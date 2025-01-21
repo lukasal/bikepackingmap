@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<h3>{{ name }}</h3>
+<p>
+    <code>
+    Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ date }} <br>
+    Time at start &nbsp;: {{ start_time }}
+    </code>
+</p>
+<h4>{{ type }}</h4>
+<p> 
+    <code>
+        {% if distance is not none %}Distance&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ distance }} km <br>{% endif %}
+        {% if elevation_gain is not none %}Elevation Gain&nbsp;&nbsp;&nbsp;&nbsp;: {{ elevation_gain }} m <br>{% endif %}
+        {% if moving_time is not none %}Moving time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ moving_time }} <br>{% endif %}
+        {% if total_time is not none %}Total time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ total_time }} <br>{% endif %}
+        {% if average_speed is not none %}&#8960; Speed &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ average_speed }} km/h (maximum: {{ max_speed }} km/h) <br>{% endif %}
+        {% if average_watts is not none %}&#8960; Watts &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{ average_watts }} W<br>{% endif %}
+        {% if weighted_average_watts is not none %}&#8960; Weighted watts &nbsp;: {{ weighted_average_watts }} W<br>{% endif %}
+        {% if average_heartrate is not none %}&#8960; Heart rate &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{{ average_heartrate }} bpm (maximum: {{ max_heartrate }} bpm) <br>{% endif %}
+        {% if average_temp is not none %}&#8960; Temperature&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;{{ average_temp }} <br>{% endif %}
+    </code>
+    {% if elevation_profile is not none %} <img src="data:image/png;base64,{{ elevation_profile }}">{% endif %}
+</p>

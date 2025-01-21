@@ -1,5 +1,5 @@
 import folium
-import time
+from app.map.map_popup import html_popup
 
 
 def map_polylines(activities, map_settings):
@@ -35,48 +35,11 @@ def map_polylines(activities, map_settings):
         # os.remove(png)
 
         # popup text
-        html = """
-                <h3>{}</h3>
-                    <p>
-                        <code>
-                        Datum &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {} <br>
-                        Uhrzeit am Start : {}
-                        </code>
-                    </p>
-                <h4>{}</h4>
-                    <p> 
-                        <code>
-                            Distanz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp: {:.2f} km <br>
-                            Höhenmeter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp: {:.0f} m <br>
-                            Bewegungszeit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp: {} <br>
-                            Verstrichene Zeit : {} <br>
-                            &#8960 Geschwindigkeit : {:.2f} km/h (maximum: {:.2f} km/h) <br>
-                            &#8960 Herzfrequenz&nbsp;&nbsp&nbsp;&nbsp;: {:.0f} bpm (maximum: {:.0f} bpm) <br>
-                            &#8960 Temperature&nbsp&nbsp;&nbsp;&nbsp;&nbsp;: {:.1f} <br>
-                        </code>
-                    <img src="data:image/png;base64,{}">
-                    </p>
-            
-                """.format(
-            row_values["name"],
-            row_values["date"],
-            row_values["start_date"].time(),
-            row_values["type"],
-            row_values.metadata["distance"],
-            row_values.metadata["total_elevation_gain"],
-            time.strftime("%H:%M:%S", time.gmtime(row_values.metadata["moving_time"])),
-            time.strftime("%H:%M:%S", time.gmtime(row_values.metadata["elapsed_time"])),
-            row_values.metadata["average_speed"],
-            row_values.metadata["max_speed"],
-            row_values.metadata["average_heartrate"],
-            row_values.metadata["max_heartrate"],
-            row_values.metadata["average_temp"],
-            row_values.metadata["elevation_profile"],
-        )
+        popup = html_popup(row_values)
 
         # add marker to map
         iframe = folium.IFrame(
-            html,
+            popup,
             width=(map_settings.spec_width * map_settings.spec_resolution) + 20,
             height=(map_settings.spec_height * map_settings.spec_resolution) + 20,
         )
