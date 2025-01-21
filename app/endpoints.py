@@ -347,7 +347,7 @@ def create_app():
             out_file="./templates/tmp/mymap_terrain.html",
             tiles_name="stadia_terrain",
             width="100%",
-            height="60%",
+            height="100%",
             final_popup=False,
             dynamic_tiles=True,
             save=False,
