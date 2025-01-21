@@ -31,7 +31,15 @@
       <!-- Calendar Dropdowns for Date Range Selection -->
       <form id="date-form" class="mb-3">
           <div class="button-row">
-              <button type="button" id="fetch-data" class="btn bg-gradient-primary">Fetch Data</button>
+            <div class="button-spinner-row" style="display: flex; align-items: center;">
+                <button type="button" id="fetch-data" class="btn bg-gradient-primary">
+                    Fetch Data
+                </button>
+                <!-- Spinner wheel -->
+                <div id="fetch-spinner" style="display: none; margin-left: 10px;">
+                    <img src="static/assets/img/spinner.gif" alt="Loading..." style="width: 20px; height: 20px;">
+                </div>
+            </div>
               {% if show_calendar %}
               <div class="row w-100">
                   <div class="col-md-4">
@@ -69,10 +77,16 @@
               <tbody>
                   <!-- Dynamic rows will be inserted here -->
               </tbody>
-          </table>
+          </table>          
           <div class="button-row">
+            <div class="button-spinner-row" style="display: flex; align-items: center;">
               <button id="submit-selection" class="btn bg-gradient-primary">Create map with selection</button>
-          </div>
+              <!-- Spinner wheel -->
+                <div id="submit-spinner" style="display: none; margin-left: 10px;">
+                    <img src="static/assets/img/spinner.gif" alt="Loading..." style="width: 20px; height: 20px;">
+                </div>
+            </div>
+        </div>
       </form>
   </div>
 

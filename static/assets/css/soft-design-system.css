@@ -1796,6 +1796,9 @@ textarea.form-control-lg {
   display: inline-block;
   margin-right: 1rem; }
 
+.hide-label .button-label {
+    display: none;
+}
 .btn-check {
   position: absolute;
   clip: rect(0, 0, 0, 0);
@@ -2111,6 +2114,7 @@ textarea.form-control-lg {
   margin-left: .5em; }
 
 .btn {
+  
   display: inline-block;
   font-weight: 700;
   line-height: 1.4;
@@ -9029,7 +9033,9 @@ label,
   display: flex;
   align-items: center;
   background-size: cover;
-  background-position: 50%; }
+  background-position: 50%;
+  margin-top: 75px; /* Adjust the value as needed */
+ }
   .page-header .container {
     z-index: 1; }
 
