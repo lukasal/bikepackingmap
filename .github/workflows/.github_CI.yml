@@ -16,6 +16,9 @@ jobs:
       - name: Set up Docker Buildx
         run: |
           docker buildx create --use --driver docker-container
+          
+      - name: Ensure cache directory exists
+        run: mkdir -p /tmp/.buildx-cache
 
       - name: Cache Docker layers
         uses: actions/cache@v3
@@ -31,6 +34,9 @@ jobs:
           login-server: laappacr.azurecr.io
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Verify Buildx setup
+        run: docker buildx ls
 
       - name: Build and push Docker image
         run: |
