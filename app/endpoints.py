@@ -45,7 +45,6 @@ STRAVA_AUTH_URL = (
     f"&response_type=code"
     f"&scope=read,activity:read"
 )
-print(os.getenv("REDIS_HOST"))
 def create_app():
     # Get the absolute path of your project root directory
     project_root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
