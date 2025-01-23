@@ -1,13 +1,3 @@
-<div class="col-md-12 text-center">
-    <div class="button-spinner-row" style="display: inline-flex; align-items: center;">
-        <button type="button" id="fetch-data" class="btn btn-primary mx-2">Update Map</button>
-        <!-- Spinner wheel -->
-        <div id="update-spinner" style="display: none; margin-left: 10px;">
-            <img src="static/assets/img/spinner.gif" alt="Loading..." style="width: 20px; height: 20px;">
-        </div>
-    </div>
-</div>
-JavaScript
 document.addEventListener("DOMContentLoaded", function() {
     var coll = document.getElementsByClassName("collapsible");
     for (var i = 0; i < coll.length; i++) {
