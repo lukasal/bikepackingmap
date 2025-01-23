@@ -137,6 +137,17 @@ def create_app():
             selection="select_strava",
             fetch_url="/fetch_strava",
             show_calendar=True,
+            show_upload_button=False,
+        )
+
+    @app.route("/display_gpx")
+    def display_gpx():
+        return render_template(
+            "home/select_activities.html",
+            selection="select_gpx",
+            fetch_url="/fetch_gpx",
+            show_calendar=False,
+            show_upload_button=True,
         )
 
     @app.route("/display_examples")
@@ -146,22 +157,34 @@ def create_app():
             selection="select_examples",
             fetch_url="/fetch_examples",
             show_calendar=False,
+            show_upload_button=False,
         )
 
-    @app.route('/fetch_strava')
+    @app.route("/fetch_gpx", methods=["POST"])
+    def fetch_gpx():
+        print("fetch_gpx", methods=["POST"])
+        # Get the current user's ActivityManager
+        session_id = session["session_id"]
+        activity_manager = ActivityManager.load_from_redis(session_id)
+
+        # process and GPX files here to the activity manager
+
+        return jsonify({"data": data_to_send})
+
+    @app.route("/fetch_strava", methods=["POST"])
     def fetch_strava():  
 
         # Get the current user's ActivityManager
         session_id = session['session_id']
         activity_manager = ActivityManager.load_from_redis(session_id)       
         # Extract parameters
-        start_date = request.args.get('start_date')
+        start_date = request.form.get("start_date")
         # Convert string dates to datetime objects
         start_date = parse_date(start_date)
 
-        end_date = request.args.get('end_date')
+        end_date = request.form.get("end_date")
         end_date = parse_date(end_date, timedelta(days=1))
-        per_page = int(request.args.get('per_page', 10))
+        per_page = int(request.form.get("per_page", 10))
 
         # Create a sample DataFrame with name and start_date
         data = get_data(session['access_token'], start_date, end_date, per_page=per_page, page=1)
@@ -178,7 +201,7 @@ def create_app():
 
         return jsonify({"data": data_to_send})
 
-    @app.route("/fetch_examples")
+    @app.route("/fetch_examples", methods=["POST"])
     def fetch_examples():
 
         session_id = session["session_id"]
@@ -201,12 +224,26 @@ def create_app():
         # return render_template('redirect.html',
         #                     df=df)  # Pass the DataFrame to the template
 
-    @app.route("/select_strava", methods=["POST"])
+    @app.route("/select_strava")
     def select_strava():
         selected_activities = request.form.getlist('selected_activities')
 
         session_id = session['session_id']
         activity_manager = ActivityManager.load_from_redis(session_id)       
+        selected_activities = [int(index) for index in selected_activities]
+
+        activity_manager.select_activities(selected_activities)
+        activity_manager.preprocess_selected()
+
+        # Render the submitted activities in a new template
+        return redirect("/build_map")
+
+    @app.route("/select_gpx", methods=["POST"])
+    def select_gpx():
+        selected_activities = request.form.getlist("selected_activities")
+
+        session_id = session["session_id"]
+        activity_manager = ActivityManager.load_from_redis(session_id)
         selected_activities = [int(index) for index in selected_activities]
 
         activity_manager.select_activities(selected_activities)

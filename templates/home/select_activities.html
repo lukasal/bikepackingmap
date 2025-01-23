@@ -19,7 +19,7 @@
                 <div class="row">
                     <div class="col-12 d-flex justify-content-center flex-column">   
                         <h1 class="text-gradient text-primary">Get and select the Data</h1>
-                        <p class="lead">Clik on fetch data to fetch the selected number of activities in the selected date range. Then, mark the relevant activities and create the map with them.</p>
+                        <p class="lead">Click on fetch data to fetch the selected number of activities in the selected date range. Then, mark the relevant activities and create the map with them.</p>
                     </div>
                 </div>
             </div>
@@ -33,7 +33,11 @@
           <div class="button-row">
             <div class="button-spinner-row" style="display: flex; align-items: center;">
                 <button type="button" id="fetch-data" class="btn bg-gradient-primary">
-                    Fetch Data
+                    {% if show_upload_button %}
+                        Upload Data
+                    {% else %}
+                        Fetch Data
+                    {% endif %}
                 </button>
                 <!-- Spinner wheel -->
                 <div id="fetch-spinner" style="display: none; margin-left: 10px;">
@@ -65,7 +69,7 @@
       </form>
 
       <!-- Data Table with Checkbox Column -->
-      <form id="activity-form" action="{{ url_for(selection) }}" method="POST"> <!-- Form to submit selected activities -->
+      <form id="activity-form" action="{{ url_for(selection) }}" method="POST" enctype="multipart/form-data"> <!-- Form to submit selected activities -->
           <table class="table" id="data-table">
               <thead>
                   <tr>
@@ -96,6 +100,7 @@
 {% block javascripts %}
     <script>
       const fetchUrl = "{{ fetch_url }}";
+      const showUploadButton = {{ show_upload_button|tojson }};
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/static/assets/js/soft-design-system.min.js?v=1.0.1" type="text/javascript"></script>
