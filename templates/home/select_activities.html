@@ -32,13 +32,10 @@
       <form id="date-form" class="mb-3">
           <div class="button-row">
             <div class="button-spinner-row" style="display: flex; align-items: center;">
-                <button type="button" id="fetch-data" class="btn bg-gradient-primary">
-                    Fetch Data
+                <button type="button" id="fetch-data" class="btn bg-gradient-primary" data-function="fetchData" onclick="toggleSpinner(this)">
+                    <span class="label">Fetch Data</span>
+                    <img src="static/assets/img/spinner.gif" class="spinner" alt="Loading..." style="width: 20px; height: 20px;">
                 </button>
-                <!-- Spinner wheel -->
-                <div id="fetch-spinner" style="display: none; margin-left: 10px;">
-                    <img src="static/assets/img/spinner.gif" alt="Loading..." style="width: 20px; height: 20px;">
-                </div>
             </div>
               {% if show_calendar %}
               <div class="row w-100">
@@ -65,7 +62,7 @@
       </form>
 
       <!-- Data Table with Checkbox Column -->
-      <form id="activity-form" action="{{ url_for(selection) }}" method="POST"> <!-- Form to submit selected activities -->
+      <form id="activity-form" action="{{ url_for(selection) }}" method="POST" onsubmit="handleSubmit(event)"> <!-- Form to submit selected activities -->
           <table class="table" id="data-table">
               <thead>
                   <tr>
@@ -80,11 +77,10 @@
           </table>          
           <div class="button-row">
             <div class="button-spinner-row" style="display: flex; align-items: center;">
-              <button id="submit-selection" class="btn bg-gradient-primary">Create map with selection</button>
-              <!-- Spinner wheel -->
-                <div id="submit-spinner" style="display: none; margin-left: 10px;">
-                    <img src="static/assets/img/spinner.gif" alt="Loading..." style="width: 20px; height: 20px;">
-                </div>
+              <button id="submit-selection" type="submit" class="btn bg-gradient-primary" data-function="submitActivities">
+                <span class="label">Create map with selection</span>
+                <img src="static/assets/img/spinner.gif" class="spinner" alt="Loading..." style="width: 20px; height: 20px;">
+              </button>
             </div>
         </div>
       </form>
@@ -100,4 +96,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/static/assets/js/soft-design-system.min.js?v=1.0.1" type="text/javascript"></script>
     <script src="{{ url_for('static', filename='assets/js/select_activities.js') }}" type="text/javascript"></script>
+    <script src="{{ url_for('static', filename='assets/js/spinner.js') }}" type="text/javascript"></script>
+
 {% endblock javascripts %}

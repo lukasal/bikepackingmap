@@ -17,81 +17,84 @@ $(document).ready(function() {
       document.getElementById('end_date').value = formatDate(endDate);
   };
 
-  // Fetch data when button is clicked
-  $('#fetch-data').click(function() {
-      const startDate = $('#start_date').val();
-      const endDate = $('#end_date').val();
-      const perPage = $('#per_page').val();
+  
 
-      // Show the loading spinner and hide the label
-      $('#fetch-spinner').show();
 
-      // Send AJAX request to fetch data
-      $.ajax({
-          url: fetchUrl,
-          method: 'GET',
-          data: { start_date: startDate, end_date: endDate, per_page: perPage },
-          success: function(response) {
-              console.log(response);  // Log the entire response
-
-              $('#data-table tbody').empty(); // Clear existing data
-              response.data.forEach(function(item) {
-                  const row = `<tr>
-                                  <td><input type="checkbox" name="selected_activities" class="select-row" data-id="${item.id}"></td>
-                                  <td>${item.start_date}</td>
-                                  <td>${item.name}</td>
-                              </tr>`;
-                  $('#data-table tbody').append(row);
-              });
-
-              // Attach event handler for "Select All" checkbox
-              $('#select-all').change(function() {
-                  $('.select-row').prop('checked', this.checked);
-              });
-          },
-          error: function(xhr, status, error) {
-              if (xhr.status === 401 && xhr.responseJSON && xhr.responseJSON.session_expired) {
-                  // Handle session expiration: Redirect user to login page or show message
-                  window.location.href = '/session-expired';  // Or use any other redirect mechanism
-              } else {
-                  // Handle other errors
-                  console.error("AJAX error:", error);
-              }
-          },
-          complete: function() {
-              // Hide the loading spinner and show the label
-              $('#fetch-spinner').hide();
-                      }
-      });
-  });
-
-  // Collect selected checkbox IDs on form submit
-  $('#activity-form').submit(function(event) {
-      const selectedIds = [];
-      // Show the loading spinner and hide the label
-      $('#submit-spinner').show();
-      // Collect selected checkbox IDs
-
-      $('.select-row:checked').each(function() {
-          selectedIds.push($(this).data('id'));  // Get the ID from data-id attribute
-      });
-      // If no checkboxes are selected, alert the user and prevent form submission
-      if (selectedIds.length === 0) {
-          event.preventDefault();  // Prevent form submission
-          alert('Please select at least one activity.');
-      } else {
-          // Optionally, you can handle the selectedIds (e.g., pass them to the server via AJAX)
-          console.log('Selected IDs:', selectedIds);
-          // Clear previously added hidden inputs (in case this is a re-submit)
-          $('#activity-form input[name="selected_activities"]').remove();
-          // Add selected IDs as hidden inputs to the form    
-          selectedIds.forEach(function(id) {
-              $('<input>').attr({
-                  type: 'hidden',
-                  name: 'selected_activities',  // The same name as the form field
-                  value: id  // The value of each selected ID
-              }).appendTo('#activity-form');
-          });
-      }
-  });
+  
 });
+
+// Fetch data when button is clicked
+function fetchData() {
+    return new Promise((resolve, reject) => {
+        const startDate = $('#start_date').val();
+        const endDate = $('#end_date').val();
+        const perPage = $('#per_page').val();
+
+        // Send AJAX request to fetch data
+        $.ajax({
+            url: fetchUrl,
+            method: 'GET',
+            data: { start_date: startDate, end_date: endDate, per_page: perPage },
+            success: function(response) {
+                console.log(response);  // Log the entire response
+
+                $('#data-table tbody').empty(); // Clear existing data
+                response.data.forEach(function(item) {
+                    const row = `<tr>
+                                    <td><input type="checkbox" name="selected_activities" class="select-row" data-id="${item.id}"></td>
+                                    <td>${item.start_date}</td>
+                                    <td>${item.name}</td>
+                                </tr>`;
+                    $('#data-table tbody').append(row);
+                });
+
+                // Attach event handler for "Select All" checkbox
+                $('#select-all').change(function() {
+                    $('.select-row').prop('checked', this.checked);
+                });
+                resolve();
+            },
+            error: function(xhr, status, error) {
+                if (xhr.status === 401 && xhr.responseJSON && xhr.responseJSON.session_expired) {
+                    // Handle session expiration: Redirect user to login page or show message
+                    window.location.href = '/session-expired';  // Or use any other redirect mechanism
+                } else {
+                    // Handle other errors
+                    console.error("AJAX error:", error);
+                    reject(error);
+                }
+            }
+        });
+    });
+}
+
+// Collect selected checkbox IDs on form submit
+function submitActivities() {
+    return new Promise((resolve, reject) => {
+        const selectedIds = [];
+        // Collect selected checkbox IDs
+        console.log('Activities submitted')
+        $('.select-row:checked').each(function() {
+            selectedIds.push($(this).data('id'));  // Get the ID from data-id attribute
+        });
+        // If no checkboxes are selected, alert the user and prevent form submission
+        if (selectedIds.length === 0) {
+            alert('Please select at least one activity.');
+            resolve();
+        } else {
+            // Optionally, you can handle the selectedIds (e.g., pass them to the server via AJAX)
+            console.log('Selected IDs:', selectedIds);
+            // Clear previously added hidden inputs (in case this is a re-submit)
+            $('#activity-form input[name="selected_activities"]').remove();
+            // Add selected IDs as hidden inputs to the form    
+            selectedIds.forEach(function(id) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'selected_activities',  // The same name as the form field
+                    value: id  // The value of each selected ID
+                }).appendTo('#activity-form');
+            });
+            resolve();
+        }
+    });
+}
