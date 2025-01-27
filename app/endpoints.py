@@ -17,6 +17,7 @@ from app.redis_client import redis_client
 from app.helper import parse_date
 from app.map.generate_map import generate_map
 from app.map.MapSettings import MapSettings
+from app.gpx.process_gpx import process_gpx_data
 
 import time
 import redis
@@ -144,7 +145,7 @@ def create_app():
     def display_gpx():
         return render_template(
             "home/select_activities.html",
-            selection="select_gpx",
+            selection="select",
             fetch_url="/fetch_gpx",
             show_calendar=False,
             show_upload_button=True,
@@ -154,7 +155,7 @@ def create_app():
     def display_examples():
         return render_template(
             "home/select_activities.html",
-            selection="select_examples",
+            selection="select",
             fetch_url="/fetch_examples",
             show_calendar=False,
             show_upload_button=False,
@@ -162,13 +163,31 @@ def create_app():
 
     @app.route("/fetch_gpx", methods=["POST"])
     def fetch_gpx():
-        print("fetch_gpx", methods=["POST"])
+        print("fetch_gpx")
         # Get the current user's ActivityManager
         session_id = session["session_id"]
         activity_manager = ActivityManager.load_from_redis(session_id)
 
+        files = request.files.getlist("gpx_files")
+
+        data = pd.DataFrame()
+        for file in files:
+            df = process_gpx_data(file.filename)
+            data = pd.concat([data, df], ignore_index=True)
+
+        data.sort_values(by="start_date", inplace=True)
+        data.reset_index(drop=True, inplace=True)
+        data["id"] = data.index + 1
+        activity_manager.preprocessed = data
+        activity_manager.save()
         # process and GPX files here to the activity manager
 
+        # Prepare data to send to the frontend
+        data_to_send = data[["start_date", "name", "id", "type"]]
+        data_to_send["start_date"] = data_to_send["start_date"].apply(
+            lambda x: x.strftime("%Y-%m-%d %H:%M:%S")
+        )
+        data_to_send = data_to_send.to_dict(orient="records")
         return jsonify({"data": data_to_send})
 
     @app.route("/fetch_strava", methods=["POST"])
@@ -197,7 +216,9 @@ def create_app():
         # filtered_df = df[(df['start_date'] >= start_date.strftime('%Y-%m-%d')) & (df['start_date'] <= end_date.strftime('%Y-%m-%d'))]
 
         # Prepare data to send to the frontend
-        data_to_send = data[["start_date", "name", "id"]].to_dict(orient="records")
+        data_to_send = data[["start_date", "name", "id", "type"]].to_dict(
+            orient="records"
+        )
 
         return jsonify({"data": data_to_send})
 
@@ -205,17 +226,23 @@ def create_app():
     def fetch_examples():
 
         session_id = session["session_id"]
+        start = time.time()
+
         activity_manager = ActivityManager.load_from_redis(session_id)
+        print("fetch_examples", time.time() - start)
         # Load the example dataset
         with open("data/giro_italia_example_raw.json", "r") as file:
             example_raw = pd.json_normalize(json.load(file))
         with open("data/giro_italia_example_preprocessed.pkl", "rb") as file:
             example_processed = pickle.load(file)
+        print("load data", time.time() - start)
         # Add activities to the DataFrame
         activity_manager.preprocessed = example_processed
+        print("preprocess activities", time.time() - start)
         activity_manager.add_activities(example_raw)
+        print("add activities", time.time() - start)
         # Prepare data to send to the frontend
-        data_to_send = example_raw[["start_date", "name", "id"]].to_dict(
+        data_to_send = example_raw[["start_date", "name", "id", "type"]].to_dict(
             orient="records"
         )
 
@@ -224,7 +251,7 @@ def create_app():
         # return render_template('redirect.html',
         #                     df=df)  # Pass the DataFrame to the template
 
-    @app.route("/select_strava")
+    @app.route("/select_strava", methods=["POST"])
     def select_strava():
         selected_activities = request.form.getlist('selected_activities')
 
@@ -238,29 +265,15 @@ def create_app():
         # Render the submitted activities in a new template
         return redirect("/build_map")
 
-    @app.route("/select_gpx", methods=["POST"])
-    def select_gpx():
+    @app.route("/select", methods=["POST"])
+    def select():
         selected_activities = request.form.getlist("selected_activities")
 
         session_id = session["session_id"]
         activity_manager = ActivityManager.load_from_redis(session_id)
         selected_activities = [int(index) for index in selected_activities]
 
-        activity_manager.select_activities(selected_activities)
-        activity_manager.preprocess_selected()
-
-        # Render the submitted activities in a new template
-        return redirect("/build_map")
-
-    @app.route("/select_examples", methods=["POST"])
-    def select_examples():
-        selected_activities = request.form.getlist("selected_activities")
-
-        session_id = session["session_id"]
-        activity_manager = ActivityManager.load_from_redis(session_id)
-        selected_activities = [int(index) for index in selected_activities]
-
-        activity_manager.select_activities(selected_activities)
+        # activity_manager.select_activities(selected_activities)
         activity_manager.preprocessed = activity_manager.preprocessed.loc[
             activity_manager.preprocessed["id"].isin(selected_activities)
         ]
