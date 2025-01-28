@@ -14135,3 +14135,26 @@ pre[class*="language-"] {
     margin-left: -10px;
 }
 /*# sourceMappingURL=soft-design-system.css.map */
+
+/* Style for the input fields */
+.editable-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2); /* Semi-transparent border */
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.editable-input:focus {
+  border-color: rgba(0, 0, 0, 0.5); /* Darker border on focus */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+
+.checkbox-cell {
+  text-align: center;
+  vertical-align: center;
+}

@@ -11,7 +11,7 @@ import os
 from datetime import timedelta
 
 
-# define function to get elevation data using the open-elevation API
+# define function to get elevation data
 def get_elevation(id):
     base_url = "https://www.strava.com/api/v3/activities/" + str(id) + "/streams"
     access_token = session["access_token"]

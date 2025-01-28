@@ -92,13 +92,13 @@ def process_gpx_data(file_path):
     df["start_latlng"] = df["map.polyline"].apply(lambda x: list(x[0]))
     df["end_latlng"] = df["map.polyline"].apply(lambda x: list(x[-1]))
     df["map.distance"] = [list(gpx_df["Distance"].fillna(0).cumsum())]
-    metadata["distance"] = df["map.distance"].apply(lambda x: list(x[-1]))
+    metadata["distance"] = df["map.distance"].apply(lambda x: x[-1])
 
     df["name"] = file_path.split("/")[-1].split(".")[0]
     df["type"] = "GPX"
     # time
     df["start_date"] = gpx_df["Time"].iloc[0]
-    df["end_date"] = gpx_df["Time"].iloc[-1].strftime("%Y-%m-%d %H:%M:%S")
+    df["end_date"] = gpx_df["Time"].iloc[-1]
     df["date"] = gpx_df["Time"].iloc[0].date()
     metadata["elapsed_time"] = (
         gpx_df["Time"].iloc[-1] - gpx_df["Time"].iloc[0]
