@@ -425,7 +425,7 @@ def create_app():
 
         # Send email
         try:
-            with smtplib.SMTP("mail.gmx.net", 587) as server:
+            with smtplib.SMTP(os.getenv("SMTP_SERVER"), int(os.getenv("SMTP_PORT"))) as server:
                 server.starttls()
                 server.login(os.getenv("EMAIL"), os.getenv("EMAIL_PW"))
                 server.sendmail(
