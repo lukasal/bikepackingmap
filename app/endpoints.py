@@ -1,4 +1,14 @@
-from flask import Flask, session, request, redirect, url_for, render_template, send_file, jsonify
+from flask import (
+    Flask,
+    session,
+    request,
+    redirect,
+    url_for,
+    render_template,
+    send_file,
+    jsonify,
+    send_from_directory,
+)
 import requests
 import os 
 import pandas as pd
@@ -87,6 +97,10 @@ def create_app():
     @app.route('/')
     def home():
         return render_template("home/index.html")  # Render the landing page
+
+    @app.route("/sitemap.xml")
+    def serve_sitemap():
+        return send_from_directory(app.static_folder, "sitemap.xml")
 
     @app.route('/strava_auth')
     def strava_auth():
