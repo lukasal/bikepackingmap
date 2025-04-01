@@ -14158,3 +14158,9 @@ pre[class*="language-"] {
   text-align: center;
   vertical-align: center;
 }
+.sortable-row {
+  cursor: move;
+}
+.ui-sortable-helper {
+  background-color: #e0e0e0;
+}

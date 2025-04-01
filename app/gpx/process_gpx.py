@@ -2,71 +2,10 @@ import pandas as pd
 import numpy as np
 import haversine as hs
 import gpxpy
-from ..elevation_profile import create_binary_elevation_profile
-
+from app.elevation_profile import create_binary_elevation_profile
+from app.gpx.process_points import process_points
 
 def process_gpx_data(file_storage):
-
-    gpx = gpxpy.parse(file_storage.stream, version="1.0")
-    points = []
-    data = []
-
-    # Extract start time
-    start_time = None
-    # if (
-    #     hasattr(gpx, "metadata")
-    #     and gpx.metadata
-    #     and hasattr(gpx.metadata, "time")
-    #     and gpx.metadata.time
-    # ):
-    #     start_time = gpx.metadata.time
-
-    for track in gpx.tracks:
-        for segment in track.segments:
-            for point_idx, point in enumerate(segment.points):
-                point_data = [point.longitude, point.latitude]
-
-                # Include elevation if present
-                if hasattr(point, "elevation"):
-                    point_data.append(point.elevation)
-                else:
-                    point_data.append(None)
-
-                # Include time if present
-                if hasattr(point, "time"):
-                    point_data.append(point.time)
-                else:
-                    point_data.append(None)
-
-                if point_idx == 0:
-                    distance = np.nan
-                else:
-                    distance = hs.haversine(
-                        point1=points[point_idx - 1],
-                        point2=(point.latitude, point.longitude),
-                        unit=hs.Unit.KILOMETERS,
-                    )
-
-                point_data.extend(
-                    [
-                        segment.get_speed(point_idx),
-                        distance,
-                    ]
-                )
-                points.append((point.latitude, point.longitude))
-                data.append(point_data)
-
-    columns = [
-        "Longitude",
-        "Latitude",
-        "Elevation",
-        "Time",
-        "Speed",
-        "Distance",
-    ]
-
-    # Create DataFrame
-    gpx_df = pd.DataFrame(data, columns=columns)
 
     # Additional DataFrame creation and metadata handling
     df = pd.DataFrame(
@@ -89,6 +28,42 @@ def process_gpx_data(file_storage):
     )
     metadata = {}
 
+    gpx = gpxpy.parse(file_storage.stream, version="1.0")
+    data = []
+
+    if gpx.tracks:
+        print("Using tracks")
+        for track in gpx.tracks:
+            for segment in track.segments:
+                data += process_points(segment.points, segment.get_speed)
+    elif gpx.routes:
+        print("Using routes")
+        for route in gpx.routes:
+            data += process_points(route.points)
+    else:
+        print("No tracks or routes found")
+        return None
+
+    # if (
+    #     hasattr(gpx, "metadata")
+    #     and gpx.metadata
+    #     and hasattr(gpx.metadata, "time")
+    #     and gpx.metadata.time
+    # ):
+    #     start_time = gpx.metadata.time
+    columns = [
+        "Longitude",
+        "Latitude",
+        "Elevation",
+        "Time",
+        "Speed",
+        "Distance",
+    ]
+
+    # Create DataFrame
+    gpx_df = pd.DataFrame(data, columns=columns)
+
+    # fill the final df
     df["map.polyline"] = [list(zip(gpx_df["Latitude"], gpx_df["Longitude"]))]
     df["start_latlng"] = df["map.polyline"].apply(lambda x: list(x[0]))
     df["end_latlng"] = df["map.polyline"].apply(lambda x: list(x[-1]))

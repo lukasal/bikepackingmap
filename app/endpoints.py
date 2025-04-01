@@ -288,12 +288,14 @@ def create_app():
         selected_activities = [int(index) for index in selected_activities]
 
         # activity_manager.select_activities(selected_activities)
-        activity_manager.preprocessed = activity_manager.preprocessed.loc[
-            activity_manager.preprocessed["id"].isin(selected_activities)
-        ]
+        activity_manager.build_activities = (
+            activity_manager.preprocessed.set_index("id")
+            .loc[selected_activities]
+            .reset_index()
+        )
 
         activity_manager.map_settings = MapSettings(
-            activity_manager.preprocessed, "config/interactive_settings.yml"
+            activity_manager.build_activities, "config/interactive_settings.yml"
         )
         activity_manager.save()
         # Render the submitted activities in a new template
@@ -305,7 +307,7 @@ def create_app():
         activity_manager = ActivityManager.load_from_redis(session_id)
         return render_template(
             "home/export.html",
-            activities=activity_manager.preprocessed[["name", "id"]],
+            activities=activity_manager.build_activities[["name", "id"]],
         )  # Pass the selected activities to the new template
 
     @app.route("/get_map", methods=["GET"])
@@ -322,12 +324,12 @@ def create_app():
                 400,
             )  # Handle case where no activities are selected
         elif activity_ids == "all":
-            activities_to_map = activity_manager.preprocessed
+            activities_to_map = activity_manager.build_activities
             name = "full"
         else:
             activity_ids = [int(id) for id in activity_ids.split(",")]
-            activities_to_map = activity_manager.preprocessed[
-                activity_manager.preprocessed["id"].isin(activity_ids)
+            activities_to_map = activity_manager.build_activities[
+                activity_manager.build_activities["id"].isin(activity_ids)
             ]
             name = "_".join(activities_to_map["name"].tolist())
 
@@ -383,7 +385,9 @@ def create_app():
         activity_id = int(activity_id) if activity_id else None
         if activity_id:
             # Filter the DataFrame based on the activity_id
-            activity_data = activity_manager.preprocessed[activity_manager.preprocessed['id'] == activity_id].squeeze()
+            activity_data = activity_manager.build_activities[
+                activity_manager.build_activities["id"] == activity_id
+            ].squeeze()
             # figure
             fig = create_elevation_profile(
                 activity_data,
@@ -407,7 +411,7 @@ def create_app():
         activity_manager = ActivityManager.load_from_redis(session_id)
         m = generate_map(
             activity_manager.map_settings,
-            activity_manager.preprocessed,
+            activity_manager.build_activities,
             out_file="./templates/tmp/mymap_terrain.html",
             tiles_name="stadia_terrain",
             width="100%",
@@ -442,7 +446,7 @@ def create_app():
         # Create a map with updated styles
         m = generate_map(
             activity_manager.map_settings,
-            activity_manager.preprocessed,
+            activity_manager.build_activities,
             out_file="./templates/tmp/mymap_terrain.html",
             tiles_name="stadia_terrain",
             width="100%",

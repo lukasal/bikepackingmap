@@ -16,6 +16,14 @@ $(document).ready(function() {
         document.getElementById('start_date').value = formatDate(startDate);
         document.getElementById('end_date').value = formatDate(endDate);
     };
+
+    // Enable drag-and-drop functionality
+    $("#data-table tbody").sortable({
+        items: 'tr',
+        update: function(event, ui) {
+            console.log("Row moved!");
+        }
+    }).disableSelection();
 });
 
 function fetchData() {
@@ -62,9 +70,10 @@ function sendRequest(formData) {
                 console.log(response);  // Log the entire response
                 $('#data-table tbody').empty(); // Clear existing data
                 response.data.forEach(function(item) {
-                    const row = `<tr>
+                     // class="editable-input" for editable-input
+                    const row = `<tr class="sortable-row">
                                     <td><input type="checkbox" name="selected_activities" class="checkbox-cell" data-id="${item.id}"></td>
-                                    <td><input type="datetime-local" name="start_date[]" class="editable-input" value="${item.start_date}"></td>
+                                    <td><input type="datetime-local" name="start_date[]"  value="${item.start_date}"></td>
                                     <td><input type="text" name="name[]" class="editable-input" value="${item.name}"></td>
                                     <td><input type="text" name="type[]" class="editable-input" value="${item.type}"></td>
                                 </tr>`;
