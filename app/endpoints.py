@@ -172,7 +172,7 @@ def create_app():
 
         data = pd.DataFrame()
         for file in files:
-            df = process_gpx_data(file.filename)
+            df = process_gpx_data(file)
             data = pd.concat([data, df], ignore_index=True)
 
         data.sort_values(by="start_date", inplace=True)
@@ -185,7 +185,7 @@ def create_app():
         # Prepare data to send to the frontend
         data_to_send = data[["start_date", "name", "id", "type"]]
         data_to_send["start_date"] = data_to_send["start_date"].apply(
-            lambda x: x.strftime("%Y-%m-%d %H:%M:%S")
+            lambda x: (x.strftime("%Y-%m-%d %H:%M:%S") if x is not None else "")
         )
         data_to_send = data_to_send.to_dict(orient="records")
         return jsonify({"data": data_to_send})

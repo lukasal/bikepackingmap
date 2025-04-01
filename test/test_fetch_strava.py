@@ -38,9 +38,9 @@ class FetchStravaTestCase(unittest.TestCase):
                 mock_activity_manager_instance
             )
 
-            response = c.get(
+            response = c.post(
                 "/fetch_strava",
-                query_string={
+                data={
                     "start_date": "2024-06-05",
                     "end_date": "2024-06-08",
                     "per_page": 10,
@@ -52,7 +52,7 @@ class FetchStravaTestCase(unittest.TestCase):
                 response.json,
                 {
                     "data": [
-                        {k: d[k] for k in ["start_date", "name", "id"]}
+                        {k: d[k] for k in ["start_date", "name", "id", "type"]}
                         for d in get_data
                     ]
                 },

@@ -2,11 +2,12 @@ import pandas as pd
 import numpy as np
 import haversine as hs
 import gpxpy
+from ..elevation_profile import create_binary_elevation_profile
 
 
-def process_gpx_data(file_path):
+def process_gpx_data(file_storage):
 
-    gpx = gpxpy.parse(open(file_path), version="1.0")
+    gpx = gpxpy.parse(file_storage.stream, version="1.0")
     points = []
     data = []
 
@@ -26,13 +27,13 @@ def process_gpx_data(file_path):
                 point_data = [point.longitude, point.latitude]
 
                 # Include elevation if present
-                if hasattr(point, "elevation") and point.elevation is not None:
+                if hasattr(point, "elevation"):
                     point_data.append(point.elevation)
                 else:
                     point_data.append(None)
 
                 # Include time if present
-                if hasattr(point, "time") and point.time is not None:
+                if hasattr(point, "time"):
                     point_data.append(point.time)
                 else:
                     point_data.append(None)
@@ -41,9 +42,9 @@ def process_gpx_data(file_path):
                     distance = np.nan
                 else:
                     distance = hs.haversine(
-                        point1=(points[point_idx - 1][1], points[point_idx - 1][0]),
+                        point1=points[point_idx - 1],
                         point2=(point.latitude, point.longitude),
-                        unit=hs.Unit.METERS,
+                        unit=hs.Unit.KILOMETERS,
                     )
 
                 point_data.extend(
@@ -92,27 +93,49 @@ def process_gpx_data(file_path):
     df["start_latlng"] = df["map.polyline"].apply(lambda x: list(x[0]))
     df["end_latlng"] = df["map.polyline"].apply(lambda x: list(x[-1]))
     df["map.distance"] = [list(gpx_df["Distance"].fillna(0).cumsum())]
-    metadata["distance"] = df["map.distance"].apply(lambda x: x[-1])
+    metadata["distance"] = df["map.distance"][0][-1]
 
-    df["name"] = file_path.split("/")[-1].split(".")[0]
+    df["name"] = file_storage.filename.split("/")[-1].split(".")[0]
     df["type"] = "GPX"
     # time
-    df["start_date"] = gpx_df["Time"].iloc[0]
-    df["end_date"] = gpx_df["Time"].iloc[-1]
-    df["date"] = gpx_df["Time"].iloc[0].date()
-    metadata["elapsed_time"] = (
-        gpx_df["Time"].iloc[-1] - gpx_df["Time"].iloc[0]
-    ).total_seconds()
-
-    # elevation
-    df["map.elevation"] = [list(gpx_df["Elevation"])]
-    diffs = gpx_df["Elevation"].diff().fillna(0)
-    diffs = diffs.apply(lambda x: x if x > 0.2 else 0)
-    metadata["total_elevation_gain"] = diffs.sum()
+    try:
+        df["start_date"] = gpx_df["Time"].iloc[0]
+        df["end_date"] = gpx_df["Time"].iloc[-1]
+        df["date"] = gpx_df["Time"].iloc[0].date()
+        metadata["elapsed_time"] = (
+            gpx_df["Time"].iloc[-1] - gpx_df["Time"].iloc[0]
+        ).total_seconds()
+    except:
+        df["start_date"] = [None]
+        df["end_date"] = [None]
+        df["date"] = [None]
+        metadata["elapsed_time"] = None
 
     # start/end location
     df["start_location"] = ""
     df["end_location"] = ""
+
+    # elevation
+    if any(element is not None for element in gpx_df["Elevation"]):
+        df["map.elevation"] = [list(gpx_df["Elevation"])]
+        diffs = gpx_df["Elevation"].diff().fillna(0)
+        diffs = diffs.apply(lambda x: x if x > 0.2 else 0)
+        metadata["total_elevation_gain"] = diffs.sum()
+
+    if all(element is not None for element in gpx_df["Elevation"]):
+        try:
+            metadata["elevation_profile"] = create_binary_elevation_profile(
+                pd.DataFrame(
+                    {
+                        "map.elevation": df["map.elevation"][0],
+                        "map.distance": df["map.distance"][0],
+                    }
+                ),
+                top_highlight=True,
+            )
+
+        except:
+            metadata["elevation_profile"] = ""
 
     df["metadata"] = [metadata]
 

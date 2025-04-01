@@ -1,6 +1,6 @@
 import folium
 from folium.plugins import BeautifyIcon
-
+import pandas as pd
 
 def map_stage_icons(activities, settings):
     # House Markler for each stage town:
@@ -8,9 +8,19 @@ def map_stage_icons(activities, settings):
 
     # stage_town_activities = activities[activities['type'] == "Ride"].groupby(activities[activities['type'] == "Ride"].index.date).apply(lambda x: x.loc[x.index.min()])
 
-    stage_town_activities = activities.loc[
-        activities.groupby("date")["end_date"].idxmax()
+    # Separate rows with missing 'end_date'
+    missing_end_date = activities[activities["end_date"].isna()]
+
+    # Drop rows with missing 'end_date' for the groupby operation
+    activities_cleaned = activities.dropna(subset=["end_date"])
+
+    # Get the rows with the maximum 'end_date' for each 'date'
+    max_end_date_entries = activities_cleaned.loc[
+        activities_cleaned.groupby("date")["end_date"].idxmax()
     ]
+
+    # Combine the results
+    stage_town_activities = pd.concat([max_end_date_entries, missing_end_date])
 
     for row in stage_town_activities.iterrows():
         row_values = row[1]
