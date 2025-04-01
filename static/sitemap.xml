@@ -1,16 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-
-  <!-- Main links -->
-  <url>
-    <loc>https://boilerplate-code-flask.appseed.us</loc>
-    <priority>1</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!--  created with Free Online Sitemap Generator www.xml-sitemaps.com  -->
+<url>
+<loc>https://www.bikepackingmap.com/</loc>
+<lastmod>2025-03-30T13:54:46+00:00</lastmod>
+<priority>1.00</priority>
+</url>
+<url>
+<loc>https://www.bikepackingmap.com/static/page-what.html</loc>
+<lastmod>2025-03-30T13:54:46+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://www.bikepackingmap.com/static/page-how.html</loc>
+<lastmod>2025-03-30T13:54:46+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://www.bikepackingmap.com/display_examples</loc>
+<lastmod>2025-03-30T13:54:46+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://www.bikepackingmap.com/static/page-author.html</loc>
+<lastmod>2025-03-30T13:54:46+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://www.bikepackingmap.com/static/page-contact.html</loc>
+<lastmod>2025-03-30T13:54:46+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://www.bikepackingmap.com/static/page-termsandconditions</loc>
+<lastmod>2025-03-30T13:54:46+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://www.bikepackingmap.com/static/page-datapolicy</loc>
+<lastmod>2025-03-30T13:54:46+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+<url>
+<loc>https://www.bikepackingmap.com/static/assets/example_map.html</loc>
+<lastmod>2025-03-30T13:04:08+00:00</lastmod>
+<priority>0.64</priority>
+</url>
 </urlset>
-
