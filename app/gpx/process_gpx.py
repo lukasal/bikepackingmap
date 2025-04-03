@@ -28,7 +28,11 @@ def process_gpx_data(file_storage):
     )
     metadata = {}
 
-    gpx = gpxpy.parse(file_storage.stream, version="1.0")
+    try:
+        gpx = gpxpy.parse(file_storage.stream, version="1.0")
+    except Exception as e:
+        print(f"Error parsing GPX file: {e}")
+        return None
     data = []
 
     if gpx.tracks:
@@ -91,8 +95,8 @@ def process_gpx_data(file_storage):
     df["end_location"] = ""
 
     # elevation
+    df["map.elevation"] = [list(gpx_df["Elevation"])]
     if any(element is not None for element in gpx_df["Elevation"]):
-        df["map.elevation"] = [list(gpx_df["Elevation"])]
         diffs = gpx_df["Elevation"].diff().fillna(0)
         diffs = diffs.apply(lambda x: x if x > 0.2 else 0)
         metadata["total_elevation_gain"] = diffs.sum()
