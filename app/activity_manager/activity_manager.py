@@ -39,8 +39,6 @@ class ActivityManager:
         self.map_settings = None
         self.map_ids = None
 
-        self.last_activity = datetime.utcnow()
-
     # Class method to load an instance from Redis
     @classmethod
     def load_from_redis(cls, session_id):
@@ -88,7 +86,6 @@ class ActivityManager:
 
         return df
 
-    
     def get_map_settings(self):
         """
         Return the map settings for this user.
@@ -106,11 +103,13 @@ class ActivityManager:
             self.get_activities_df(self.map_ids), "config/interactive_settings.yml"
         )
     @store_in_redis
-    def delete_all_activities(self):
+    def reset(self):
         """
-        Delete all activities for this user.
+        Reset the activity manager
         """
         self.activities = []
+        self.map_settings = None
+        self.map_ids = None
 
     @store_in_redis
     def save(self):

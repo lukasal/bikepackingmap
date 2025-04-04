@@ -149,7 +149,6 @@ def create_app():
     def display_strava():  
         return render_template(
             "home/select_activities.html",
-            selection="select",
             fetch_url="/fetch_strava",
             show_calendar=True,
             show_upload_button=False,
@@ -159,7 +158,6 @@ def create_app():
     def display_gpx():
         return render_template(
             "home/select_activities.html",
-            selection="select",
             fetch_url="/fetch_gpx",
             show_calendar=False,
             show_upload_button=True,
@@ -169,7 +167,6 @@ def create_app():
     def display_examples():
         return render_template(
             "home/select_activities.html",
-            selection="select",
             fetch_url="/fetch_examples",
             show_calendar=False,
             show_upload_button=False,
@@ -181,7 +178,7 @@ def create_app():
         # Get the current user's ActivityManager
         session_id = session["session_id"]
         activity_manager = ActivityManager.load_from_redis(session_id)
-        activity_manager.delete_all_activities()
+        activity_manager.reset()
         files = request.files.getlist("gpx_files")
 
         activities = []
@@ -258,20 +255,6 @@ def create_app():
         # Render a template with the authorization code, tokens, and the DataFrame
         # return render_template('redirect.html',
         #                     df=df)  # Pass the DataFrame to the template
-
-    @app.route("/select_strava", methods=["POST"])
-    def select_strava():
-        selected_activities = request.form.getlist('selected_activities')
-
-        session_id = session['session_id']
-        activity_manager = ActivityManager.load_from_redis(session_id)       
-        selected_activities = [int(index) for index in selected_activities]
-
-        activity_manager.select_activities(selected_activities)
-        activity_manager.preprocess_selected()
-
-        # Render the submitted activities in a new template
-        return redirect("/build_map")
 
     @app.route("/select", methods=["POST"])
     def select():
