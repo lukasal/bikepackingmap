@@ -17,4 +17,3 @@ html5lib==1.1
 haversine==2.9.0
 gpxpy==1.6.2
 pydantic==2.11.2
-
