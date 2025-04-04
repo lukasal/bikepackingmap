@@ -6,7 +6,7 @@ from app.utils.session import ensure_session_id
 from app.routes.download import download_bp
 from app.routes.examples import examples_bp
 from app.routes.gpx import gpx_bp
-from app.routes.index import home_bp
+from app.routes.home import home_bp
 from app.routes.map import map_bp
 from app.routes.send_email import email_bp
 from app.routes.strava import strava_bp
