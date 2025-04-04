@@ -14,7 +14,6 @@ def map_grand_depart(activities, settings):
             activities["start_date"] == activities["start_date"].min()
         ]
 
-    first_stage = activities[activities.index == activities.index.min()]
     # first_stage = activities[activities["start_date"] == activities["start_date"].min()]
 
     # Grand depart marker
