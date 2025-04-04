@@ -12,11 +12,17 @@ import os
 from datetime import datetime, timedelta
 
 from app.activity_manager.activity_manager import ActivityManager
-from app.helper import parse_date
+from app.utils.parse_date import parse_date
 from app.strava.process_strava import process_strava
 from app.strava.get_data import get_data
 
 strava_bp = Blueprint("strava", __name__)
+
+website_host = os.getenv("WEBSITE_HOSTNAME")
+if website_host:
+    REDIRECT_URI = f"https://{website_host}/redirect"
+else:
+    REDIRECT_URI = "http://localhost:5000/redirect"
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")

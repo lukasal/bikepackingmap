@@ -7,7 +7,7 @@ import pickle
 
 PATH = realpath(abspath(__file__))
 sys.path.insert(0, dirname(dirname(PATH)))
-from app.endpoints import create_app
+from app import create_app
 
 
 class TestStravaRedirect(unittest.TestCase):

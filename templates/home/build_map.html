@@ -127,11 +127,11 @@
 
     <div class="container mt-5 folium-map-page">
         <div class="top-buttons">
-            <button data-function="window.location.href='{{ url_for('home.home') }}'" class="btn bg-gradient-primary mt-4" onclick="toggleSpinner(this, false, true)">
+            <button data-function="window.location.href='{{ url_for('index.home') }}'" class="btn bg-gradient-primary mt-4" onclick="toggleSpinner(this, false, true)">
               <span class="label">Back</span>
               <img src="static/assets/img/spinner.gif" class="spinner" alt="Loading..." style="width: 20px; height: 20px;">
             </button>
-            <button data-function="window.location.href='{{ url_for('downloads.downloads_overview') }}'" class="btn bg-gradient-primary mt-4" onclick="toggleSpinner(this, false, true)">
+            <button data-function="window.location.href='{{ url_for('download.downloads_overview') }}'" class="btn bg-gradient-primary mt-4" onclick="toggleSpinner(this, false, true)">
               <span class="label">Export maps</span>
               <img src="static/assets/img/spinner.gif" class="spinner" alt="Loading..." style="width: 20px; height: 20px;">
             </button>

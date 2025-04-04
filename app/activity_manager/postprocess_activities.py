@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from app.models.activity_model import Activity
 from app.strava.get_elevation import get_elevation
-from app.elevation_profile import create_binary_elevation_profile
+from app.map.elevation_profile import create_binary_elevation_profile
 
 
 def postprocess(activity: Activity) -> Activity:

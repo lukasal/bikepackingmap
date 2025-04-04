@@ -1,8 +1,8 @@
 from flask import Blueprint, request, session, render_template, send_file
 from app.activity_manager.activity_manager import ActivityManager
 from app.map.generate_map import generate_map
-from app.save_png import save_png
-from app.elevation_profile import create_elevation_profile
+from app.utils.save_png import save_png
+from app.map.elevation_profile import create_elevation_profile
 import os
 
 download_bp = Blueprint("download", __name__)

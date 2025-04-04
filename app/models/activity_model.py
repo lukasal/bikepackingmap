@@ -31,7 +31,10 @@ class Activity(BaseModel):
         """
         Returns a list of field names (or aliases) for the Activity model.
         """
-        return [field.alias if field.alias else field.name for field in Activity.__fields__.values()]
+        return [
+            field.alias or field_name
+            for field_name, field in Activity.model_fields.items()
+        ]
 
     @staticmethod
     def convert_df(activities: pd.DataFrame) -> List["Activity"]:

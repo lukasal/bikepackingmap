@@ -4,7 +4,7 @@ from tqdm import tqdm
 import requests
 import re
 from flask import session
-from app.elevation_profile import create_binary_elevation_profile
+from app.map.elevation_profile import create_binary_elevation_profile
 import matplotlib.pyplot as plt
 import base64
 import os
