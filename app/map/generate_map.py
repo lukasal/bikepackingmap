@@ -23,7 +23,7 @@ def generate_map(
 ):
 
     m = folium.Map(
-        location=centroid(activities["map.polyline"]),
+        location=centroid(activities["map_polyline"]),
         width=width,
         height=height,
         zoom_start=6,
@@ -49,7 +49,7 @@ def generate_map(
     if settings.get_interactive_setting("arrivee_labels_active"):
         map_grand_arrivee(activities, settings, final_popup).add_to(m)
 
-    m.fit_bounds(bounding_box(activities["map.polyline"], margin=zoom_margin))
+    m.fit_bounds(bounding_box(activities["map_polyline"], margin=zoom_margin))
     if save:
         m.save(out_file)
 

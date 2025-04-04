@@ -150,7 +150,7 @@
             <tbody>
                 {% for index, activity in activities.iterrows() %}
                 <tr>
-                    <td>{{ index }}</td>
+                    <td>{{ activity['start_date']}}</td>
                     <td>{{ activity['name'] }}</td>
                     <td>
                         <button type="submit" class="btn btn-secondary" data-function="getMap({activity_ids: {{ activity['id'] }}, filetype: 'html'})" onclick="toggleSpinner(this)">

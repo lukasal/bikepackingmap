@@ -16,20 +16,25 @@ def up_gen(low, up):
 
 # references = pd.DataFrame({'dist' : [18,60,75, 125], 'loc' : ['Albulapass', 'Lenzerheide', 'Chur', 'Walensee']})
 def create_elevation_profile(
-    my_ride, background_color="white", size=(5.8, 3), top_highlight=True
+    map_distance,
+    map_elevation,
+    reference_labels=pd.DataFrame(columns=["reference_dist", "reference_name"]),
+    background_color="white",
+    size=(5.8, 3),
+    top_highlight=True,
 ):
     fig, ax = plt.subplots(figsize=size, tight_layout=True)
 
-    x = pd.Series(my_ride["map.distance"])
+    x = pd.Series(map_distance)
     x_max = np.nanmax(x)
-    y_min = np.nanmin(my_ride['map.elevation'])
-    y_max = np.nanmax(my_ride['map.elevation'])
+    y_min = np.nanmin(map_elevation)
+    y_max = np.nanmax(map_elevation)
     y_min_plot = y_min-50
     y_max_plot = max(y_max+100,y_min + 500)
     y_range = y_max_plot-y_min_plot
 
-    y = pd.Series(my_ride['map.elevation']).rolling(30).mean()
-    # ax1.plot(pd.Series(my_ride['map.distance'])/1000, y, lw=2)
+    y = pd.Series(map_elevation).rolling(30).mean()
+    # ax1.plot(pd.Series(my_ride['map_distance'])/1000, y, lw=2)
     if top_highlight:
         ax.plot(x, y, lw=2, c="#1a1a1a")
     ax.fill_between(x, y_min_plot, y, alpha=1, fc='darkgrey', xunits="km")
@@ -42,21 +47,22 @@ def create_elevation_profile(
     ax.set_axisbelow(True)
 
     # create vertical referrence lines
-    try:
-        references = pd.DataFrame(
-            {
-                "reference_dist": my_ride.get("reference_dist", default=[]),
-                "reference_label": my_ride.get("reference_label", default=[]),
-            }
-        )
-    except:
-        references = pd.DataFrame()
 
     max_height= 0
     random_move = up_gen(0,2)
 
-    for index, row in references.iterrows():
-        height = pd.Series(my_ride['map.elevation'])[(pd.Series(my_ride['map.distance'])/1000).between(row['reference_dist']-20, row['reference_dist']+20, inclusive='both')].max() + 200 + y_range/7 * next(random_move) 
+    for index, row in reference_labels.iterrows():
+        height = (
+            pd.Series(map_elevation)[
+                (pd.Series(map_distance)).between(
+                    row["reference_dist"] - 20,
+                    row["reference_dist"] + 20,
+                    inclusive="both",
+                )
+            ].max()
+            + 200
+            + y_range / 7 * next(random_move)
+        )
         ax.vlines(x=row['reference_dist'], ymin=y_min_plot, ymax=height, linewidth=1, color='black', linestyles= 'dashed', alpha = 0.9)
 
         if row['reference_dist'] <  x_max/10:
@@ -74,18 +80,17 @@ def create_elevation_profile(
     xlabels = ['{:,.0f}'.format(x) + ' Km' for x in ax.get_xticks()]
     ax.set_xticklabels(xlabels)
 
-    ax.set_ylabel('Höhe')
+    ax.set_ylabel("Altitude [m]", fontsize=12)
     ax.set_facecolor(background_color)
     fig.patch.set_facecolor(background_color)
 
-    fig.suptitle('Höhenprofil')
+    fig.suptitle("Altitude profile")
     return fig
 
 
-def create_binary_elevation_profile(my_ride, *args, **kwargs):
+def create_binary_elevation_profile(*args, **kwargs):
 
     fig = create_elevation_profile(
-        my_ride,
         *args,
         **kwargs,
     )
