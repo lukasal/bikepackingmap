@@ -217,7 +217,7 @@ def create_app():
         end_date = parse_date(end_date, timedelta(days=1))
         per_page = int(request.form.get("per_page", 10))
 
-        activity_manager.delete_all_activities()
+        activity_manager.reset()
         # get Activities from strava API
         data = get_data(session['access_token'], start_date, end_date, per_page=per_page, page=1)
         # normalize data to Activity type
@@ -236,25 +236,14 @@ def create_app():
         activity_manager = ActivityManager.load_from_redis(session_id)
         print("fetch_examples", time.time() - start)
         # Load the example dataset
-        with open("data/giro_italia_example_raw.json", "r") as file:
-            example_raw = pd.json_normalize(json.load(file))
-        with open("data/giro_italia_example_preprocessed.pkl", "rb") as file:
+        with open("data/giro_italia_example.pkl", "rb") as file:
             example_processed = pickle.load(file)
         print("load data", time.time() - start)
         # Add activities to the DataFrame
-        activity_manager.preprocessed = example_processed
+        activity_manager.add_activities(example_processed)
         print("preprocess activities", time.time() - start)
-        activity_manager.add_activities(example_raw)
-        print("add activities", time.time() - start)
-        # Prepare data to send to the frontend
-        data_to_send = example_raw[["start_date", "name", "id", "type"]].to_dict(
-            orient="records"
-        )
 
-        return jsonify({"data": data_to_send})
-        # Render a template with the authorization code, tokens, and the DataFrame
-        # return render_template('redirect.html',
-        #                     df=df)  # Pass the DataFrame to the template
+        return jsonify({"data": activity_manager.send_to_frontend()})
 
     @app.route("/select", methods=["POST"])
     def select():

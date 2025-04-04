@@ -139,7 +139,7 @@ class ActivityManager:
         """
         # Update activities based on IDs
         for i, activity in enumerate(self.activities):
-            if activity.id in id_list:
+            if activity.id in id_list and activity.ready is False:
                 self.activities[i] = postprocess(activity)
 
     def reorder_activities(self, id_list):
