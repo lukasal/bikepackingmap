@@ -4,14 +4,14 @@ from tqdm import tqdm
 import requests
 import re
 from flask import session
-from ..elevation_profile import create_elevation_profile
+from ..elevation_profile import create_binary_elevation_profile
 import matplotlib.pyplot as plt
 import base64
 import os
 from datetime import timedelta
 
 
-# define function to get elevation data using the open-elevation API
+# define function to get elevation data
 def get_elevation(id):
     base_url = "https://www.strava.com/api/v3/activities/" + str(id) + "/streams"
     access_token = session["access_token"]
@@ -77,18 +77,11 @@ def preprocess(activities):
         # TODO catch if fails
         try:
             distance, elevation = get_elevation(activity.id)
-            fig = create_elevation_profile(
+            distance = [point / 1000 for point in distance]  # convert from m to km
+            elevation_profile = create_binary_elevation_profile(
                 pd.DataFrame({"map.elevation": elevation, "map.distance": distance}),
-                top_color=False,
+                top_highlight=True,
             )
-            png = "elevation_profile_.png"
-            fig.savefig(png, dpi=75)
-            plt.close()
-
-            # read png file
-            elevation_profile = base64.b64encode(open(png, "rb").read()).decode()
-            # delete file
-            os.remove(png)
 
         except:
             distance = []
@@ -121,7 +114,6 @@ def preprocess(activities):
         activities["elapsed_time"], unit="s"
     )
     # convert values
-    activities.loc[:, "distance"] /= 1000  # convert from m to km
     activities.loc[:, "average_speed"] *= 3.6  # convert from m/s to km/h
     activities.loc[:, "max_speed"] *= 3.6  # convert from m/s to km/h
 

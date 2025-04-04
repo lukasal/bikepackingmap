@@ -1,7 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-color = {'Ride':'darkblue', 'Run':'green', 'Hike':'purple'}
+import base64
+import os
 
 
 def up_gen(low, up):
@@ -15,11 +16,11 @@ def up_gen(low, up):
 
 # references = pd.DataFrame({'dist' : [18,60,75, 125], 'loc' : ['Albulapass', 'Lenzerheide', 'Chur', 'Walensee']})
 def create_elevation_profile(
-    my_ride, background_color="white", size=(5.8, 3), top_color=True
+    my_ride, background_color="white", size=(5.8, 3), top_highlight=True
 ):
     fig, ax = plt.subplots(figsize=size, tight_layout=True)
 
-    x = pd.Series(my_ride['map.distance'])/1000
+    x = pd.Series(my_ride["map.distance"])
     x_max = np.nanmax(x)
     y_min = np.nanmin(my_ride['map.elevation'])
     y_max = np.nanmax(my_ride['map.elevation'])
@@ -29,8 +30,8 @@ def create_elevation_profile(
 
     y = pd.Series(my_ride['map.elevation']).rolling(30).mean()
     # ax1.plot(pd.Series(my_ride['map.distance'])/1000, y, lw=2)
-    if top_color:
-        ax.plot(x, y, lw=2, c=color[my_ride['type']])
+    if top_highlight:
+        ax.plot(x, y, lw=2, c="#1a1a1a")
     ax.fill_between(x, y_min_plot, y, alpha=1, fc='darkgrey', xunits="km")
 
     ax.grid(axis='y',color='lightgrey', alpha = 1)
@@ -79,3 +80,21 @@ def create_elevation_profile(
 
     fig.suptitle('Höhenprofil')
     return fig
+
+
+def create_binary_elevation_profile(my_ride, *args, **kwargs):
+
+    fig = create_elevation_profile(
+        my_ride,
+        *args,
+        **kwargs,
+    )
+    png = "elevation_profile_.png"
+    fig.savefig(png, dpi=75)
+    plt.close()
+
+    # read png file
+    elevation_profile = base64.b64encode(open(png, "rb").read()).decode()
+    # delete file
+    os.remove(png)
+    return elevation_profile

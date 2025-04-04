@@ -23,13 +23,13 @@ class TestPreprocess(unittest.TestCase):
         self.activities = pd.DataFrame(data)
 
     @patch("app.strava.preprocess.get_elevation")
-    @patch("app.strava.preprocess.create_elevation_profile")
+    @patch("app.strava.preprocess.create_binary_elevation_profile")
     @patch("app.strava.preprocess.polyline.decode", lambda x: x)
-    def test_preprocess(self, mock_create_elevation_profile, mock_get_elevation):
+    def test_preprocess(self, mock_create_binary_elevation_profile, mock_get_elevation):
         # Mock the return values
-        mock_get_elevation.return_value = ([0, 1, 2], [10, 20, 30])
+        mock_get_elevation.return_value = ([0, 1000, 2000], [10, 20, 30])
         mock_plot = plt.plot(mock_get_elevation.return_value)
-        mock_create_elevation_profile.return_value = plt.gcf()
+        mock_create_binary_elevation_profile.return_value = plt.gcf()
 
         # Apply the preprocess function
         result = preprocess(self.activities)
@@ -62,9 +62,11 @@ class TestPreprocess(unittest.TestCase):
         )
 
     @patch("app.strava.preprocess.get_elevation", side_effect=Exception("Mocked error"))
-    @patch("app.strava.preprocess.create_elevation_profile")
+    @patch("app.strava.preprocess.create_binary_elevation_profile")
     @patch("app.strava.preprocess.polyline.decode", lambda x: x)
-    def test_preprocess_error(self, mock_create_elevation_profile, mock_get_elevation):
+    def test_preprocess_error(
+        self, mock_create_binary_elevation_profile, mock_get_elevation
+    ):
 
         # Apply the preprocess function
         result = preprocess(self.activities)

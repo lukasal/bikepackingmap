@@ -13,6 +13,7 @@ function toggleSpinner(button, submitForm = false, keep = false) {
     console.log('spinnerappear:', spinner);
 
     execute(functionDef).then(() => {
+        console.log('function executed:', functionDef);
         if (submitForm && button.closest('form')) {
             return new Promise((resolve, reject) => {
                 button.closest('form').submit();
@@ -32,16 +33,19 @@ function toggleSpinner(button, submitForm = false, keep = false) {
     });
 }
 
-function handleSubmit(event, keep = true ) {
+function handleSubmit(event, submit = true, keep = true ) {
     event.preventDefault(); // Prevent default form submission
     const button = event.submitter;
-    toggleSpinner(button, true, keep);
+    console.log('button function called');
+    toggleSpinner(button, submit, keep);
 }
 
 function execute(str) {
     return new Promise((resolve, reject) => {
+        console.log("executing:", str);
         try {
             if (typeof window[str] === 'function') {
+                console.log("function found:", str);
                 // If it's a function, call it and wait for it to complete
                 const result = window[str]();
                 if (result instanceof Promise) {
@@ -50,6 +54,7 @@ function execute(str) {
                     resolve(result);
                 }
             } else {
+                console.log("no function found:", str);
                 // Otherwise, execute the string as code
                 const result = eval(str);
                 resolve(result);

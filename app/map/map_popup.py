@@ -65,7 +65,7 @@ def html_popup(row_values, template_path="templates/map/popup.html"):
     start_time = (
         row_values["start_date"].time() if row_values.get("start_date") else None
     )
-    distance = distance = "{:.2f}".format(distance) if distance is not None else None
+    distance = "{:.2f}".format(distance) if distance is not None else None
     elevation_gain = (
         "{:.0f}".format(elevation_gain) if elevation_gain is not None else None
     )
