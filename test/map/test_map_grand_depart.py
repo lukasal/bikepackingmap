@@ -12,7 +12,7 @@ class TestMapGranddepart(unittest.TestCase):
         self.activities = pd.DataFrame(
             {
                 "end_date": ["2023-10-01", "2023-10-02"],
-                "map.polyline": [
+                "map_polyline": [
                     [(45.0, 7.0), (46.0, 8.0)],
                     [(47.0, 9.0), (48.0, 10.0)],
                 ],

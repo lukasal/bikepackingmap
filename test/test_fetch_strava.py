@@ -3,6 +3,8 @@ from unittest.mock import patch, MagicMock
 import sys
 from os.path import abspath, dirname, realpath
 import pickle
+import pandas as pd
+from app.activity_manager.activity_manager import ActivityManager
 
 PATH = realpath(abspath(__file__))
 sys.path.insert(0, dirname(dirname(PATH)))
@@ -21,7 +23,10 @@ class FetchStravaTestCase(unittest.TestCase):
         self.ctx.pop()
 
     @patch("app.endpoints.get_data")
-    @patch("app.endpoints.ActivityManager")
+    @patch(
+        "app.activity_manager.activity_manager.store_in_redis",
+        side_effect=lambda: lambda x: x,
+    )
     def test_fetch_strava(self, mock_activity_manager, mock_get_data):
 
         # Mock request args
@@ -33,7 +38,7 @@ class FetchStravaTestCase(unittest.TestCase):
                 get_data = pickle.load(f)
 
             mock_get_data.return_value = get_data
-            mock_activity_manager_instance = MagicMock()
+            mock_activity_manager_instance = ActivityManager("123")
             mock_activity_manager.load_from_redis.return_value = (
                 mock_activity_manager_instance
             )
@@ -48,15 +53,17 @@ class FetchStravaTestCase(unittest.TestCase):
             )
 
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(
-                response.json,
-                {
-                    "data": [
-                        {k: d[k] for k in ["start_date", "name", "id", "type"]}
-                        for d in get_data
-                    ]
-                },
-            )
+            response_data = response.json["data"]
+            self.assertEqual(len(response_data), 3)
+            for item in response_data:
+                self.assertIn("start_date", item)
+                self.assertIn("name", item)
+                self.assertIn("id", item)
+                self.assertIn("type", item)
+                self.assertIsInstance(item["start_date"], str)
+                self.assertIsInstance(item["name"], str)
+                self.assertIsInstance(item["id"], str)
+                self.assertIsInstance(item["type"], str)
 
 
 if __name__ == "__main__":

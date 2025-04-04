@@ -21,7 +21,7 @@ class TestMapPolylines(unittest.TestCase):
             "start_date": [datetime(2023, 10, 1, 12, 0, 0)],
             "date": ["2023-10-01"],
             "type": ["Run"],
-            "map.polyline": [[[51.5, -0.1], [51.5, -0.12], [51.5, -0.14]]],
+            "map_polyline": [[[51.5, -0.1], [51.5, -0.12], [51.5, -0.14]]],
             "metadata": [
                 {
                     "distance": 10.0,

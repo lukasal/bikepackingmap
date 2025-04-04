@@ -1,10 +1,18 @@
 import folium
 from folium.plugins import BeautifyIcon
-
+import numpy as np
 
 def map_grand_depart(activities, settings):
 
     grand_depart = folium.FeatureGroup(name="Grand depart", control=False)
+
+    if activities["start_date"].min() is np.nan:
+        # return grand_arrivee
+        first_stage = activities.iloc[[0]]
+    else:
+        first_stage = activities[
+            activities["start_date"] == activities["start_date"].min()
+        ]
 
     first_stage = activities[activities.index == activities.index.min()]
     # first_stage = activities[activities["start_date"] == activities["start_date"].min()]
