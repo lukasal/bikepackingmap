@@ -4,7 +4,7 @@ import os
 from functools import wraps
 from datetime import datetime
 from app.activity_manager.postprocess_activities import postprocess
-from app.redis_client import redis_client
+from app.utils.redis_client import redis_client
 from app.map.MapSettings import MapSettings
 from app.models.activity_model import Activity
 from typing import List

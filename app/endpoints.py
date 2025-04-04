@@ -23,7 +23,7 @@ matplotlib.use('Agg')  # Use a non-GUI backend for rendering
 from app.activity_manager.activity_manager import ActivityManager
 from app.strava.get_data import get_data
 from datetime import datetime, timedelta
-from app.redis_client import redis_client
+from app.utils.redis_client import redis_client
 from app.helper import parse_date
 from app.map.generate_map import generate_map
 from app.map.MapSettings import MapSettings
@@ -71,31 +71,7 @@ def create_app():
     app.secret_key = os.getenv("SECRET_KEY")
 
     @app.before_request
-    def ensure_session_id():
-        """
-        Ensure each user has a unique session ID stored as a cookie.
-        This is run before every request.
-        """
-        SESSION_EXPIRATION = int(os.getenv("SESSION_EXP_TIME", 1800))
-
-        # session expired, then the redis client has deleted the content
-        if 'session_id' in session and redis_client.exists(f"session:{session['session_id']}")!=1:
-            session.clear()
-            # Check if the request is AJAX
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return jsonify({'session_expired': True}), 401  # Send a JSON response indicating session expired
-            else:
-                return redirect(url_for('session_expired'))  # For regular requests, perform a redirect
-        # new session
-        if 'session_id' not in session:
-            # Generate a new session ID if one doesn't exist
-            session['session_id'] = os.urandom(16).hex()
-            ActivityManager(session['session_id'])
-        # session ok
-        else:            
-            redis_client.expire(f"session:{session['session_id']}", SESSION_EXPIRATION)
-
-    @app.route('/')
+    @app.route("/")
     def home():
         return render_template("home/index.html")  # Render the landing page
 

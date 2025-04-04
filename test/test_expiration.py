@@ -9,7 +9,7 @@ PATH = realpath(abspath(__file__))
 sys.path.insert(0, dirname(dirname(PATH)))
 
 from app.endpoints import create_app
-from app.redis_client import redis_client # Adjust the import path accordingly
+from app.utils.redis_client import redis_client  # Adjust the import path accordingly
 
 
 SESSION_EXPIRATION = 4
