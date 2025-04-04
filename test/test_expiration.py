@@ -8,14 +8,14 @@ from os.path import abspath, dirname, realpath
 PATH = realpath(abspath(__file__))
 sys.path.insert(0, dirname(dirname(PATH)))
 
-from app.endpoints import create_app
-from app.redis_client import redis_client # Adjust the import path accordingly
+from app import create_app
+from app.utils.redis_client import redis_client  # Adjust the import path accordingly
 
 
 SESSION_EXPIRATION = 4
 
 class TestSessionLogic(unittest.TestCase):
-    
+
     def setUp(self):
         # Create the Flask test client
         os.environ["SESSION_EXP_TIME"]= str(SESSION_EXPIRATION)
@@ -47,10 +47,10 @@ class TestSessionLogic(unittest.TestCase):
             # Check if session is stored in Redis
             self.assertFalse(redis_client.exists(f"session:{session['session_id']}"))
             # Manually set last_activity to be expired
-            #session['last_activity'] = time.time() - SESSION_EXPIRATION - 1  # Expires after 10 minutes
+            # session['last_activity'] = time.time() - SESSION_EXPIRATION - 1  # Expires after 10 minutes
 
             # Send another request (this should trigger the session expiration)
-            response = self.app.get('/')
+            response = self.app.get("/static/page-what.html")
 
             # Assert that session is cleared and redirected
             self.assertEqual(response.status_code, 302)  # Expecting a redirect

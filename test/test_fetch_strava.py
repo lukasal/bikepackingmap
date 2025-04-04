@@ -8,7 +8,7 @@ from app.activity_manager.activity_manager import ActivityManager
 
 PATH = realpath(abspath(__file__))
 sys.path.insert(0, dirname(dirname(PATH)))
-from app.endpoints import create_app
+from app import create_app
 
 
 class FetchStravaTestCase(unittest.TestCase):
@@ -22,7 +22,7 @@ class FetchStravaTestCase(unittest.TestCase):
     def tearDown(self):
         self.ctx.pop()
 
-    @patch("app.endpoints.get_data")
+    @patch("app.routes.strava.get_data")
     @patch(
         "app.activity_manager.activity_manager.store_in_redis",
         side_effect=lambda: lambda x: x,

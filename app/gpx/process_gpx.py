@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import haversine as hs
 import gpxpy
-from app.elevation_profile import create_binary_elevation_profile
+from app.map.elevation_profile import create_binary_elevation_profile
 from app.gpx.process_points import process_points
 from app.models.activity_model import Activity
 
