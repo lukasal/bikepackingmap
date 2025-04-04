@@ -95,7 +95,7 @@ class TestProcessGpxData(unittest.TestCase):
 
         self.assertIsInstance(result, pd.DataFrame)
         self.assertIn("map.elevation", result.columns)
-        self.assertTrue(all(item is None for item in result["map.elevation"]))
+        self.assertTrue(all(item is None for item in result["map.elevation"][0]))
 
     def test_process_gpx_data_with_errorous_file(self):
         gpx_data = ""
