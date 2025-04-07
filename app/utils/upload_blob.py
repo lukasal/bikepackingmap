@@ -2,12 +2,6 @@ from azure.storage.blob import BlobServiceClient
 import os
 
 AZURE_STORAGE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-CONTAINER_NAME = "your-container-name"
-
-blob_service_client = BlobServiceClient.from_connection_string(
-    AZURE_STORAGE_CONNECTION_STRING
-)
-
 
 def upload_to_blob(serialized_data, container_name, blob_name):
     # Create a BlobServiceClient
