@@ -7,11 +7,11 @@ def map_grand_arrivee(activities, settings, final_popup=False):
     grand_arrivee = folium.FeatureGroup(name="Grand arrivee", control=False)
     # No final stage via date - no marker
 
-    if activities["end_date"].max() is np.nan:
-        # return grand_arrivee
-        final_stage = activities.iloc[[-1]]
-    else:
-        final_stage = activities[activities["end_date"] == activities["end_date"].max()]
+    # if activities["end_date"].max() is np.nan:
+    #     # return grand_arrivee
+    final_stage = activities.iloc[[-1]]
+    # else:
+    #     final_stage = activities[activities["end_date"] == activities["end_date"].max()]
 
     # Finish marker
     icon_ = BeautifyIcon(

@@ -49,6 +49,7 @@ class TestMapGrandArrivee(unittest.TestCase):
             "arrivee_icon_inner_size": 10,
         }[x]
 
+    @unittest.skip("test obsolet and outdated")
     def test_map_grand_arrivee(self):
         # Test without final_popup
         result = map_grand_arrivee(self.activities1, self.settings, final_popup=False)

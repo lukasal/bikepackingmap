@@ -50,7 +50,7 @@ def unhandled_exception(error):
         )  # Use the upload_to_blobactivity_manager.dump_to_blob_store(blob_store_key, blob_data)
         logger.info(f"Activity manager dumped to blob store with key: {blob_store_key}")
     except Exception as e:
-        logger.error(f"Failed to load activity manager: {e}")
+        logger.error(f"Failed to log activity manager: {e}")
 
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         response = jsonify({"error": str(error)})
