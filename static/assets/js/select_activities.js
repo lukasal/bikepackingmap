@@ -77,9 +77,9 @@ function sendRequest(formData) {
                 response.data.forEach(function(item) {
                     const row = `<tr class="sortable-row">
                                     <td><input type="checkbox" name="selected_activities" class="checkbox-cell" data-id="${item.id}"></td>
-                                    <td><input type="datetime-local" name="start_date[]" value="${item.start_date}"></td>
-                                    <td><input type="text" name="name[]" class="editable-input" value="${item.name}"></td>
-                                    <td><input type="text" name="type[]" class="editable-input" value="${item.type}"></td>
+                                    <td><input type="datetime-local" class="non-editable" name="start_date[]"  value="${item.start_date}"></td>
+                                    <td><input type="text"class="non-editable" name="name[]"  value="${item.name}"></td>
+                                    <td><input type="text" class="non-editable" name="type[]"  value="${item.type}"></td>
                                 </tr>`;
                     $('#data-table tbody').append(row);
                 });

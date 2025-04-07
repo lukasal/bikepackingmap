@@ -13427,3 +13427,6 @@ pre[class*="language-"] {
 .ui-sortable-helper {
   background-color: #e0e0e0;
 }
+.non-editable {
+  pointer-events: none;
+}
