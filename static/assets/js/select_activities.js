@@ -53,7 +53,12 @@ function fetchData() {
             fileInput.click();
         } else {
             // Send AJAX request to fetch data
-            sendRequest(formData).then(resolve).catch(reject);
+            sendRequest(formData).then(resolve).catch(error => {
+                const errorMessage = error.responseJSON && error.responseJSON.error ? error.responseJSON.error : "An unknown error occurred.";
+                alert(errorMessage);  // Show error message in a popup
+                console.error("AJAX error:", error);
+                reject(error);
+            });
         }
     });
 }
@@ -70,7 +75,6 @@ function sendRequest(formData) {
                 console.log(response);  // Log the entire response
                 $('#data-table tbody').empty(); // Clear existing data
                 response.data.forEach(function(item) {
-                     // class="editable-input" for editable-input
                     const row = `<tr class="sortable-row">
                                     <td><input type="checkbox" name="selected_activities" class="checkbox-cell" data-id="${item.id}"></td>
                                     <td><input type="datetime-local" class="non-editable" name="start_date[]"  value="${item.start_date}"></td>
@@ -91,6 +95,8 @@ function sendRequest(formData) {
                     window.location.href = '/session-expired';  // Or use any other redirect mechanism
                 } else {
                     // Handle other errors
+                    const errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "An unknown error occurred.";
+                    alert(errorMessage);  // Show error message in a popup
                     console.error("AJAX error:", error);
                     reject(error);
                 }

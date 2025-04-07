@@ -13,6 +13,7 @@ from app import create_app
 class TestStravaRedirect(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
+        self.app.config["PROPAGATE_EXCEPTIONS"] = True
         self.app.testing = True
         self.client = self.app.test_client()
 
