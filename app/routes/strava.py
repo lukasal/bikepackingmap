@@ -18,26 +18,21 @@ from app.strava.get_data import get_data
 
 strava_bp = Blueprint("strava", __name__)
 
-website_host = os.getenv("WEBSITE_HOSTNAME")
-if website_host:
-    REDIRECT_URI = f"https://{website_host}/redirect"
-else:
-    REDIRECT_URI = "http://localhost:5000/redirect"
-
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-REDIRECT_URI = os.getenv("REDIRECT_URI", "http://localhost:5000/redirect")
-STRAVA_AUTH_URL = (
-    f"https://www.strava.com/oauth/authorize"
-    f"?client_id={CLIENT_ID}"
-    f"&redirect_uri={REDIRECT_URI}"
-    f"&response_type=code"
-    f"&scope=read,activity:read"
-)
 
 
 @strava_bp.route("/strava_auth")
 def strava_auth():
+    # Replace 'strava_auth' with 'redirect' in the URL
+    redirect_url = request.url.replace("strava_auth", "redirect")
+    STRAVA_AUTH_URL = (
+        f"https://www.strava.com/oauth/authorize"
+        f"?client_id={CLIENT_ID}"
+        f"&redirect_uri={redirect_url}"
+        f"&response_type=code"
+        f"&scope=read,activity:read"
+    )
     return redirect(STRAVA_AUTH_URL)
 
 

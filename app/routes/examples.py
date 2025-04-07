@@ -17,7 +17,6 @@ def fetch_examples():
     print("load data", time.time() - start)
     activity_manager.add_activities(example_processed)
     print("preprocess activities", time.time() - start)
-    raise Exception("Simulated internal server error")
     return jsonify({"data": activity_manager.send_to_frontend()})
 
 @examples_bp.route("/display_examples")

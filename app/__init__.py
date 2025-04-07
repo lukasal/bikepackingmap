@@ -14,7 +14,7 @@ from app.routes.map import map_bp
 from app.routes.send_email import email_bp
 from app.routes.strava import strava_bp
 from app.routes.templates import templates_bp
-from flask_cors import CORS
+# from flask_cors import CORS
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def create_app():
     app = Flask(__name__, root_path=project_root)
     app.config.from_object(Config)
     app.config["SESSION_REDIS"] = redis_client
-    CORS(app, resources={r"/*": {"origins": "https://www.bikepackingmap.com"}})
+    # CORS(app, resources={r"/*": {"origins": "https://www.bikepackingmap.com"}})
 
     # Add a before_request function to ensure session ID
     @app.before_request
