@@ -19,17 +19,20 @@ class TestSessionLogic(unittest.TestCase):
     def setUp(self):
         # Create the Flask test client
         os.environ["SESSION_EXP_TIME"]= str(SESSION_EXPIRATION)
-        self.app = create_app().test_client()
-        self.app.testing = True
+        self.app = create_app()
+        self.app.config["TESTING"] = True
+        self.app.config["PROPAGATE_EXCEPTIONS"] = True
+        self.client = self.app.test_client()
+        self.client.testing = True
 
         # Ensure that Redis is clear before each test
         redis_client.flushdb()
 
     def test_session_initialization(self):
         """Test that a session ID is set if one doesn't exist"""
-        with self.app:
-            # Send a request to the app (this will trigger the before_request logic)
-            response = self.app.get('/')
+        with self.client:
+            # Send a request to the client (this will trigger the before_request logic)
+            response = self.client.get("/")
 
             # Check if session_id is set
             self.assertIn('session_id', session)
@@ -38,9 +41,9 @@ class TestSessionLogic(unittest.TestCase):
 
     def test_session_expiration(self):
         """Test that the session expires after idle time"""
-        with self.app:
+        with self.client:
             # Simulate an initial request (sets session and last_activity)
-            self.app.get('/')
+            self.client.get("/")
             session_id = session['session_id']
 
             time.sleep(SESSION_EXPIRATION)
@@ -50,7 +53,7 @@ class TestSessionLogic(unittest.TestCase):
             # session['last_activity'] = time.time() - SESSION_EXPIRATION - 1  # Expires after 10 minutes
 
             # Send another request (this should trigger the session expiration)
-            response = self.app.get("/static/page-what.html")
+            response = self.client.get("/static/page-what.html")
 
             # Assert that session is cleared and redirected
             self.assertEqual(response.status_code, 302)  # Expecting a redirect
@@ -59,9 +62,9 @@ class TestSessionLogic(unittest.TestCase):
 
     def test_redis_expiration(self):
         """Test that the session's Redis data expiration is set correctly"""
-        with self.app:
+        with self.client:
             # Trigger the session creation
-            response = self.app.get('/')
+            response = self.client.get("/")
             session_id = session['session_id']
 
             # Check if Redis expiration is set
