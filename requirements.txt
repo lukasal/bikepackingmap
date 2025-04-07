@@ -18,3 +18,4 @@ haversine==2.9.0
 gpxpy==1.6.2
 pydantic==2.11.2
 azure-storage-blob==12.20.0
+flask_cors==5.0.1
