@@ -3,7 +3,10 @@ from typing import List, Optional, Any, Tuple
 from datetime import date
 import pandas as pd
 import uuid
+import logging
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 class Activity(BaseModel):
     name: str
     id: str =  Field(default_factory=lambda: str(uuid.uuid4()), description="The unique identifier for the activity")
@@ -59,8 +62,12 @@ class Activity(BaseModel):
                 validated_activities.append(validated_activity)
             except ValidationError as e:
                 error_count += 1
-                print(f"Validation error for activity: {activity['name']}, error: {e}")
+                logger.error(
+                    f"Validation error for activity: {activity['name']}, error: {e}"
+                )
         if error_count > 0:
-            print(f"{error_count} activies where discarded because they do not contain valid tracks.")
+            logger.info(
+                f"{error_count} activies where discarded because they do not contain valid tracks."
+            )
             # print warning to user
         return validated_activities

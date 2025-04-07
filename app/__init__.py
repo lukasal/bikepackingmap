@@ -1,6 +1,9 @@
-from flask import Flask
+from flask import Flask, g, request
 import os
+import logging
+import time
 from app.utils.config import Config
+from app.utils.error_handlers import error_bp
 from app.utils.redis_client import redis_client
 from app.utils.session import ensure_session_id
 from app.routes.download import download_bp
@@ -12,6 +15,8 @@ from app.routes.send_email import email_bp
 from app.routes.strava import strava_bp
 from app.routes.templates import templates_bp
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def create_app():
     project_root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -24,7 +29,19 @@ def create_app():
     # Add a before_request function to ensure session ID
     @app.before_request
     def before_request():
+        g.start_time = time.time()
+        logger.info(f"Request: {request.method} {request.url}")
         return ensure_session_id()
+
+    @app.after_request
+    def log_response_info(response):
+        duration = time.time() - g.start_time
+        logger.info(f"Response status: {response.status}")
+        logger.info(f"Request duration: {duration:.4f} seconds")
+        return response
+
+    # Register error handlers
+    app.register_blueprint(error_bp)
 
     app.register_blueprint(download_bp)
     app.register_blueprint(examples_bp)

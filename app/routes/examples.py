@@ -10,7 +10,6 @@ examples_bp = Blueprint("examples", __name__)
 def fetch_examples():
     session_id = session["session_id"]
     start = time.time()
-
     activity_manager = ActivityManager.load_from_redis(session_id)
     print("fetch_examples", time.time() - start)
     with open("data/giro_italia_example.pkl", "rb") as file:
@@ -18,7 +17,7 @@ def fetch_examples():
     print("load data", time.time() - start)
     activity_manager.add_activities(example_processed)
     print("preprocess activities", time.time() - start)
-
+    raise Exception("Simulated internal server error")
     return jsonify({"data": activity_manager.send_to_frontend()})
 
 @examples_bp.route("/display_examples")

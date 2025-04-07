@@ -8,6 +8,7 @@ from app.utils.redis_client import redis_client
 from app.map.MapSettings import MapSettings
 from app.models.activity_model import Activity
 from typing import List
+import json
 
 # Define the decorator without an outer function
 def store_in_redis(method):
@@ -38,6 +39,13 @@ class ActivityManager:
         self.activities = []
         self.map_settings = None
         self.map_ids = None
+
+    def serialize(self):
+        return pickle.dumps(self)
+
+    @staticmethod
+    def deserialize(data):
+        return pickle.loads(data)
 
     # Class method to load an instance from Redis
     @classmethod

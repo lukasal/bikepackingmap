@@ -5,7 +5,10 @@ import gpxpy
 from app.map.elevation_profile import create_binary_elevation_profile
 from app.gpx.process_points import process_points
 from app.models.activity_model import Activity
+import logging
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def process_gpx_data(file_storage: object) -> Activity:
     activity = {}
@@ -15,20 +18,20 @@ def process_gpx_data(file_storage: object) -> Activity:
     try:
         gpx = gpxpy.parse(file_storage.stream, version="1.0")
     except Exception as e:
-        print(f"Error parsing GPX file: {e}")
+        logger.error(f"Error parsing GPX file: {e}")
         return None
 
     if gpx.tracks:
-        print("Using tracks")
+        logger.info("Using tracks")
         for track in gpx.tracks:
             for segment in track.segments:
                 data += process_points(segment.points, segment.get_speed)
     elif gpx.routes:
-        print("Using routes")
+        logger.info("Using routes")
         for route in gpx.routes:
             data += process_points(route.points)
     else:
-        print("No tracks or routes found")
+        logger.info("No tracks or routes found")
         return None
 
     # if (
