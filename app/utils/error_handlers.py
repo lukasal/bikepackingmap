@@ -4,6 +4,9 @@ import logging
 import traceback 
 from app.activity_manager.activity_manager import ActivityManager
 from app.utils.upload_blob import upload_to_blob
+import pickle
+from datetime import datetime
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -41,8 +44,17 @@ def unhandled_exception(error):
     try:
         activity_manager = ActivityManager.load_from_redis(session["session_id"])
         # Dump the activity manager to a blob store
-        blob_data = activity_manager.serialize()
-        blob_store_key = f"activity_manager_dumps/{session['session_id']}.json"
+        blob_data = pickle.dumps(
+            {
+                "activity_manager": activity_manager,
+                "error": error,
+                "routine": routine_name,
+            }
+        )
+        current_timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        blob_store_key = (
+            f"activity_manager_dumps/{current_timestamp}_{session['session_id']}.json"
+        )
         upload_to_blob(
             blob_data,
             "error-data",
