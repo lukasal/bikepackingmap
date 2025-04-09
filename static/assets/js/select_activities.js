@@ -41,6 +41,14 @@ function fetchData() {
             // Handle file upload
             const fileInput = $('<input type="file" multiple>').on('change', function(event) {
                 const files = event.target.files;
+
+                if (files.length > 50) {
+                    alert('You can only upload up to 50 files.');
+                    console.log('50 files limit:');
+                    resolve('File limit exceeded');
+                    return;
+                }
+    
                 for (let i = 0; i < files.length; i++) {
                     formData.append('gpx_files', files[i]);
                 }
