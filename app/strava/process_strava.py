@@ -90,6 +90,7 @@ def process_strava(activities: pd.DataFrame) -> List[Activity]:
         activities["elapsed_time"], unit="s"
     )
     # convert values
+    activities.loc[:, "distance"] /= 1000  # convert from m to km
     activities.loc[:, "average_speed"] *= 3.6  # convert from m/s to km/h
     activities.loc[:, "max_speed"] *= 3.6  # convert from m/s to km/h
 
