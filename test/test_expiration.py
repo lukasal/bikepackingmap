@@ -60,6 +60,34 @@ class TestSessionLogic(unittest.TestCase):
             self.assertIn('/session-expired', response.location)
             self.assertNotIn('session_id', session)  # No session_id is available
 
+    def test_session_renewed(self):
+        """Test that the session expires after idle time"""
+        with self.client:
+            # Simulate an initial request (sets session and last_activity)
+            self.client.get("/")
+            session_id = session["session_id"]
+
+            time.sleep(int(SESSION_EXPIRATION * 2 / 3))
+            # Check if session is stored in Redis
+            self.assertTrue(redis_client.exists(f"session:{session['session_id']}"))
+            # Manually set last_activity to be expired
+            # session['last_activity'] = time.time() - SESSION_EXPIRATION - 1  # Expires after 10 minutes
+
+            # Send another request (this should trigger the session expiration)
+            response = self.client.get("/static/page-what.html")
+
+            time.sleep(int(SESSION_EXPIRATION * 2 / 3))
+
+            self.assertTrue(redis_client.exists(f"session:{session['session_id']}"))
+            # Manually set last_activity to be expired
+            # session['last_activity'] = time.time() - SESSION_EXPIRATION - 1  # Expires after 10 minutes
+
+            # Send another request (this should trigger the session expiration)
+            response = self.client.get("/static/page-what.html")
+
+            # Assert that session is cleared and redirected
+            self.assertEqual(response.status_code, 200)  # Expecting a redirect
+
     def test_redis_expiration(self):
         """Test that the session's Redis data expiration is set correctly"""
         with self.client:
