@@ -84,9 +84,10 @@ class TestSessionLogic(unittest.TestCase):
 
             # Send another request (this should trigger the session expiration)
             response = self.client.get("/static/page-what.html")
-
-            # Assert that session is cleared and redirected
-            self.assertEqual(response.status_code, 200)  # Expecting a redirect
+            # Check if session is stored in Redis
+            self.assertTrue(redis_client.exists(f"session:{session['session_id']}"))
+            # Assert that session is not cleared and redirected
+            self.assertEqual(response.status_code, 200)
 
     def test_redis_expiration(self):
         """Test that the session's Redis data expiration is set correctly"""

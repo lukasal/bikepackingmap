@@ -39,8 +39,12 @@ def unhandled_exception(error):
     # Capture the stack trace
     tb = traceback.format_exc()
     # Extract the routine name from the stack trace
+    endpoint = request.endpoint
+
     routine_name = tb.splitlines()[-3].strip().split()[-1]
-    logger.error(f"Unhandler exception in Routine: {routine_name}, with session_id: {session['session_id']}, Error: {error}")
+    logger.error(
+        f"Unhandler exception in Endpoint: {endpoint}, with session_id: {session['session_id']}, Error: {error}, stack trace: {tb}"
+    )
     try:
         activity_manager = ActivityManager.load_from_redis(session["session_id"])
         # Dump the activity manager to a blob store
@@ -48,12 +52,13 @@ def unhandled_exception(error):
             {
                 "activity_manager": activity_manager,
                 "error": error,
+                "stack_trace": tb,
                 "routine": routine_name,
             }
         )
         current_timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
         blob_store_key = (
-            f"activity_manager_dumps/{current_timestamp}_{session['session_id']}.json"
+            f"activity_manager_dumps/{current_timestamp}_{session['session_id']}.pkl"
         )
         upload_to_blob(
             blob_data,
