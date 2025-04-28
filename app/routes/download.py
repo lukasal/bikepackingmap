@@ -11,7 +11,7 @@ download_bp = Blueprint("download", __name__)
 @download_bp.route("/downloads_overview", methods=["GET"])
 def downloads_overview():
     session_id = session["session_id"]
-    activity_manager = ActivityManager.load_from_redis(session_id)
+    activity_manager = ActivityManager.load_from_cache(session_id)
     return render_template(
         "home/export.html",
         activities=activity_manager.get_activities_df(activity_manager.map_ids),
@@ -22,7 +22,7 @@ def downloads_overview():
 def get_map():
     filetype = request.args.get("filetype")
     session_id = session["session_id"]
-    activity_manager = ActivityManager.load_from_redis(session_id)
+    activity_manager = ActivityManager.load_from_cache(session_id)
 
     activity_ids = request.args.get("activity_ids")
     if not activity_ids:
@@ -79,7 +79,7 @@ def get_map():
 @download_bp.route("/download_elevation_profile", methods=["GET"])
 def download_elevation_profile():
     session_id = session["session_id"]
-    activity_manager = ActivityManager.load_from_redis(session_id)
+    activity_manager = ActivityManager.load_from_cache(session_id)
 
     activity_id = request.args.get("activity_ids")
     if activity_id:

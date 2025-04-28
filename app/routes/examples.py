@@ -10,7 +10,7 @@ examples_bp = Blueprint("examples", __name__)
 def fetch_examples():
     session_id = session["session_id"]
     start = time.time()
-    activity_manager = ActivityManager.load_from_redis(session_id)
+    activity_manager = ActivityManager.load_from_cache(session_id)
     print("fetch_examples", time.time() - start)
     with open("data/giro_italia_example.pkl", "rb") as file:
         example_processed = pickle.load(file)

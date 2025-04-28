@@ -81,7 +81,7 @@ def fetch_strava():
 
     # Get the current user's ActivityManager
     session_id = session['session_id']
-    activity_manager = ActivityManager.load_from_redis(session_id)       
+    activity_manager = ActivityManager.load_from_cache(session_id)
     # Extract parameters
     start_date = request.form.get("start_date")
     # Convert string dates to datetime objects

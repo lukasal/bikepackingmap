@@ -4,7 +4,6 @@ import logging
 import time
 from app.utils.config import Config
 from app.utils.error_handlers import error_bp
-from app.utils.redis_client import redis_client
 from app.utils.session import ensure_session_id
 from app.routes.download import download_bp
 from app.routes.examples import examples_bp
@@ -15,6 +14,7 @@ from app.routes.send_email import email_bp
 from app.routes.strava import strava_bp
 from app.routes.templates import templates_bp
 from flask_cors import CORS
+from app.utils.cache import cache
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,7 +25,9 @@ def create_app():
     # Create the Flask app and set the root path to the project root
     app = Flask(__name__, root_path=project_root)
     app.config.from_object(Config)
-    app.config["SESSION_REDIS"] = redis_client
+
+    # Initialize cache with app
+    cache.init_app(app)
     # Allow all origins
     CORS(app)
 
