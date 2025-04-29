@@ -40,7 +40,7 @@ class TestErrorHandlers(unittest.TestCase):
     def test_internal_error(self, mock_upload_to_blob):
         response = self.client.get("/trigger-500")
         self.assertEqual(response.status_code, 500)
-        self.assertIn("internal server error", response.get_data(as_text=True).lower())
+        self.assertIn("error 500", response.get_data(as_text=True).lower())
         self.assertIn("<html", response.get_data(as_text=True).lower())
 
     @unittest.mock.patch("app.utils.error_handlers.upload_to_blob")
