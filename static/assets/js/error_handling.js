@@ -32,12 +32,18 @@ document.addEventListener("DOMContentLoaded", () => {
         submitButton.textContent = "Submitting...";
 
         // Send the email to the server
-        fetch("/notify", {
+        fetch("/notify-on-fix", {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: `email=${encodeURIComponent(email)}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json(); // Parse JSON from the response
         })
         .then(data => {
             console.log('Response data:', data); // Debugging line
@@ -45,6 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert(data.message);
                 // Reset the form fields after the user clicks "OK" on the alert
                 document.getElementById('email').value = '';
+                submitButton.textContent = "Notify Me";
+                submitButton.disabled = false;
+
             } else {
                 alert('Unexpected error occurred.');
             }
@@ -52,7 +61,13 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => {
             console.error('Error:', error);
             alert('Failed to send email.');
-        });;
+        })
+        .finally(() => {
+            document.getElementById('email').value = '';
+            submitButton.textContent = "Notify Me";
+            submitButton.disabled = false;
+            closeErrorModal();
+        });
     });
 
     // Handle close button click to trigger closeErrorModal function
