@@ -1,5 +1,6 @@
 import unittest
 from flask import Flask, session, redirect, url_for
+from redis import Redis
 import time
 import sys
 import os
@@ -37,6 +38,19 @@ class TestSessionLogicRedis(unittest.TestCase):
         self.client = self.app.test_client()
         self.client.testing = True
 
+        if cache_type == "redis":
+            self.assertIsInstance(
+                cache.cache._read_client,
+                Redis,
+                "Cache client should be a Redis instance",
+            )
+        else:
+            self.assertIsInstance(
+                cache.cache._cache,
+                dict,
+                "Cache client should be a SimpleCache instance",
+            )
+
         with self.client:
             # Send a request to the client (this will trigger the before_request logic)
             response = self.client.get("/")
@@ -64,6 +78,19 @@ class TestSessionLogicRedis(unittest.TestCase):
         self.app.config["CACHE_TYPE"] = cache_type
         self.client = self.app.test_client()
         self.client.testing = True
+
+        if cache_type == "redis":
+            self.assertIsInstance(
+                cache.cache._read_client,
+                Redis,
+                "Cache client should be a Redis instance",
+            )
+        else:
+            self.assertIsInstance(
+                cache.cache._cache,
+                dict,
+                "Cache client should be a SimpleCache instance",
+            )
 
         with self.client:
             # Simulate an initial request (sets session and last_activity)
@@ -102,6 +129,19 @@ class TestSessionLogicRedis(unittest.TestCase):
         self.client = self.app.test_client()
         self.client.testing = True
         print(cache.cache)
+
+        if cache_type == "redis":
+            self.assertIsInstance(
+                cache.cache._read_client,
+                Redis,
+                "Cache client should be a Redis instance",
+            )
+        else:
+            self.assertIsInstance(
+                cache.cache._cache,
+                dict,
+                "Cache client should be a SimpleCache instance",
+            )
 
         with self.client:
             # Simulate an initial request (sets session and last_activity)
