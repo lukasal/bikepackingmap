@@ -29,7 +29,7 @@ function updateMap() {
             },
             error: function(xhr, status, error) {
                 const errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "An unknown error occurred.";
-                alert(errorMessage);  // Show error message in a popup
+                showErrorModal(errorMessage);  // Show error message in a popup
                 console.error('Error:', error);
                 reject(error);
             }

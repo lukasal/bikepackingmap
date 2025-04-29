@@ -22,15 +22,19 @@
                     Error 500
                 </h3>
                 <p class="mb-0">
-                  There was an internal server error. Please try again later.
+                  Ooops! Something Went wrong - this app is still in under construction and unfortunately you found a bug. Do you want to be notified when the issue is fixed?
                 </p>
               </div>
-              <form role="form" id="contact-form" method="post" autocomplete="off">
-                  <div class="row">
-                    <div class="col-md-12 text-center">
-                      <!-- <a href="/" class="btn bg-gradient-primary mt-3 mb-0">HOME</a> -->
-                      <button type="button" class="btn bg-gradient-primary mt-3 mb-0" onclick="window.history.back()">GO BACK</button>
+              <form role="form" id="notify-form-page500" autocomplete="off">
+                <div class="row">
+                  <div class="col-md-12 text-center">
+                    <div class="input-group mb-3 align-items-stretch">
+                      <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" >
+                      <div class="ms-2">
+                        <button type="submit" id="submit-button" class="btn bg-gradient-primary">Notify Me</button>
+                      </div>
                     </div>
+                    <button type="button" class="btn btn-outline-secondary mt-2" onclick="window.history.back()">Go Back</button>
                   </div>
                 </div>
               </form>
@@ -47,5 +51,6 @@
 {% block javascripts %}
 
   <script src="/static/assets/js/soft-design-system.min.js?v=1.0.1" type="text/javascript"></script>
+  <script src="{{ url_for('static', filename='assets/js/error_handling-page500.js') }}" type="text/javascript"></script>
 
 {% endblock javascripts %}

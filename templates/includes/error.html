@@ -1,0 +1,31 @@
+<!-- Error Modal (hidden by default) -->
+<div id="error-modal" class="page-header section-height-85" style="display: none;">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-7 d-flex justify-content-center flex-column">
+          <div class="card d-flex blur justify-content-center p-4 shadow-lg my-sm-0 my-sm-6 mt-8 mb-5">
+            <div class="text-center">
+              <h3 class="text-gradient text-primary">
+                  Error 500
+              </h3>
+              <p class="mb-0">
+                Ooops! Something Went wrong - this app is still in under construction and unfortunately you found a bug. Do you want to be notified when the issue is fixed?
+              </p>
+            </div>
+            <form role="form" id="notify-form" autocomplete="off">
+              <div class="row">
+                <div class="col-md-12 text-center">
+                  <div class="input-group mb-3 align-items-stretch">
+                    <div class="input-group mb-3 align-items-stretch">
+                        <input id="email" type="email" name="email" class="form-control" placeholder="Enter your email" >
+                          <button id="notify-form" type="submit" class="btn bg-gradient-primary">Notify Me</button>
+                    </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <button id="close-modal" type="button" class="btn btn-outline-secondary mt-2">Close</button>
+        </div>
+      </div>
+    </div>
+</div>

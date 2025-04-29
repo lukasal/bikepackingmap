@@ -13430,3 +13430,23 @@ pre[class*="language-"] {
 .non-editable {
   pointer-events: none;
 }
+
+#error-modal {
+  display: none; /* Start hidden */
+  position: fixed;
+  z-index: 9999; /* On top of other content */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6); /* Dim background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Optional: style the modal card inside */
+#error-modal .card {
+  max-width: 600px;
+  width: 90%;
+}

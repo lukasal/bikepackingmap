@@ -41,20 +41,39 @@ def unhandled_exception(error):
     # Extract the routine name from the stack trace
     endpoint = request.endpoint
 
-    routine_name = tb.splitlines()[-3].strip().split()[-1]
     logger.error(
         f"Unhandler exception in Endpoint: {endpoint}, with session_id: {session['session_id']}, Error: {error}, stack trace: {tb}"
     )
     try:
         activity_manager = ActivityManager.load_from_cache(session["session_id"])
         # Dump the activity manager to a blob store
-        blob_data = pickle.dumps(
-            {
-                "activity_manager": activity_manager,
-                "error": error,
-                "stack_trace": tb,
-                "routine": routine_name,
+        error_info = {
+            "activity_manager": activity_manager,
+            "error_type": type(Exception).__name__,
+            "error_message": str(Exception),
+            "traceback": traceback.format_exc(),
+            "timestamp": datetime.utcnow().isoformat(),
+
+            "request_info": {
+                "endpoint": request.endpoint,
+                "path": request.path,
+                "method": request.method,
+                "args": request.args.to_dict(),
+                "form": request.form.to_dict(),
+                "json": request.get_json(silent=True),
+                "headers": dict(request.headers),
+                "remote_addr": request.remote_addr
+            },
+
+            "user_info": {
+                "sesssion_id": session['session_id'],
             }
+        }
+        logger.error(
+        f"Unhandler exception: {error_info}"
+    )
+        blob_data = pickle.dumps(
+            error_info
         )
         current_timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
         blob_store_key = (
