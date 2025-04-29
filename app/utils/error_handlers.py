@@ -46,7 +46,7 @@ def unhandled_exception(error):
         f"Unhandler exception in Endpoint: {endpoint}, with session_id: {session['session_id']}, Error: {error}, stack trace: {tb}"
     )
     try:
-        activity_manager = ActivityManager.load_from_redis(session["session_id"])
+        activity_manager = ActivityManager.load_from_cache(session["session_id"])
         # Dump the activity manager to a blob store
         blob_data = pickle.dumps(
             {

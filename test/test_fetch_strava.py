@@ -25,7 +25,7 @@ class FetchStravaTestCase(unittest.TestCase):
 
     @patch("app.routes.strava.get_data")
     @patch(
-        "app.activity_manager.activity_manager.store_in_redis",
+        "app.activity_manager.activity_manager.store_in_cache",
         side_effect=lambda: lambda x: x,
     )
     def test_fetch_strava(self, mock_activity_manager, mock_get_data):
@@ -40,7 +40,7 @@ class FetchStravaTestCase(unittest.TestCase):
 
             mock_get_data.return_value = get_data
             mock_activity_manager_instance = ActivityManager("123")
-            mock_activity_manager.load_from_redis.return_value = (
+            mock_activity_manager.load_from_cache.return_value = (
                 mock_activity_manager_instance
             )
 

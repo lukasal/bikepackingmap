@@ -3,15 +3,17 @@ import pickle
 import os
 from functools import wraps
 from datetime import datetime
+from flask import current_app
 from app.activity_manager.postprocess_activities import postprocess
-from app.utils.redis_client import redis_client
+from app.utils.cache import cache
 from app.map.MapSettings import MapSettings
 from app.models.activity_model import Activity
 from typing import List
 import json
 
+
 # Define the decorator without an outer function
-def store_in_redis(method):
+def store_in_cache(method):
 
     @wraps(method)
     def wrapper(self, *args, **kwargs):
@@ -19,17 +21,27 @@ def store_in_redis(method):
         ttl_seconds = int(os.getenv("SESSION_EXP_TIME", 1800))  # Move here for dynamic value
         # Execute the original method
         result = method(self, *args, **kwargs)
-        
-        # Serialize the instance and store it in Redis with TTL
-        serialized_instance = pickle.dumps(self)
-        redis_client.setex(f"session:{self.session_id}", ttl_seconds, serialized_instance)
-        
+
+        # Serialize the instance and store it in Cache with TTL
+        cache_type = current_app.config["CACHE_TYPE"]
+        if cache_type == "redis":
+            cache_data = pickle.dumps(self)
+        else:
+            cache_data = self
+        cache.set(
+            f"session:{self.session_id}",
+            cache_data,
+            timeout=ttl_seconds,
+        )
+
         return result
 
     return wrapper
 
+
 class ActivityManager:
-    @store_in_redis
+
+    @store_in_cache
     def __init__(self, session_id):
         """
         Initialize the ActivityManager with a user-specific ID.
@@ -47,26 +59,30 @@ class ActivityManager:
     def deserialize(data):
         return pickle.loads(data)
 
-    # Class method to load an instance from Redis
+    # Class method to load an instance from Cache
     @classmethod
-    def load_from_redis(cls, session_id):
-        # Attempt to get serialized data from Redis
-        serialized_activity = redis_client.get(f"session:{session_id}")
+    def load_from_cache(cls, session_id):
+        # Attempt to get serialized data from Cache
+        cache_data = cache.get(f"session:{session_id}")
 
         # If no data is found, return None
-        if serialized_activity is None:
+        if cache_data is None:
             return None
 
         # Deserialize the data into a UserActivity instance
-        user_activity = pickle.loads(serialized_activity)
-        return user_activity
-        # Class method to load an instance from Redis
+        cache_type = current_app.config["CACHE_TYPE"]
+        user_activity = (
+            pickle.loads(cache_data) if cache_type == "redis" else cache_data
+        )
 
-    @store_in_redis    
+        return user_activity
+        # Class method to load an instance from Cache
+
+    @store_in_cache
     def set_last_activity(self):
         self.last_activity = datetime.utcnow()
 
-    @store_in_redis         
+    @store_in_cache
     def add_activities(self, activities: List[Activity]):
         """
         Add activities to the user's DataFrame.
@@ -74,7 +90,7 @@ class ActivityManager:
         """
         self.activities += activities
 
-    @store_in_redis
+    @store_in_cache
     def set_map_ids(self, map_ids):
         self.map_ids = map_ids
 
@@ -102,7 +118,7 @@ class ActivityManager:
             self.init_map_settings()
         return self.map_settings
 
-    @store_in_redis
+    @store_in_cache
     def init_map_settings(self):
         """
         Initialize the map settings for this user.
@@ -110,7 +126,8 @@ class ActivityManager:
         self.map_settings = MapSettings(
             self.get_activities_df(self.map_ids), "config/interactive_settings.yml"
         )
-    @store_in_redis
+
+    @store_in_cache
     def reset(self):
         """
         Reset the activity manager
@@ -119,10 +136,10 @@ class ActivityManager:
         self.map_settings = None
         self.map_ids = None
 
-    @store_in_redis
+    @store_in_cache
     def save(self):
         """
-        store current class in redis
+        store current class in cache
         """
         pass
 
@@ -139,7 +156,7 @@ class ActivityManager:
             orient="records"
         )
 
-    @store_in_redis
+    @store_in_cache
     def postprocess(self, id_list):
         """
         Postprocess the activities after selection.

@@ -12,7 +12,7 @@ def select():
     selected_activities = request.form.getlist("selected_activities")
 
     session_id = session["session_id"]
-    activity_manager = ActivityManager.load_from_redis(session_id)
+    activity_manager = ActivityManager.load_from_cache(session_id)
     activity_manager.postprocess(selected_activities)
     activity_manager.set_map_ids(selected_activities)
 
@@ -22,7 +22,7 @@ def select():
 @map_bp.route("/build_map")
 def build_map():
     session_id = session["session_id"]
-    activity_manager = ActivityManager.load_from_redis(session_id)
+    activity_manager = ActivityManager.load_from_cache(session_id)
     data = activity_manager.get_activities_df(activity_manager.map_ids)
     m = generate_map(
         activity_manager.get_map_settings(),
@@ -46,7 +46,7 @@ def build_map():
 @map_bp.route("/update_map", methods=["POST"])
 def update_map():
     session_id = session["session_id"]
-    activity_manager = ActivityManager.load_from_redis(session_id)
+    activity_manager = ActivityManager.load_from_cache(session_id)
     settings_data = request.get_json()
     print(settings_data)
     for name, value in settings_data.items():

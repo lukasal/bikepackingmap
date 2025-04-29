@@ -1,6 +1,6 @@
-from flask import session, request, redirect, url_for, jsonify
+from flask import session, request, redirect, url_for, jsonify, current_app
 from app.activity_manager.activity_manager import ActivityManager
-from app.utils.redis_client import redis_client
+from app.utils.cache import cache
 import os
 
 def ensure_session_id():
@@ -10,11 +10,8 @@ def ensure_session_id():
     """
     SESSION_EXPIRATION = int(os.getenv("SESSION_EXP_TIME", 1800))
 
-    # session expired, then the redis client has deleted the content
-    if (
-        "session_id" in session
-        and redis_client.exists(f"session:{session['session_id']}") != 1
-    ):
+    # session expired, then the cache has deleted the content
+    if "session_id" in session and cache.has(f"session:{session['session_id']}") != 1:
         session.clear()
         # Check if the request is AJAX
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
@@ -33,4 +30,9 @@ def ensure_session_id():
         ActivityManager(session["session_id"])
     # session ok
     else:
-        redis_client.expire(f"session:{session['session_id']}", SESSION_EXPIRATION)
+
+        cache.set(
+            f"session:{session['session_id']}",
+            cache.get(f"session:{session['session_id']}"),
+            timeout=SESSION_EXPIRATION,
+        )

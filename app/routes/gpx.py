@@ -19,7 +19,7 @@ def display_gpx():
 @gpx_bp.route("/fetch_gpx", methods=["POST"])
 def fetch_gpx():
     session_id = session["session_id"]
-    activity_manager = ActivityManager.load_from_redis(session_id)
+    activity_manager = ActivityManager.load_from_cache(session_id)
     activity_manager.reset()
     files = request.files.getlist("gpx_files")
 
