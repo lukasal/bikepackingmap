@@ -7,6 +7,11 @@ on:
     branches: [ "master" ]
   workflow_dispatch:
 
+env:
+  APP_NAME: bikepackmap
+  PRODIGY_WEBAPP_RESOURCE_GROUP: la_learning
+  FULL_IMAGE_NAME: laappacr.azurecr.io/bikepackmap:${{ github.sha }}
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,7 +32,7 @@ jobs:
         run: |
           docker build \
             --tag laappacr.azurecr.io/bikepackmap:latest \
-            --tag laappacr.azurecr.io/bikepackmap:${{ github.sha }} \
+            --tag $FULL_IMAGE_NAME \
             --push .
 
   test:
@@ -62,4 +67,5 @@ jobs:
 
       - name: Restart Web App
         run: |
-          az webapp restart --name bikepackmap --resource-group la_learning
+          az webapp config container set --name "$APP_NAME" --resource-group "$WEBAPP_RESOURCE_GROUP" --docker-custom-image-name "$FULL_IMAGE_NAME"
+          az webapp restart --name "$APP_NAME" --resource-group "$WEBAPP_RESOURCE_GROUP"
