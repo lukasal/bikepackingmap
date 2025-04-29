@@ -67,5 +67,5 @@ jobs:
 
       - name: Restart Web App
         run: |
-          az webapp config container set --name "$APP_NAME" --resource-group "$WEBAPP_RESOURCE_GROUP" --docker-image-name "$FULL_IMAGE_NAME"
+          az webapp config container set --name "$APP_NAME" --resource-group "$WEBAPP_RESOURCE_GROUP" --container-image-name "$FULL_IMAGE_NAME"
           az webapp restart --name "$APP_NAME" --resource-group "$WEBAPP_RESOURCE_GROUP"
