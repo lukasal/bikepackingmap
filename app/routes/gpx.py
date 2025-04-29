@@ -23,6 +23,7 @@ def fetch_gpx():
     activity_manager.reset()
     files = request.files.getlist("gpx_files")
 
+    raise ("Test_exception")
     activities = []
     for file in files:
         activities.append(process_gpx_data(file))

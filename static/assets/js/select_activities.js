@@ -63,7 +63,7 @@ function fetchData() {
             // Send AJAX request to fetch data
             sendRequest(formData).then(resolve).catch(error => {
                 const errorMessage = error.responseJSON && error.responseJSON.error ? error.responseJSON.error : "An unknown error occurred.";
-                alert(errorMessage);  // Show error message in a popup
+                showErrorModal(errorMessage);  // Show error message in a popup
                 console.error("AJAX error:", error);
                 reject(error);
             });
@@ -104,7 +104,7 @@ function sendRequest(formData) {
                 } else {
                     // Handle other errors
                     const errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : "An unknown error occurred.";
-                    alert(errorMessage);  // Show error message in a popup
+                    showErrorModal(errorMessage);  // Show error message in a popup
                     console.error("AJAX error:", error);
                     reject(error);
                 }
