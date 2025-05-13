@@ -82,6 +82,16 @@ function sendRequest(formData) {
             success: function(response) {
                 console.log(response);  // Log the entire response
                 $('#data-table tbody').empty(); // Clear existing data
+                
+                // Check for errors in the response
+                if (response.errors && response.errors.length > 0) {
+                    const filenames = response.errors.join("\n");
+                    const errorMessage = `Error in parsing files:\n${filenames}\nThese files have been excluded.`;
+                    console.error("Loading error:", errorMessage);
+
+                    alert(errorMessage);
+                } 
+
                 response.data.forEach(function(item) {
                     const row = `<tr class="sortable-row">
                                     <td><input type="checkbox" name="selected_activities" class="checkbox-cell" data-id="${item.id}"></td>

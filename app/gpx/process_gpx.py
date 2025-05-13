@@ -15,11 +15,7 @@ def process_gpx_data(file_storage: object) -> Activity:
     metadata = {}
     data = []
 
-    try:
-        gpx = gpxpy.parse(file_storage.stream, version="1.0")
-    except Exception as e:
-        logger.error(f"Error parsing GPX file: {e}")
-        return None
+    gpx = gpxpy.parse(file_storage.stream, version="1.0")
 
     if gpx.tracks:
         logger.info("Using tracks")

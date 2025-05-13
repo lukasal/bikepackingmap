@@ -24,9 +24,13 @@ def fetch_gpx():
     files = request.files.getlist("gpx_files")
 
     activities = []
+    errors = []
     for file in files:
-        activities.append(process_gpx_data(file))
-
+        try:
+            activities.append(process_gpx_data(file))
+        except Exception as e:
+            # logger.error(f"Error parsing GPX file: {e}")
+            errors.append(file.filename)
     sorted_activities = sorted(
         activities,
         key=lambda activity: (
@@ -36,4 +40,4 @@ def fetch_gpx():
     )
     activity_manager.add_activities(sorted_activities)
 
-    return jsonify({"data": activity_manager.send_to_frontend()})
+    return jsonify({"data": activity_manager.send_to_frontend(), "errors": errors})
