@@ -109,9 +109,9 @@ class TestProcessGpxData(unittest.TestCase):
     def test_process_gpx_data_with_errorous_file(self):
         gpx_data = ""
         file_storage = MockFileStorage("test.gpx", BytesIO(gpx_data.encode("utf-8")))
-        result = process_gpx_data(file_storage)
 
-        self.assertIsNone(result)
+        with self.assertRaises(Exception):
+            result = process_gpx_data(file_storage)
 
     def test_process_gpx_data_with_invalid_gpx(self):
         gpx_data = "<invalid>Not a valid GPX</invalid>"
