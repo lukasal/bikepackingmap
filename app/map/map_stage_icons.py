@@ -2,6 +2,7 @@ import folium
 from folium.plugins import BeautifyIcon
 import pandas as pd
 
+
 def map_stage_icons(activities, settings):
     # House Markler for each stage town:
     stage_icons = folium.FeatureGroup(name="Stage Icons", control=False)

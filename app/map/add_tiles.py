@@ -2,7 +2,6 @@ import folium
 
 
 def add_tiles(m, settings, tiles_name, dynamic_tiles):
-
     folium.TileLayer(
         settings.tiles[tiles_name],
         show=True,

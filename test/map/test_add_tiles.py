@@ -1,16 +1,12 @@
 import unittest
 import folium
 from app.map.add_tiles import add_tiles
-import sys
-import os
-from os.path import abspath, dirname, realpath
 
 # PATH = realpath(abspath(__file__))
 # sys.path.insert(0, dirname(dirname(PATH)))
 
 
 class TestAddTiles(unittest.TestCase):
-
     def setUp(self):
         self.map = folium.Map(location=[45.5236, -122.6750])
         self.settings = type(

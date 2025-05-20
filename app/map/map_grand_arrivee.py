@@ -1,9 +1,8 @@
 import folium
 from folium.plugins import BeautifyIcon
-import numpy as np
+
 
 def map_grand_arrivee(activities, settings, final_popup=False):
-
     grand_arrivee = folium.FeatureGroup(name="Grand arrivee", control=False)
     # No final stage via date - no marker
 

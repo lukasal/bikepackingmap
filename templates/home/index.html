@@ -8,7 +8,7 @@
 {% block body_class %} forms-sections {% endblock body_class %}
 
 {% block content %}
-    
+
     {% include "includes/navigation.html" %}
 
     <!-- -------- START HEADER 1 w/ text and image on right ------- -->
@@ -19,15 +19,15 @@
             </div>
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-6 col-md-7 d-flex justify-content-center flex-column">   
+                    <div class="col-lg-6 col-md-7 d-flex justify-content-center flex-column">
                         <!-- <h1 class="text-gradient text-primary">Bikepacking Map</h1> -->
                         <h1 class="mb-4">Build an interactive map of your multi-day bikepacking trip</h1>
-                        <p class="lead pe-5 me-5">Based on your tracking data, create one single map of your bicycling trip with all your stages, profiles, stats. Just like the overview map of the tour de france!    
+                        <p class="lead pe-5 me-5">Based on your tracking data, create one single map of your bicycling trip with all your stages, profiles, stats. Just like the overview map of the tour de france!
                             </p>
                         <div class="buttons">
                             <a href="/static/page-what.html">
                                 <button type="submit" class="btn bg-gradient-primary mt-4">What is bikepacking map? </button>
-                            </a> 
+                            </a>
                             <br>
                             <a href="{{ url_for('examples.display_examples') }}">
                                 <button type="button" class="btn bg-gradient-primary mt-4">Try it out using example data</button>

@@ -1,5 +1,7 @@
 from flask import session
 import requests
+
+
 # define function to get elevation data
 def get_elevation(id):
     base_url = "https://www.strava.com/api/v3/activities/" + str(id) + "/streams"

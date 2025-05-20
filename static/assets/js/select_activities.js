@@ -48,11 +48,11 @@ function fetchData() {
                     resolve('File limit exceeded');
                     return;
                 }
-    
+
                 for (let i = 0; i < files.length; i++) {
                     formData.append('gpx_files', files[i]);
                 }
-                    
+
                 // Send AJAX request to upload files
                 sendRequest(formData).then(resolve).catch(reject);
             });
@@ -82,7 +82,7 @@ function sendRequest(formData) {
             success: function(response) {
                 console.log(response);  // Log the entire response
                 $('#data-table tbody').empty(); // Clear existing data
-                
+
                 // Check for errors in the response
                 if (response.errors && response.errors.length > 0) {
                     const filenames = response.errors.join("\n");
@@ -90,7 +90,7 @@ function sendRequest(formData) {
                     console.error("Loading error:", errorMessage);
 
                     alert(errorMessage);
-                } 
+                }
 
                 response.data.forEach(function(item) {
                     const row = `<tr class="sortable-row">
@@ -160,7 +160,7 @@ function submitActivities() {
             $('#activity-form input[name="selected_activities"]').remove();
             $('#activity-form input[name="edited_data"]').remove();
 
-            // Add selected IDs as hidden inputs to the form    
+            // Add selected IDs as hidden inputs to the form
             selectedIds.forEach(function(id) {
                 $('<input>').attr({
                     type: 'hidden',

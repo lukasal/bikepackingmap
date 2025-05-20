@@ -9,15 +9,15 @@
 {% block body_class %} select-data-page {% endblock body_class %}
 
 {% block content %}
-    
+
     {% include "includes/navigation.html" %}
-    
+
     <!-- -------- START HEADER 1 ------- -->
     <header>
         <div class="page-header">
             <div class="container">
                 <div class="row">
-                    <div class="col-12 d-flex justify-content-center flex-column">   
+                    <div class="col-12 d-flex justify-content-center flex-column">
                         <h1 class="text-gradient text-primary">Get and select the Data</h1>
                         <p class="lead">Click on fetch data to fetch the selected number of activities in the selected date range. Then, mark the relevant activities and create the map with them.</p>
                     </div>
@@ -79,7 +79,7 @@
               <tbody>
                   <!-- Dynamic rows will be inserted here -->
               </tbody>
-          </table>          
+          </table>
           <div class="button-row">
             <div class="button-spinner-row" style="display: flex; align-items: center;">
               <button id="submit-selection" type="submit" class="btn bg-gradient-primary" data-function="submitActivities">
@@ -93,7 +93,7 @@
   {% include "includes/error.html" %}
 {% endblock %}
 
-<!-- Specific JS goes HERE --> 
+<!-- Specific JS goes HERE -->
 {% block javascripts %}
     <script>
       const fetchUrl = "{{ fetch_url }}";

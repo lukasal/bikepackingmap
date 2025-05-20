@@ -1,6 +1,6 @@
 import os
-from datetime import timedelta
 from app.utils.redis_client import redis_client
+
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")

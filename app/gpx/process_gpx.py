@@ -1,8 +1,5 @@
 import pandas as pd
-import numpy as np
-import haversine as hs
 import gpxpy
-from app.map.elevation_profile import create_binary_elevation_profile
 from app.gpx.process_points import process_points
 from app.models.activity_model import Activity
 import logging
@@ -10,7 +7,8 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def process_gpx_data(file_storage: object) -> Activity:
+
+def process_gpx_data(file_storage):
     activity = {}
     metadata = {}
     data = []
@@ -65,7 +63,7 @@ def process_gpx_data(file_storage: object) -> Activity:
     )
     activity["end_date"] = gpx_df["Time"].iloc[-1] if not gpx_df["Time"].empty else None
     activity["date"] = gpx_df["Time"].iloc[0].date() if activity["end_date"] else None
-    if not activity["start_date"] is None and not activity["end_date"] is None:
+    if activity["start_date"] is not None and activity["end_date"] is not None:
         metadata["elapsed_time"] = (
             activity["end_date"] - activity["start_date"]
         ).total_seconds()

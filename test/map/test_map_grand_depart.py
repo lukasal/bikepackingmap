@@ -6,7 +6,6 @@ from unittest.mock import MagicMock
 
 
 class TestMapGranddepart(unittest.TestCase):
-
     def setUp(self):
         # Sample data for activities
         self.activities1 = pd.DataFrame(

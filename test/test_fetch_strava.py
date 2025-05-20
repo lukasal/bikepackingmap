@@ -1,13 +1,8 @@
 import unittest
-from unittest.mock import patch, MagicMock
-import sys
-from os.path import abspath, dirname, realpath
+from unittest.mock import patch
 import pickle
-import pandas as pd
 from app.activity_manager.activity_manager import ActivityManager
 
-PATH = realpath(abspath(__file__))
-sys.path.insert(0, dirname(dirname(PATH)))
 from app import create_app
 
 
@@ -29,7 +24,6 @@ class FetchStravaTestCase(unittest.TestCase):
         side_effect=lambda: lambda x: x,
     )
     def test_fetch_strava(self, mock_activity_manager, mock_get_data):
-
         # Mock request args
         with self.client as c:
             with c.session_transaction() as sess:

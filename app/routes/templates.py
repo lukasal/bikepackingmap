@@ -10,9 +10,7 @@ templates_bp = Blueprint("templates", __name__)
 
 # Helper - Extract current page name from request
 def get_segment(request):
-
     try:
-
         segment = request.path.split("/")[-1]
 
         if segment == "":
@@ -20,15 +18,13 @@ def get_segment(request):
 
         return segment
 
-    except:
+    except Exception:
         return None
 
 
 @templates_bp.route("/static/<template>")
 def route_template(template):
-
     try:
-
         if not template.endswith(".html"):
             template += ".html"
 
@@ -41,5 +37,5 @@ def route_template(template):
     except TemplateNotFound:
         return render_template("home/page-404.html"), 404
 
-    except:
+    except Exception:
         return render_template("home/page-500.html"), 500

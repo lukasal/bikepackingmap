@@ -4,7 +4,6 @@ from app.map.helper import bounding_box
 
 
 class TestMapHelperFunctions(unittest.TestCase):
-
     def test_centroid_single_polyline(self):
         polylines = [[[0, 2], [2, 4], [4, 0]]]
         result = centroid(polylines)

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, session, jsonify,render_template
+from flask import Blueprint, session, jsonify, render_template
 from app.activity_manager.activity_manager import ActivityManager
 import time
 import pickle
@@ -18,6 +18,7 @@ def fetch_examples():
     activity_manager.add_activities(example_processed)
     print("preprocess activities", time.time() - start)
     return jsonify({"data": activity_manager.send_to_frontend()})
+
 
 @examples_bp.route("/display_examples")
 def display_examples():

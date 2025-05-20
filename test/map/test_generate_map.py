@@ -1,23 +1,17 @@
 import unittest
 import os
 
-import sys
-from os.path import abspath, dirname, realpath
 import pickle
 from bs4 import BeautifulSoup
 
-PATH = realpath(abspath(__file__))
-sys.path.insert(0, dirname(dirname(PATH)))
 from app.map.generate_map import generate_map
 from app.map.MapSettings import MapSettings
-from app.models.activity_model import Activity
 import pandas as pd
 
-class TestMapMarkers(unittest.TestCase):
 
+class TestMapMarkers(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-
         with open("data/giro_italia_example.pkl", "rb") as file:
             data_processed = pickle.load(file)
         data_processed = pd.DataFrame(
@@ -60,7 +54,6 @@ class TestMapMarkers(unittest.TestCase):
         )
 
     def test_polylines_count(self):
-
         # Find all script tags and count occurrences of 'var poly_line'
         script_tags = self.soup.find_all("script")
         polyline_count = 0

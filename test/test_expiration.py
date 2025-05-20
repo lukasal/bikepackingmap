@@ -1,13 +1,8 @@
 import unittest
-from flask import Flask, session, redirect, url_for
+from flask import session
 from redis import Redis
 import time
-import sys
 import os
-from os.path import abspath, dirname, realpath
-
-PATH = realpath(abspath(__file__))
-sys.path.insert(0, dirname(dirname(PATH)))
 
 from app import create_app
 from app.utils.cache import cache  # Adjust the import path accordingly
@@ -17,7 +12,6 @@ SESSION_EXPIRATION = 4
 
 
 class TestSessionLogicRedis(unittest.TestCase):
-
     @parameterized.expand(
         [
             ("redis",),  # Run this test with Redis
@@ -54,9 +48,9 @@ class TestSessionLogicRedis(unittest.TestCase):
         with self.client:
             # Send a request to the client (this will trigger the before_request logic)
             response = self.client.get("/")
-
+            self.assertEqual(response.status_code, 200)
             # Check if session_id is set
-            self.assertIn('session_id', session)
+            self.assertIn("session_id", session)
             # Check if session is stored in Cache
             self.assertTrue(cache.has(f"session:{session['session_id']}"))
 
@@ -95,7 +89,6 @@ class TestSessionLogicRedis(unittest.TestCase):
         with self.client:
             # Simulate an initial request (sets session and last_activity)
             self.client.get("/")
-            session_id = session['session_id']
 
             time.sleep(SESSION_EXPIRATION)
             # Check if session is stored in Cache
@@ -108,8 +101,8 @@ class TestSessionLogicRedis(unittest.TestCase):
 
             # Assert that session is cleared and redirected
             self.assertEqual(response.status_code, 302)  # Expecting a redirect
-            self.assertIn('/session-expired', response.location)
-            self.assertNotIn('session_id', session)  # No session_id is available
+            self.assertIn("/session-expired", response.location)
+            self.assertNotIn("session_id", session)  # No session_id is available
 
     @parameterized.expand(
         [
@@ -146,7 +139,6 @@ class TestSessionLogicRedis(unittest.TestCase):
         with self.client:
             # Simulate an initial request (sets session and last_activity)
             self.client.get("/")
-            session_id = session["session_id"]
 
             time.sleep(int(SESSION_EXPIRATION * 2 / 3))
             # Check if session is stored in Cache
@@ -171,5 +163,5 @@ class TestSessionLogicRedis(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

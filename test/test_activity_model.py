@@ -1,17 +1,29 @@
 import unittest
 from app.models.activity_model import Activity
 import pandas as pd
-from pydantic import ValidationError
+
 
 class TestActivityModel(unittest.TestCase):
     class TestActivityModel(unittest.TestCase):
         def test_get_field_names(self):
             # Expected field names based on the Activity model
             expected_field_names = [
-                "name", "id", "start_date", "end_date", "date", "type",
-                "map_polyline", "start_latlng", "end_latlng", "map_elevation",
-                "map_distance", "start_location", "end_location", "metadata",
-                "source", "ready"
+                "name",
+                "id",
+                "start_date",
+                "end_date",
+                "date",
+                "type",
+                "map_polyline",
+                "start_latlng",
+                "end_latlng",
+                "map_elevation",
+                "map_distance",
+                "start_location",
+                "end_location",
+                "metadata",
+                "source",
+                "ready",
             ]
 
             # Call the method
@@ -30,7 +42,7 @@ class TestActivityModel(unittest.TestCase):
                 "end_latlng": [[1.0, 1.0]],
                 "metadata": [{}],
                 "source": ["GPS"],
-                "ready": [True]
+                "ready": [True],
             }
             df = pd.DataFrame(data)
 
@@ -52,7 +64,7 @@ class TestActivityModel(unittest.TestCase):
                 "end_latlng": [[1.0, 1.0]],
                 "metadata": [{}],
                 "source": ["GPS"],
-                "ready": [True]
+                "ready": [True],
             }
             df = pd.DataFrame(data)
 
@@ -72,7 +84,7 @@ class TestActivityModel(unittest.TestCase):
                 "end_latlng": [[1.0, 1.0], [1.0, 1.0]],
                 "metadata": [{}, {}],
                 "source": ["GPS", "GPS"],
-                "ready": [True, True]
+                "ready": [True, True],
             }
             df = pd.DataFrame(data)
 

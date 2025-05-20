@@ -1,5 +1,5 @@
-from pydantic import BaseModel, ValidationError, Field, Extra
-from typing import List, Optional, Any, Tuple
+from pydantic import BaseModel, ValidationError, Field
+from typing import List, Optional, Tuple
 from datetime import date
 import pandas as pd
 import uuid
@@ -7,12 +7,17 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
 class Activity(BaseModel):
     name: str
-    id: str =  Field(default_factory=lambda: str(uuid.uuid4()), description="The unique identifier for the activity")
+    id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()),
+        description="The unique identifier for the activity",
+    )
     start_date: Optional[pd.Timestamp]
     end_date: Optional[pd.Timestamp]
-    date: Optional[date] 
+    date: Optional[date]
     type: str
     map_polyline: List[Tuple[float, float]]
     start_latlng: List[float]
@@ -27,7 +32,7 @@ class Activity(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-        extra = 'ignore'  # Ignore extra fields
+        extra = "ignore"  # Ignore extra fields
 
     @staticmethod
     def get_field_names() -> List[str]:

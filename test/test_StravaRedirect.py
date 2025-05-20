@@ -1,12 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from flask import Flask, session, request
-import sys
-from os.path import abspath, dirname, realpath
-import pickle
+from flask import session
 
-PATH = realpath(abspath(__file__))
-sys.path.insert(0, dirname(dirname(PATH)))
 from app import create_app
 
 
