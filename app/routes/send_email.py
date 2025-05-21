@@ -20,7 +20,9 @@ def send_email():
 
     # Send email
     try:
-        with smtplib.SMTP(os.getenv("SMTP_SERVER"), int(os.getenv("SMTP_PORT"))) as server:
+        with smtplib.SMTP(
+            os.getenv("SMTP_SERVER"), int(os.getenv("SMTP_PORT"))
+        ) as server:
             server.starttls()
             server.login(os.getenv("EMAIL"), os.getenv("EMAIL_PW"))
             server.sendmail(
@@ -52,6 +54,6 @@ def notify_on_fix():
             server.sendmail(
                 os.getenv("EMAIL"), os.getenv("EMAIL_TARGET"), msg.as_string()
             )
-    except smtplib.SMTPException as e:
+    except smtplib.SMTPException:
         pass
     return jsonify({"message": "Thank you very much!"})

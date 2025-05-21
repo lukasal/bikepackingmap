@@ -1,7 +1,8 @@
-from flask import session, request, redirect, url_for, jsonify, current_app
+from flask import session, request, redirect, jsonify
 from app.activity_manager.activity_manager import ActivityManager
 from app.utils.cache import cache
 import os
+
 
 def ensure_session_id():
     """
@@ -30,7 +31,6 @@ def ensure_session_id():
         ActivityManager(session["session_id"])
     # session ok
     else:
-
         cache.set(
             f"session:{session['session_id']}",
             cache.get(f"session:{session['session_id']}"),

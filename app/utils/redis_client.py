@@ -1,5 +1,6 @@
 import redis
-import os 
+import os
+
 redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
 
 # Initialize and configure the Redis client connection

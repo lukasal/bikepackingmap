@@ -1,22 +1,19 @@
-import pandas as pd
-from datetime import timedelta
-
 from app.models.activity_model import Activity
 from app.strava.get_elevation import get_elevation
 from app.map.elevation_profile import create_binary_elevation_profile
 
 
 def postprocess(activity: Activity) -> Activity:
-
     if activity.source == "strava":
         # get elevation data from strava API
         try:
             activity.map_distance, activity.map_elevation = get_elevation(activity.id)
-            activity.map_distance = [
-                point / 1000 for point in activity.map_distance
-            ]  # convert from m to km
+            if activity.map_distance is not None:
+                activity.map_distance = [
+                    point / 1000 for point in activity.map_distance
+                ]  # convert from m to km
 
-        except:
+        except Exception:
             pass
 
     if activity.map_distance and activity.map_elevation:

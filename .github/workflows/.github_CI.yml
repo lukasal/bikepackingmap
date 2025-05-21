@@ -46,11 +46,11 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
-      
+
       - name: Run unit tests
         env:
-          REDIS_URL: ${{ secrets.REDIS_URL }}    
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}    
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: python -m unittest discover
 
   deploy:

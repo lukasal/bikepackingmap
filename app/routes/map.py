@@ -1,8 +1,14 @@
-from flask import Blueprint, request, session, jsonify, render_template, send_file, url_for, redirect
+from flask import (
+    Blueprint,
+    request,
+    session,
+    jsonify,
+    render_template,
+    url_for,
+    redirect,
+)
 from app.activity_manager.activity_manager import ActivityManager
 from app.map.generate_map import generate_map
-from app.utils.save_png import save_png
-import os
 
 map_bp = Blueprint("map", __name__)
 

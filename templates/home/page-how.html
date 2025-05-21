@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} Forms {% endblock title %}
+{% block title %} How {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
@@ -10,7 +10,7 @@
 {% block body_class %} forms-sections {% endblock body_class %}
 
 {% block content %}
-    
+
     {% include "includes/navigation.html" %}
 
     <!-- -------- START HEADER 1 w/ text and image on right ------- -->
@@ -29,7 +29,7 @@
                             <li>Export your maps</li>
                         </ul>
                         <p>You are guided through these steps when you start building your map by connecting to Strava.</p>
-                        
+
                         <h2>How to Connect to Strava</h2>
                         <p>Click the "Connect to Strava" button to establish a connection. Follow the on-screen instructions to log in to your Strava account and grant the necessary permissions for the app to fetch your data.</p>
                         <p><strong>Note:</strong> Activities marked as "private" will not be fetched!</p>
@@ -53,7 +53,7 @@
                         <p>Alternatively, you can use <a href="https://fontawesome.com/search" target="_blank">Font Awesome icons</a>, a collection of scalable vector icons that can be customized and used in various ways. Add the "fa" prefix to the icon name (e.g., "fa fa-flag-checkered").</p>
                         <img src="{{ url_for('static', filename='assets/img/folium-fontawesome.png') }}" alt="Font Awesome icons" class="img-fluid mt-4 spaced-image">
                         <p>Experiment with different icons, colors, and styles to create your unique map. Have fun!</p>
-                        
+
                         <h2>How to Export Maps</h2>
                         <p>Finally, click "Export Maps" to download your created visualization. You can download the full map as HTML or PNG, as well as the map and profile of each stage in PNG or HTML format. Don't foget this as we are deleting all your data after 30 min of inactivity.</p>
                         <img src="{{ url_for('static', filename='assets/img/export_maps.png') }}" alt="Export maps" class="img-fluid mt-4 spaced-image">
@@ -63,5 +63,5 @@
             </div>
         </div>
     </header>
-    
+
 {% endblock %}

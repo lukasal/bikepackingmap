@@ -1,19 +1,19 @@
 document.getElementById('notify-form-page500').addEventListener('submit', function(e) {
     e.preventDefault(); // Stop the form from submitting normally
-  
+
     const form = e.target;
     const emailInput = document.getElementById('email');
     const submitButton = document.getElementById('submit-button');
-  
+
     const email = emailInput.value.trim();
     if (!email) {
       alert("Please enter a valid email.");
       return;
     }
-  
+
     submitButton.textContent = "Submitting...";
     submitButton.disabled = true;
-  
+
     fetch("/notify-on-fix", {
       method: "POST",
       headers: {

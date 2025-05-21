@@ -10,7 +10,6 @@ import yaml
 
 
 class MapSettings:
-
     def __init__(self, activities, config_file=None):
         self.interactive_settings = {}
         if config_file:
@@ -34,7 +33,7 @@ class MapSettings:
         self.spec_width = 6
         self.spec_height = 7.5
 
-        self.tiles = tiles = {
+        self.tiles = {
             "stadia_terrain": "https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png?api_key=18eb0b62-6b8d-4784-9997-f9b5a9ac39fd",
             "google_hybrid": "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&apistyle=s.t%3A2|s.e%3Al|p.v%3Aoff",
             "google_satellit": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&apistyle=s.t%3A2|s.e%3Al|p.v%3Aoff",

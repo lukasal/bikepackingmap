@@ -1,8 +1,8 @@
 import unittest
-import pandas as pd
 from io import BytesIO
 from app.gpx.process_gpx import process_gpx_data
 from app.models.activity_model import Activity
+
 
 class MockFileStorage:
     def __init__(self, filename, stream):
@@ -11,7 +11,6 @@ class MockFileStorage:
 
 
 class TestProcessGpxData(unittest.TestCase):
-
     def test_process_gpx_data_with_tracks(self):
         gpx_data = """
         <gpx version="1.1" creator="test">
@@ -111,7 +110,7 @@ class TestProcessGpxData(unittest.TestCase):
         file_storage = MockFileStorage("test.gpx", BytesIO(gpx_data.encode("utf-8")))
 
         with self.assertRaises(Exception):
-            result = process_gpx_data(file_storage)
+            process_gpx_data(file_storage)
 
     def test_process_gpx_data_with_invalid_gpx(self):
         gpx_data = "<invalid>Not a valid GPX</invalid>"

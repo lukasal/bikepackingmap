@@ -21,7 +21,6 @@ def generate_map(
     dynamic_tiles=False,
     save=True,
 ):
-
     m = folium.Map(
         location=centroid(activities["map_polyline"]),
         width=width,

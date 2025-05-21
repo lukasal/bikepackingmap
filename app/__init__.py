@@ -19,6 +19,7 @@ from app.utils.cache import cache
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def create_app():
     project_root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 

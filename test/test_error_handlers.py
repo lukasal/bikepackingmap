@@ -1,10 +1,8 @@
 import unittest
-from flask import Flask, jsonify
 from app import create_app
-import traceback
+
 
 class TestErrorHandlers(unittest.TestCase):
-
     def setUp(self):
         self.app = create_app()
         self.app.testing = True
@@ -46,11 +44,11 @@ class TestErrorHandlers(unittest.TestCase):
     @unittest.mock.patch("app.utils.error_handlers.upload_to_blob")
     def test_internal_error_ajax(self, mock_upload_to_blob):
         response = self.client.get(
-            "/trigger-500",
-            headers={"X-Requested-With": "XMLHttpRequest"}
+            "/trigger-500", headers={"X-Requested-With": "XMLHttpRequest"}
         )
         self.assertEqual(response.status_code, 500)
         self.assertIn("internal server error", response.get_json()["error"].lower())
+
 
 if __name__ == "__main__":
     unittest.main()

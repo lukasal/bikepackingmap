@@ -9,16 +9,16 @@ from app.utils.cache import cache
 from app.map.MapSettings import MapSettings
 from app.models.activity_model import Activity
 from typing import List
-import json
 
 
 # Define the decorator without an outer function
 def store_in_cache(method):
-
     @wraps(method)
     def wrapper(self, *args, **kwargs):
         # Set TTL from environment variable or default to 1800 seconds (30 minutes)
-        ttl_seconds = int(os.getenv("SESSION_EXP_TIME", 1800))  # Move here for dynamic value
+        ttl_seconds = int(
+            os.getenv("SESSION_EXP_TIME", 1800)
+        )  # Move here for dynamic value
         # Execute the original method
         result = method(self, *args, **kwargs)
 
@@ -40,7 +40,6 @@ def store_in_cache(method):
 
 
 class ActivityManager:
-
     @store_in_cache
     def __init__(self, session_id):
         """
@@ -86,7 +85,7 @@ class ActivityManager:
     def add_activities(self, activities: List[Activity]):
         """
         Add activities to the user's DataFrame.
-        :param activities: List of activities 
+        :param activities: List of activities
         """
         self.activities += activities
 
@@ -152,9 +151,7 @@ class ActivityManager:
         data_to_send["start_date"] = data_to_send["start_date"].apply(
             lambda x: (x.strftime("%Y-%m-%d %H:%M:%S") if x is not None else "")
         )
-        return data_to_send.to_dict(
-            orient="records"
-        )
+        return data_to_send.to_dict(orient="records")
 
     @store_in_cache
     def postprocess(self, id_list):
@@ -181,5 +178,8 @@ class ActivityManager:
             )
 
         self.activities = [
-            activity for id in id_list for activity in self.activities if activity.id == id
+            activity
+            for id in id_list
+            for activity in self.activities
+            if activity.id == id
         ]

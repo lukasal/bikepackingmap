@@ -9,7 +9,7 @@ from flask import (
 )
 import requests
 import os
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from app.activity_manager.activity_manager import ActivityManager
 from app.utils.parse_date import parse_date
@@ -77,10 +77,9 @@ def display_strava():
 
 
 @strava_bp.route("/fetch_strava", methods=["POST"])
-def fetch_strava():  
-
+def fetch_strava():
     # Get the current user's ActivityManager
-    session_id = session['session_id']
+    session_id = session["session_id"]
     activity_manager = ActivityManager.load_from_cache(session_id)
     # Extract parameters
     start_date = request.form.get("start_date")
@@ -93,7 +92,9 @@ def fetch_strava():
 
     activity_manager.reset()
     # get Activities from strava API
-    data = get_data(session['access_token'], start_date, end_date, per_page=per_page, page=1)
+    data = get_data(
+        session["access_token"], start_date, end_date, per_page=per_page, page=1
+    )
     # normalize data to Activity type
     data = process_strava(data)
     # Add activities to the DataFrame

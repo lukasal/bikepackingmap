@@ -5,8 +5,8 @@ from datetime import datetime
 from app.map.map_polylines import map_polylines
 from app.map.MapSettings import MapSettings
 
-class TestMapPolylines(unittest.TestCase):
 
+class TestMapPolylines(unittest.TestCase):
     class MapSettings:
         line_thickness = 5
         color = {"Run": "blue"}

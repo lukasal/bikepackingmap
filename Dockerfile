@@ -24,14 +24,14 @@ RUN apt-get update && apt-get install -y \
 
 RUN wget -qO - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update 
+    && apt-get update
 RUN apt-cache policy google-chrome-stable
 RUN apt-get install -y google-chrome-stable
 
     # Create a working directory
 WORKDIR /app
 # Copy the remaining files and source code
-COPY . . 
+COPY . .
 # Install python packages
 RUN pip install -r requirements.txt
 

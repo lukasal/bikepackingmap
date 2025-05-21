@@ -3,11 +3,8 @@ from app.map.map_popup import html_popup
 
 
 def map_polylines(activities, map_settings):
-
     polylines = folium.FeatureGroup(name="Polylines", control=False)
-    for row in activities.iterrows():
-        row_index = row[0]
-        row_values = row[1]
+    for _, row_values in activities.iterrows():
         if map_settings.get_interactive_setting("line_stroke"):
             ls = folium.PolyLine(
                 row_values["map_polyline"],

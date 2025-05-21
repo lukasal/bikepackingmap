@@ -28,7 +28,7 @@ def fetch_gpx():
     for file in files:
         try:
             activities.append(process_gpx_data(file))
-        except Exception as e:
+        except Exception:
             # logger.error(f"Error parsing GPX file: {e}")
             errors.append(file.filename)
     sorted_activities = sorted(

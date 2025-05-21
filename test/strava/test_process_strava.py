@@ -1,6 +1,5 @@
 import unittest
 import pandas as pd
-import polyline
 from app.strava.process_strava import process_strava
 from unittest.mock import patch
 from app.models.activity_model import Activity
@@ -10,13 +9,14 @@ class TestProcessStrava(unittest.TestCase):
     def setUp(self):
         self.data = pd.DataFrame(
             {
-                "name": ["Stage1: Location A - Location B", "Stage2 : Location C - Location D"],
+                "name": [
+                    "Stage1: Location A - Location B",
+                    "Stage2 : Location C - Location D",
+                ],
                 "id": [123, 456],
                 "map.summary_polyline": [
-                    [(52.5200, 13.4050),
-                    (52.5201, 13.4051)],
-                    [(52.5200, 14.4050),
-                    (52.5201, 14.4051)],
+                    [(52.5200, 13.4050), (52.5201, 13.4051)],
+                    [(52.5200, 14.4050), (52.5201, 14.4051)],
                 ],
                 "start_date_local": ["2023-01-01T00:00:00Z", "2023-01-02T00:00:00Z"],
                 "elapsed_time": [3600, 7200],
@@ -26,6 +26,7 @@ class TestProcessStrava(unittest.TestCase):
                 "max_speed": [5.56, 11.12],
             }
         )
+
     @patch("app.strava.process_strava.polyline.decode")
     def test_process_strava_basic(self, mock_decode):
         mock_decode.side_effect = lambda x: x
@@ -50,17 +51,20 @@ class TestProcessStrava(unittest.TestCase):
 
         # Check if date and time conversions were applied correctly
         self.assertEqual(result[0].date.strftime("%Y-%m-%d"), "2023-01-01")
-        self.assertEqual(result[0].start_date.strftime("%Y-%m-%d %H:%M:%S"), "2023-01-01 00:00:00")
-        self.assertEqual(result[0].end_date.strftime("%Y-%m-%d %H:%M:%S"), "2023-01-01 01:00:00")
+        self.assertEqual(
+            result[0].start_date.strftime("%Y-%m-%d %H:%M:%S"), "2023-01-01 00:00:00"
+        )
+        self.assertEqual(
+            result[0].end_date.strftime("%Y-%m-%d %H:%M:%S"), "2023-01-01 01:00:00"
+        )
 
         # Check if metadata was created correctly
         self.assertIn("average_speed", result[0].metadata)
         self.assertIn("max_speed", result[0].metadata)
 
         # Check if speed conversions were applied correctly
-        self.assertEqual(
-            result[0].metadata["average_speed"], 2.78 * 3.6)
-        self.assertEqual(result[0].metadata["max_speed"], 5.56 * 3.6) 
+        self.assertEqual(result[0].metadata["average_speed"], 2.78 * 3.6)
+        self.assertEqual(result[0].metadata["max_speed"], 5.56 * 3.6)
         # Check if polyline decoding was applied
         self.assertEqual(
             result[1].map_polyline, [(52.5200, 14.4050), (52.5201, 14.4051)]
@@ -76,8 +80,12 @@ class TestProcessStrava(unittest.TestCase):
 
         # Check if date and time conversions were applied correctly
         self.assertEqual(result[1].date.strftime("%Y-%m-%d"), "2023-01-02")
-        self.assertEqual(result[1].start_date.strftime("%Y-%m-%d %H:%M:%S"), "2023-01-02 00:00:00")
-        self.assertEqual(result[1].end_date.strftime("%Y-%m-%d %H:%M:%S"), "2023-01-02 02:00:00")
+        self.assertEqual(
+            result[1].start_date.strftime("%Y-%m-%d %H:%M:%S"), "2023-01-02 00:00:00"
+        )
+        self.assertEqual(
+            result[1].end_date.strftime("%Y-%m-%d %H:%M:%S"), "2023-01-02 02:00:00"
+        )
 
     @unittest.skip("test not ready")
     def test_process_strava_empty_dataframe(self):
@@ -88,10 +96,12 @@ class TestProcessStrava(unittest.TestCase):
         self.assertEqual(result, [])
 
     def test_process_strava_missing_columns(self):
-        incomplete_activities = pd.DataFrame({
-            "name": ["Run: Start - End"],
-            "start_date_local": ["2023-01-01T10:00:00Z"],
-        })
+        incomplete_activities = pd.DataFrame(
+            {
+                "name": ["Run: Start - End"],
+                "start_date_local": ["2023-01-01T10:00:00Z"],
+            }
+        )
 
         with self.assertRaises(KeyError):
             process_strava(incomplete_activities)

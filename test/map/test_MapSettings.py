@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import patch, mock_open
 from app.map.MapSettings import MapSettings
 from app.map.InteractiveSetting import (
     BooleanSetting,
@@ -11,7 +10,6 @@ import pandas as pd
 
 
 class TestMapSettings(unittest.TestCase):
-
     def setUp(self):
         activities = pd.DataFrame({"type": []})
         self.map_settings = MapSettings(activities)
@@ -40,7 +38,6 @@ class TestMapSettings(unittest.TestCase):
         self.assertIn("line_color_bike", map_settings.interactive_settings)
 
     def test_add_setting_boolean(self):
-
         self.map_settings.add_setting(
             id="test_boolean",
             type="BooleanSetting",
@@ -57,7 +54,6 @@ class TestMapSettings(unittest.TestCase):
         )
 
     def test_add_setting_color(self):
-
         self.map_settings.add_setting(
             id="test_color",
             type="ColorSetting",
@@ -74,7 +70,6 @@ class TestMapSettings(unittest.TestCase):
         )
 
     def test_add_setting_number(self):
-
         self.map_settings.add_setting(
             id="test_number",
             type="NumberSetting",
@@ -91,7 +86,6 @@ class TestMapSettings(unittest.TestCase):
         )
 
     def test_add_setting_text(self):
-
         self.map_settings.add_setting(
             id="test_text",
             type="TextSetting",
@@ -108,7 +102,6 @@ class TestMapSettings(unittest.TestCase):
         )
 
     def test_get_interactive_groups(self):
-
         self.map_settings.add_setting(
             id="test_number",
             type="NumberSetting",
@@ -127,7 +120,6 @@ class TestMapSettings(unittest.TestCase):
         self.assertEqual(groups, ["Group1", "Group2"])
 
     def test_set_interactive_setting_number(self):
-
         self.map_settings.add_setting(
             id="test_number",
             type="NumberSetting",
@@ -149,7 +141,6 @@ class TestMapSettings(unittest.TestCase):
         )
 
     def test_set_interactive_setting_boolean(self):
-
         self.map_settings.add_setting(
             id="test_boolean",
             type="BooleanSetting",
@@ -171,7 +162,6 @@ class TestMapSettings(unittest.TestCase):
         )
 
     def test_set_interactive_setting_color(self):
-
         self.map_settings.add_setting(
             id="test_color",
             type="ColorSetting",
@@ -185,7 +175,6 @@ class TestMapSettings(unittest.TestCase):
         )
 
     def test_set_interactive_setting_text(self):
-
         self.map_settings.add_setting(
             id="test_text",
             type="TextSetting",
@@ -199,12 +188,10 @@ class TestMapSettings(unittest.TestCase):
         )
 
     def test_set_interactive_setting_not_found(self):
-
         with self.assertRaises(KeyError):
             self.map_settings.set_interactive_setting("non_existent_setting", "value")
 
     def test_get_interactive_setting(self):
-
         self.map_settings.add_setting(
             id="test_text",
             type="TextSetting",

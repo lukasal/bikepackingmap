@@ -1,14 +1,6 @@
 import polyline
 import pandas as pd
-from tqdm import tqdm
-import requests
 import re
-from flask import session
-from app.map.elevation_profile import create_binary_elevation_profile
-import matplotlib.pyplot as plt
-import base64
-import os
-from datetime import timedelta
 from app.models.activity_model import Activity
 from typing import List
 
@@ -18,6 +10,7 @@ def decode_polyline(x):
         return polyline.decode(x)
     except Exception:
         return None
+
 
 information_columns = [
     "distance",
@@ -70,7 +63,9 @@ def process_strava(activities: pd.DataFrame) -> List[Activity]:
     if activities.empty:
         return []
 
-    activities["map_polyline"] = activities["map.summary_polyline"].apply(decode_polyline)
+    activities["map_polyline"] = activities["map.summary_polyline"].apply(
+        decode_polyline
+    )
     activities["start_latlng"] = activities["map_polyline"].apply(lambda x: list(x[0]))
     activities["end_latlng"] = activities["map_polyline"].apply(lambda x: list(x[-1]))
 

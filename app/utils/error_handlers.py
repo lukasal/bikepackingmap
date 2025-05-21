@@ -1,7 +1,7 @@
 # error_handlers.py
 from flask import session, Blueprint, jsonify, request, render_template
 import logging
-import traceback 
+import traceback
 from app.activity_manager.activity_manager import ActivityManager
 from app.utils.upload_blob import upload_to_blob
 import pickle
@@ -53,7 +53,6 @@ def unhandled_exception(error):
             "error_message": str(Exception),
             "traceback": traceback.format_exc(),
             "timestamp": datetime.utcnow().isoformat(),
-
             "request_info": {
                 "endpoint": request.endpoint,
                 "path": request.path,
@@ -62,19 +61,14 @@ def unhandled_exception(error):
                 "form": request.form.to_dict(),
                 "json": request.get_json(silent=True),
                 "headers": dict(request.headers),
-                "remote_addr": request.remote_addr
+                "remote_addr": request.remote_addr,
             },
-
             "user_info": {
-                "sesssion_id": session['session_id'],
-            }
+                "sesssion_id": session["session_id"],
+            },
         }
-        logger.error(
-        f"Unhandler exception: {error_info}"
-    )
-        blob_data = pickle.dumps(
-            error_info
-        )
+        logger.error(f"Unhandler exception: {error_info}")
+        blob_data = pickle.dumps(error_info)
         current_timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
         blob_store_key = (
             f"activity_manager_dumps/{current_timestamp}_{session['session_id']}.pkl"

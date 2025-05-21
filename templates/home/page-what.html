@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} Forms {% endblock title %}
+{% block title %} What {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
@@ -24,7 +24,7 @@
 {% block body_class %} forms-sections {% endblock body_class %}
 
 {% block content %}
-    
+
     {% include "includes/navigation.html" %}
 
     <!-- -------- START HEADER 1 w/ text and image on right ------- -->
@@ -36,7 +36,7 @@
                         <!-- <h1 class="text-gradient text-primary">Bikepacking Map</h1> -->
                         <h1 class="mb-4">What is bikepacking map?</h1>
                         <p class="mt-4">Bikepacking map uses your tracking data to create visualizations of multi-day trips like the one displayed on the right hand side.
-                           It shows the whole route in a way similar to the maps from Tour de France route visualizations including stage towns and the finish/depart. Additionally it shows all your stats from the stages as popups and can handle different activity types. 
+                           It shows the whole route in a way similar to the maps from Tour de France route visualizations including stage towns and the finish/depart. Additionally it shows all your stats from the stages as popups and can handle different activity types.
                            These maps consist of:</p>
                         <ul>
                             <li>The route based on GPS data</li>
@@ -60,10 +60,10 @@
             </div>
         </div>
     </header>
-    
+
 {% endblock %}
 
-<!-- Specific JS goes HERE --> 
+<!-- Specific JS goes HERE -->
 {% block javascripts %}
   <script src="/static/assets/js/soft-design-system.min.js?v=1.0.1" type="text/javascript"></script>
 {% endblock javascripts %}
